@@ -91,6 +91,7 @@ button,input{
   align-items:center;
   justify-content:center;
   box-shadow:0 2px 7px rgba(0,0,0,.25);
+  cursor:pointer;
 }
 
 .mapArea{
@@ -120,7 +121,7 @@ button,input{
   left:10px;
   max-width:500px;
   margin-left:auto;
-  max-height:calc(100dvh - 85px);
+  max-height:calc(100vh - 85px);
   z-index:6000;
   background:white;
   border-radius:16px;
@@ -163,10 +164,11 @@ button,input{
   background:rgba(255,255,255,.18)!important;
   color:white!important;
   font-size:25px!important;
+  cursor:pointer;
 }
 
 .profileContent{
-  max-height:calc(100dvh - 145px);
+  max-height:calc(100vh - 145px);
   overflow-y:auto;
   padding:12px;
   -webkit-overflow-scrolling:touch;
@@ -201,6 +203,7 @@ input{
   background:white;
 }
 
+/* WEBVIEW-OPTIMIZED BOOKING SHEET */
 .bookingSheet{
   position:fixed;
   left:50%;
@@ -214,35 +217,33 @@ input{
   border-radius:20px 20px 0 0;
   box-shadow:0 -4px 20px rgba(0,0,0,.3);
   overflow:hidden;
-  transition:height .28s cubic-bezier(.25,.8,.25,1);
 }
 
 .bookingSheet.expanded{
-  height:min(82dvh,720px);
+  height:80vh !important;
 }
 
-.bookingHeader{
+.bookingHeaderBar{
   height:82px;
+  width:100%;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:0 15px;
   background:linear-gradient(135deg,#8b0000,#650000);
-  color:white;
-  font-weight:bold;
-  user-select:none;
+  position:relative;
+  z-index:5001;
 }
 
-/* Centered Circular Toggle Button with Green (Open) & Red (Close) States */
+/* DIRECT CLICK BUTTON PARA SA WEBVIEW */
 .bookNowCircleBtn {
-  width: 64px !important;
-  height: 64px !important;
-  min-width: 64px !important;
-  max-width: 64px !important;
+  width: 66px !important;
+  height: 66px !important;
+  min-width: 66px !important;
+  max-width: 66px !important;
   margin: 0 !important;
   padding: 0 !important;
   border-radius: 50% !important;
-  background: #16823b !important; /* Green default */
+  background: #16823b !important; /* Green */
   color: #ffffff !important;
   font-size: 11px !important;
   font-weight: 900 !important;
@@ -250,37 +251,34 @@ input{
   align-items: center;
   justify-content: center;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   border: 3px solid #ffffff !important;
-  cursor: pointer;
+  cursor: pointer !important;
   line-height: 1.1;
-  transition: all 0.2s ease;
-}
-
-.bookNowCircleBtn:hover {
-  transform: scale(1.06);
-  background: #12662e !important;
+  position: relative;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  outline: none;
 }
 
 .bookNowCircleBtn:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
-/* Style when sheet is open/expanded */
 .bookingSheet.expanded .bookNowCircleBtn {
-  background: #b00020 !important; /* Red when open */
-  border-color: #ffffff !important;
-}
-
-.bookingSheet.expanded .bookNowCircleBtn:hover {
-  background: #8b0000 !important;
+  background: #b00020 !important; /* Red kapag naka-open */
 }
 
 .bookingContent{
-  height:calc(min(82dvh,720px) - 82px);
+  height:calc(80vh - 82px);
   overflow-y:auto;
   padding:12px;
   -webkit-overflow-scrolling:touch;
+  display: none; /* Naka-hide kapag closed para hindi sagabal sa webview */
+}
+
+.bookingSheet.expanded .bookingContent {
+  display: block !important; /* Lumilitaw lang kapag open */
 }
 
 .bookingSection{
@@ -305,6 +303,7 @@ button{
   background:#8b0000;
   color:white;
   font-weight:bold;
+  cursor:pointer;
 }
 
 button:active{
@@ -341,10 +340,6 @@ button:disabled{
   background:#eee;
   margin-top:10px;
   font-weight:bold;
-}
-
-.info{
-  line-height:1.6;
 }
 
 .recoveryNotice{
@@ -419,35 +414,10 @@ button:disabled{
   box-shadow:0 3px 9px #0004;
 }
 
-.rideActionBtn:active{
-  transform:scale(.92);
-}
-
-#chatBtn.rideActionBtn{
-  font-size:0!important;
-}
-
-#chatBtn.rideActionBtn::before{
-  content:"💬";
-  font-size:24px;
-}
-
-#cancelBtn.rideActionBtn{
-  font-size:0!important;
-}
-
-#cancelBtn.rideActionBtn::before{
-  content:"❌";
-  font-size:22px;
-}
-
-#callBtn{
-  background:#16823b;
-}
-
-#wazeRiderBtn{
-  background:#d97706;
-}
+#chatBtn.rideActionBtn::before{ content:"💬"; font-size:24px; }
+#cancelBtn.rideActionBtn::before{ content:"❌"; font-size:22px; }
+#callBtn{ background:#16823b; }
+#wazeRiderBtn{ background:#d97706; }
 
 .chatModal{
   position:fixed;
@@ -486,10 +456,6 @@ button:disabled{
 .chatHeaderTitle{
   font-weight:900;
   font-size:17px;
-}
-
-.chatHeader small{
-  opacity:.9;
 }
 
 .chatClose{
@@ -587,29 +553,6 @@ button:disabled{
   font-size:14px;
 }
 
-@media(min-width:701px){
-  .profilePanel{
-    right:15px;
-    left:auto;
-    width:420px;
-  }
-  .bookingSheet{
-    border-radius:20px 20px 0 0;
-  }
-}
-
-@media(max-width:380px){
-  .rideActions{
-    gap:8px;
-  }
-  .rideActionBtn{
-    width:52px!important;
-    height:52px!important;
-    min-width:52px!important;
-    max-width:52px!important;
-  }
-}
-
 #pickupDestinationSection.sectionHidden {
   display: none !important;
 }
@@ -701,7 +644,6 @@ button:disabled{
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: .6px;
 }
 
 .ridePointAddress {
@@ -731,14 +673,12 @@ button:disabled{
   color: #777;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: .5px;
 }
 
 .rideStatValue {
   color: #8b0000;
   font-size: 20px;
   font-weight: 900;
-  overflow-wrap: anywhere;
 }
 
 .rideWaiting {
@@ -758,11 +698,6 @@ button:disabled{
   background: #eef8f0;
   border: 1px solid #cce8d2;
   line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-.rideRiderInfo strong {
-  color: #176b32;
 }
 
 #rideActions {
@@ -774,29 +709,13 @@ button:disabled{
 #rideActions .rideActionBtn {
   width: 55px !important;
   height: 55px !important;
-  min-width: 55px !important;
-  max-width: 55px !important;
   box-shadow: 0 4px 10px #0002;
 }
 
-#wazePickupBtn,
-#wazeDestinationBtn {
+#wazePickupBtn, #wazeDestinationBtn {
   width: calc(100% - 24px);
   margin: 0 12px 10px;
   border-radius: 12px;
-}
-
-.bookingSection:has(#rideInfo) > #wazeDestinationBtn {
-  margin-bottom: 14px;
-}
-
-@media(max-width:380px) {
-  .rideStatValue {
-    font-size: 18px;
-  }
-  #rideActions {
-    gap: 10px;
-  }
 }
 </style>
 </head>
@@ -810,11 +729,7 @@ button:disabled{
     <strong>T U K L A S</strong>
     <small>Passenger</small>
   </div>
-  <button
-    id="profileButton"
-    class="profileButton"
-    onclick="toggleProfileMenu()"
-  >
+  <button id="profileButton" class="profileButton" onclick="toggleProfileMenu()">
     👤
   </button>
 </header>
@@ -825,12 +740,8 @@ button:disabled{
 
 <section id="profilePanel" class="profilePanel">
   <div class="profileHeader">
-    <div class="profileHeaderTitle">
-      👤 Passenger Profile
-    </div>
-    <button class="profileClose" onclick="closeProfileMenu()">
-      ×
-    </button>
+    <div class="profileHeaderTitle">👤 Passenger Profile</div>
+    <button class="profileClose" onclick="closeProfileMenu()">×</button>
   </div>
   <div class="profileContent">
     <div class="profileCard">
@@ -842,16 +753,13 @@ button:disabled{
     </div>
     <div class="profileCard">
       <h3>📋 Booking History</h3>
-      <div id="history">
-        Enter contact number to view booking history.
-      </div>
+      <div id="history">Enter contact number to view booking history.</div>
     </div>
   </div>
 </section>
 
 <section id="bookingSheet" class="bookingSheet">
-  <div id="bookingHeader" class="bookingHeader">
-    <!-- Centered Toggle Button -->
+  <div class="bookingHeaderBar">
     <button id="toggleBtn" class="bookNowCircleBtn" onclick="toggleBookingSheet()">
       BOOK<br>NOW
     </button>
@@ -859,52 +767,28 @@ button:disabled{
   <div class="bookingContent">
     <div id="pickupDestinationSection" class="bookingSection">
       <h3>Pickup & Destination</h3>
-      <button onclick="getPickupGPS()">
-        📍 Use My Current Location
-      </button>
+      <button onclick="getPickupGPS()">📍 Use My Current Location</button>
       <input id="pickupInput" placeholder="Pickup location" autocomplete="off">
       <div id="pickupSuggestions" class="suggestions hidden"></div>
       <input id="destinationInput" placeholder="Destination" autocomplete="off">
       <div id="destinationSuggestions" class="suggestions hidden"></div>
-      <button onclick="chooseDestination()">
-        🎯 Tap Map for Destination
-      </button>
-      <div class="status" id="locationStatus">
-        Set your pickup and destination.
-      </div>
-      <div id="recoveryNotice" class="recoveryNotice hidden">
-        🔄 Checking your previous active booking...
-      </div>
-      <button class="green" id="bookRideBtn" onclick="bookRide()">
-        🏍️ BOOK RIDE
-      </button>
+      <button onclick="chooseDestination()">🎯 Tap Map for Destination</button>
+      <div class="status" id="locationStatus">Set your pickup and destination.</div>
+      <div id="recoveryNotice" class="recoveryNotice hidden">🔄 Checking previous active booking...</div>
+      <button class="green" id="bookRideBtn" onclick="bookRide()">🏍️ BOOK RIDE</button>
     </div>
 
     <div id="currentRideSection" class="bookingSection hidden">
       <h3>Current Ride</h3>
-      <div id="rideInfo">
-        No active ride.
-      </div>
+      <div id="rideInfo">No active ride.</div>
       <div id="rideActions" class="rideActions">
-        <button id="callBtn" class="rideActionBtn hidden" onclick="callRider()" title="Call Rider">
-          📞
-        </button>
-        <button id="chatBtn" class="blue rideActionBtn hidden" onclick="openChat()" title="Chat Rider">
-          💬
-        </button>
-        <button id="wazeRiderBtn" class="rideActionBtn hidden" onclick="wazeToRider()" title="Waze to Rider">
-          🧭
-        </button>
-        <button id="cancelBtn" class="danger rideActionBtn hidden" onclick="cancelRide()" title="Cancel Ride">
-          ❌
-        </button>
+        <button id="callBtn" class="rideActionBtn hidden" onclick="callRider()" title="Call">📞</button>
+        <button id="chatBtn" class="blue rideActionBtn hidden" onclick="openChat()" title="Chat">💬</button>
+        <button id="wazeRiderBtn" class="rideActionBtn hidden" onclick="wazeToRider()" title="Waze">🧭</button>
+        <button id="cancelBtn" class="danger rideActionBtn hidden" onclick="cancelRide()" title="Cancel">❌</button>
       </div>
-      <button id="wazePickupBtn" class="secondary hidden" onclick="wazeToPickup()">
-        🧭 Navigate to Pickup
-      </button>
-      <button id="wazeDestinationBtn" class="secondary hidden" onclick="wazeToDestination()">
-        🧭 Navigate to Destination
-      </button>
+      <button id="wazePickupBtn" class="secondary hidden" onclick="wazeToPickup()">🧭 Navigate to Pickup</button>
+      <button id="wazeDestinationBtn" class="secondary hidden" onclick="wazeToDestination()">🧭 Navigate to Destination</button>
     </div>
   </div>
 </section>
@@ -915,14 +799,10 @@ button:disabled{
   <div class="chatBox">
     <div class="chatHeader">
       <div>
-        <div class="chatHeaderTitle">
-          💬 Chat with Rider
-        </div>
+        <div class="chatHeaderTitle">💬 Chat with Rider</div>
         <small id="chatRideLabel">Ride #</small>
       </div>
-      <button class="chatClose" onclick="closeChat()">
-        ×
-      </button>
+      <button class="chatClose" onclick="closeChat()">×</button>
     </div>
     <div id="chatMessages" class="chatMessages">
       <div class="chatEmpty">No messages yet.</div>
@@ -942,46 +822,20 @@ const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let map=null;
-let pickupMarker=null;
-let destinationMarker=null;
-let riderMarker=null;
-let routeLine=null;
-let passengerLocation=null;
-let destinationLocation=null;
-let currentRide=null;
-let destinationMode=false;
-let pickupSearchTimer=null;
-let destinationSearchTimer=null;
-let routeRequestId=0;
-let cancelInProgress=false;
+let map=null, pickupMarker=null, destinationMarker=null, riderMarker=null, routeLine=null;
+let passengerLocation=null, destinationLocation=null, currentRide=null, destinationMode=false;
+let pickupSearchTimer=null, destinationSearchTimer=null, routeRequestId=0, cancelInProgress=false;
 
-const FARE_BASE=50;
-const FARE_PER_KM=15;
-
-let chatChannel=null;
-let chatRideId=null;
-let chatMessagesSeen=new Set();
-let chatLoading=false;
-
+const FARE_BASE=50, FARE_PER_KM=15;
+let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set(), chatLoading=false;
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
 function escapeHTML(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+  return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
-function toggleProfileMenu(){
-  document.getElementById("profilePanel").classList.toggle("open");
-}
-
-function closeProfileMenu(){
-  document.getElementById("profilePanel").classList.remove("open");
-}
+function toggleProfileMenu(){ document.getElementById("profilePanel").classList.toggle("open"); }
+function closeProfileMenu(){ document.getElementById("profilePanel").classList.remove("open"); }
 
 function saveRecoveryInfo(){
   const name = document.getElementById("passengerName").value.trim();
@@ -991,21 +845,12 @@ function saveRecoveryInfo(){
 }
 
 function getRecoveryInfo(){
-  try{
-    const raw = localStorage.getItem(RECOVERY_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }catch(e){
-    return null;
-  }
+  try{ const raw = localStorage.getItem(RECOVERY_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
 }
 
 function initMap(){
   map = L.map("map").setView([14.4086,121.0415], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom:19,
-    attribution:"© OpenStreetMap"
-  }).addTo(map);
-
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom:19, attribution:"© OpenStreetMap" }).addTo(map);
   map.on("click", function(e){
     if(!destinationMode) return;
     setDestination(e.latlng.lat, e.latlng.lng, "Map selected destination");
@@ -1020,43 +865,31 @@ function chooseDestination(){
 
 async function reverseGeocode(lat, lng){
   try{
-    const url = "https://photon.komoot.io/reverse?lat="+lat+"&lon="+lng;
-    const res = await fetch(url);
+    const res = await fetch("https://photon.komoot.io/reverse?lat="+lat+"&lon="+lng);
     const data = await res.json();
     const p = data.features?.[0]?.properties || {};
     return [p.name, p.street, p.city, p.state].filter(Boolean).join(", ");
-  }catch(e){
-    return "Selected location";
-  }
+  }catch(e){ return "Selected location"; }
 }
 
 function getPickupGPS(){
-  if(!navigator.geolocation){
-    alert("GPS is not supported.");
-    return;
-  }
+  if(!navigator.geolocation){ alert("GPS is not supported."); return; }
   document.getElementById("locationStatus").innerText = "📍 Getting your GPS location...";
   navigator.geolocation.getCurrentPosition(
     async position=>{
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+      const lat = position.coords.latitude, lng = position.coords.longitude;
       const name = await reverseGeocode(lat, lng);
       setPickup(lat, lng, name);
     },
-    error=>{
-      alert("Unable to get GPS location. Please allow location permission.");
-    },
+    error=>{ alert("Unable to get GPS location."); },
     { enableHighAccuracy:true, timeout:15000, maximumAge:5000 }
   );
 }
 
 function setPickup(lat, lng, name){
   passengerLocation = { lat:Number(lat), lng:Number(lng), name:name || "Current Location" };
-  if(pickupMarker){
-    pickupMarker.setLatLng([lat,lng]);
-  }else{
-    pickupMarker = L.marker([lat,lng]).addTo(map).bindPopup("📍 Pickup").openPopup();
-  }
+  if(pickupMarker){ pickupMarker.setLatLng([lat,lng]); }
+  else{ pickupMarker = L.marker([lat,lng]).addTo(map).bindPopup("📍 Pickup").openPopup(); }
   document.getElementById("pickupInput").value = passengerLocation.name;
   map.setView([lat,lng], 16);
   updateStatus();
@@ -1065,9 +898,8 @@ function setPickup(lat, lng, name){
 
 function setDestination(lat, lng, name){
   destinationLocation = { lat:Number(lat), lng:Number(lng), name:name || "Destination" };
-  if(destinationMarker){
-    destinationMarker.setLatLng([lat,lng]);
-  }else{
+  if(destinationMarker){ destinationMarker.setLatLng([lat,lng]); }
+  else{
     destinationMarker = L.marker([lat,lng], { draggable:true }).addTo(map).bindPopup("🎯 Destination").openPopup();
     destinationMarker.on("dragend", async function(){
       const p = destinationMarker.getLatLng();
@@ -1082,30 +914,21 @@ function setDestination(lat, lng, name){
 
 function updateStatus(){
   const el = document.getElementById("locationStatus");
-  if(!passengerLocation){
-    el.innerText = "📍 Set pickup location.";
-    return;
-  }
-  if(!destinationLocation){
-    el.innerText = "🎯 Set destination.";
-    return;
-  }
+  if(!passengerLocation){ el.innerText = "📍 Set pickup location."; return; }
+  if(!destinationLocation){ el.innerText = "🎯 Set destination."; return; }
   el.innerText = "✅ Pickup and destination are ready.";
 }
 
 async function photonSearch(query){
   if(!query.trim()) return [];
   try{
-    const url = "https://photon.komoot.io/api/?q="+encodeURIComponent(query)+"&limit=10";
-    const res = await fetch(url);
+    const res = await fetch("https://photon.komoot.io/api/?q="+encodeURIComponent(query)+"&limit=10");
     const data = await res.json();
     return (data.features || []).filter(feature=>{
       const p = feature.properties || {};
       return String(p.countrycode || "").toLowerCase()==="ph";
     });
-  }catch(e){
-    return [];
-  }
+  }catch(e){ return []; }
 }
 
 function featureName(feature){
@@ -1114,14 +937,11 @@ function featureName(feature){
 }
 
 function setupPhoton(){
-  const pickupInput = document.getElementById("pickupInput");
-  pickupInput.addEventListener("input", function(){
+  document.getElementById("pickupInput").addEventListener("input", function(){
     clearTimeout(pickupSearchTimer);
     pickupSearchTimer = setTimeout(()=>{ searchPickup(this.value); }, 400);
   });
-
-  const destinationInput = document.getElementById("destinationInput");
-  destinationInput.addEventListener("input", function(){
+  document.getElementById("destinationInput").addEventListener("input", function(){
     clearTimeout(destinationSearchTimer);
     destinationSearchTimer = setTimeout(()=>{ searchDestination(this.value); }, 400);
   });
@@ -1129,10 +949,7 @@ function setupPhoton(){
 
 async function searchPickup(query){
   const box = document.getElementById("pickupSuggestions");
-  if(query.length<2){
-    box.classList.add("hidden");
-    return;
-  }
+  if(query.length<2){ box.classList.add("hidden"); return; }
   const results = await photonSearch(query);
   box.innerHTML="";
   results.forEach(feature=>{
@@ -1140,10 +957,7 @@ async function searchPickup(query){
     const item = document.createElement("div");
     item.className="suggestion";
     item.textContent = featureName(feature);
-    item.onclick=()=>{
-      setPickup(coords[1], coords[0], featureName(feature));
-      box.classList.add("hidden");
-    };
+    item.onclick=()=>{ setPickup(coords[1], coords[0], featureName(feature)); box.classList.add("hidden"); };
     box.appendChild(item);
   });
   box.classList.toggle("hidden", results.length===0);
@@ -1151,10 +965,7 @@ async function searchPickup(query){
 
 async function searchDestination(query){
   const box = document.getElementById("destinationSuggestions");
-  if(query.length<2){
-    box.classList.add("hidden");
-    return;
-  }
+  if(query.length<2){ box.classList.add("hidden"); return; }
   const results = await photonSearch(query);
   box.innerHTML="";
   results.forEach(feature=>{
@@ -1162,10 +973,7 @@ async function searchDestination(query){
     const item = document.createElement("div");
     item.className="suggestion";
     item.textContent = featureName(feature);
-    item.onclick=()=>{
-      setDestination(coords[1], coords[0], featureName(feature));
-      box.classList.add("hidden");
-    };
+    item.onclick=()=>{ setDestination(coords[1], coords[0], featureName(feature)); box.classList.add("hidden"); };
     box.appendChild(item);
   });
   box.classList.toggle("hidden", results.length===0);
@@ -1182,9 +990,7 @@ async function drawRoute(){
     if(!data.routes || !data.routes.length) return;
     const route = data.routes[0];
     if(routeLine) map.removeLayer(routeLine);
-    routeLine = L.geoJSON(route.geometry, {
-      style:{ color:"#1769aa", weight:5, opacity:.8 }
-    }).addTo(map);
+    routeLine = L.geoJSON(route.geometry, { style:{ color:"#1769aa", weight:5, opacity:.8 } }).addTo(map);
 
     const km = route.distance / 1000;
     const fare = FARE_BASE + (km * FARE_PER_KM);
@@ -1195,42 +1001,23 @@ async function drawRoute(){
 async function bookRide(){
   if(currentRide){
     const status = String(currentRide.status || "").toLowerCase();
-    if(!["completed", "cancelled"].includes(status)){
-      alert("You already have an active ride.");
-      return;
-    }
+    if(!["completed", "cancelled"].includes(status)){ alert("You already have an active ride."); return; }
     currentRide = null;
   }
-
-  if(!passengerLocation){
-    alert("Please set your pickup location.");
-    return;
-  }
-  if(!destinationLocation){
-    alert("Please set your destination.");
-    return;
-  }
+  if(!passengerLocation){ alert("Please set pickup location."); return; }
+  if(!destinationLocation){ alert("Please set destination."); return; }
 
   const name = document.getElementById("passengerName").value.trim();
   const contact = document.getElementById("passengerContact").value.trim();
-
-  if(!name){
-    alert("Please enter your name.");
-    return;
-  }
-  if(!contact){
-    alert("Please enter your contact number.");
-    return;
-  }
+  if(!name){ alert("Please enter your name."); return; }
+  if(!contact){ alert("Please enter contact number."); return; }
 
   saveRecoveryInfo();
   const btn = document.getElementById("bookRideBtn");
-  btn.disabled=true;
-  btn.innerText = "BOOKING...";
+  btn.disabled=true; btn.innerText = "BOOKING...";
 
   try{
-    let distanceKm=0;
-    let estimatedFare=FARE_BASE;
+    let distanceKm=0, estimatedFare=FARE_BASE;
     if(passengerLocation && destinationLocation){
       const url = "https://router.project-osrm.org/route/v1/driving/"+passengerLocation.lng+","+passengerLocation.lat+";"+destinationLocation.lng+","+destinationLocation.lat+"?overview=false";
       const res = await fetch(url);
@@ -1242,44 +1029,30 @@ async function bookRide(){
     }
 
     const payload={
-      passenger_name:name,
-      passenger_contact:contact,
-      pickup_lat:passengerLocation.lat,
-      pickup_lng:passengerLocation.lng,
-      destination_lat:destinationLocation.lat,
-      destination_lng:destinationLocation.lng,
+      passenger_name:name, passenger_contact:contact,
+      pickup_lat:passengerLocation.lat, pickup_lng:passengerLocation.lng,
+      destination_lat:destinationLocation.lat, destination_lng:destinationLocation.lng,
       destination:destinationLocation.name,
-      distance_km:Number(distanceKm.toFixed(2)),
-      estimated_fare:Number(estimatedFare.toFixed(2)),
+      distance_km:Number(distanceKm.toFixed(2)), estimated_fare:Number(estimatedFare.toFixed(2)),
       status:"searching"
     };
 
     const { data, error } = await supabaseClient.from("rides").insert(payload).select().single();
-    if(error){
-      alert("Booking failed:\n"+error.message);
-      return;
-    }
+    if(error){ alert("Booking failed:\n"+error.message); return; }
 
     currentRide=data;
     showRide(data);
     subscribeRealtime();
     loadHistory();
-  }catch(e){
-    alert("Booking error:\n"+e.message);
-  }finally{
-    btn.disabled=false;
-    btn.innerText = "🏍️ BOOK RIDE";
-  }
+  }catch(e){ alert("Booking error:\n"+e.message); }
+  finally{ btn.disabled=false; btn.innerText = "🏍️ BOOK RIDE"; }
 }
 
 function statusText(status){
   const mapStatus={
-    searching:"🔎 Searching for rider...",
-    accepted:"🏍️ Rider accepted your booking.",
-    arrived:"📍 Rider has arrived.",
-    ongoing:"🏍️ Ride in progress.",
-    completed:"✅ Ride completed.",
-    cancelled:"❌ Ride cancelled."
+    searching:"🔎 Searching for rider...", accepted:"🏍️ Rider accepted booking.",
+    arrived:"📍 Rider has arrived.", ongoing:"🏍️ Ride in progress.",
+    completed:"✅ Ride completed.", cancelled:"❌ Ride cancelled."
   };
   return mapStatus[status] || status || "Unknown";
 }
@@ -1287,7 +1060,6 @@ function statusText(status){
 function showRide(ride){
   const info = document.getElementById("rideInfo");
   const section = document.getElementById("currentRideSection");
-
   const actionIds = ["callBtn", "chatBtn", "wazeRiderBtn", "cancelBtn", "wazePickupBtn", "wazeDestinationBtn"];
 
   if(!ride){
@@ -1315,22 +1087,7 @@ function showRide(ride){
   const distance = Number(ride.distance_km || 0).toFixed(2);
   const fare = Number(ride.estimated_fare || 0).toFixed(2);
 
-  let waitingMessage = "";
-  if(status === "searching"){
-    waitingMessage = "🔎 Naghahanap kami ng available na rider malapit sa iyo. Pakihintay sandali.";
-  }else if(status === "accepted"){
-    waitingMessage = "✅ May rider nang tumanggap sa booking mo. Maaari mo siyang tawagan o i-chat.";
-  }else if(status === "arrived"){
-    waitingMessage = "📍 Nasa pickup location na ang rider. Magkita kayo sa napiling lugar.";
-  }else if(status === "ongoing" || status === "picked_up"){
-    waitingMessage = "🏍️ Nasa biyahe ka na. Maaari mong gamitin ang Waze para sa destination.";
-  }else if(status === "completed"){
-    waitingMessage = "✅ Tapos na ang biyahe.";
-  }else if(status === "cancelled"){
-    waitingMessage = "❌ Nakansela ang booking na ito.";
-  }else{
-    waitingMessage = statusText(status);
-  }
+  let waitingMessage = statusText(status);
 
   info.innerHTML = `
     <div class="rideCard">
@@ -1348,14 +1105,8 @@ function showRide(ride){
         </div>
       </div>
       <div class="rideStats">
-        <div class="rideStat">
-          <span class="rideStatLabel">DISTANCE</span>
-          <div class="rideStatValue">${distance} km</div>
-        </div>
-        <div class="rideStat">
-          <span class="rideStatLabel">ESTIMATED FARE</span>
-          <div class="rideStatValue">₱${fare}</div>
-        </div>
+        <div class="rideStat"><span class="rideStatLabel">DISTANCE</span><div class="rideStatValue">${distance} km</div></div>
+        <div class="rideStat"><span class="rideStatLabel">ESTIMATED FARE</span><div class="rideStatValue">₱${fare}</div></div>
       </div>
       ${accepted && riderName ? `
         <div class="rideRiderInfo">
@@ -1373,9 +1124,9 @@ function showRide(ride){
 
   document.getElementById("chatBtn").classList.toggle("hidden", !accepted);
   document.getElementById("callBtn").classList.toggle("hidden", !accepted || !riderContact);
-  document.getElementById("wazeRiderBtn").classList.toggle("hidden", !accepted || ride.rider_lat == null || ride.rider_lng == null);
-  document.getElementById("wazePickupBtn").classList.toggle("hidden", !accepted || ride.pickup_lat == null || ride.pickup_lng == null);
-  document.getElementById("wazeDestinationBtn").classList.toggle("hidden", !accepted || ride.destination_lat == null || ride.destination_lng == null);
+  document.getElementById("wazeRiderBtn").classList.toggle("hidden", !accepted || ride.rider_lat == null);
+  document.getElementById("wazePickupBtn").classList.toggle("hidden", !accepted || ride.pickup_lat == null);
+  document.getElementById("wazeDestinationBtn").classList.toggle("hidden", !accepted || ride.destination_lat == null);
 
   showRiderLocation(ride);
 }
@@ -1383,399 +1134,83 @@ function showRide(ride){
 function callRider(){
   if(!currentRide) return;
   const phone = currentRide.rider_contact || currentRide.driver_contact;
-  if(!phone){
-    alert("Rider contact number is not available.");
-    return;
-  }
-  window.location.href = "tel:"+phone;
+  if(phone) window.location.href = "tel:"+phone;
 }
 
-function wazeToRider(){
-  if(!currentRide) return;
-  if(currentRide.rider_lat == null || currentRide.rider_lng == null){
-    alert("Rider location is not available yet.");
-    return;
-  }
-  openWaze(currentRide.rider_lat, currentRide.rider_lng);
-}
+function wazeToRider(){ if(currentRide?.rider_lat) openWaze(currentRide.rider_lat, currentRide.rider_lng); }
+function wazeToPickup(){ if(passengerLocation) openWaze(passengerLocation.lat, passengerLocation.lng); }
+function wazeToDestination(){ if(destinationLocation) openWaze(destinationLocation.lat, destinationLocation.lng); }
 
 function openWaze(lat, lng){
-  const latitude = Number(lat);
-  const longitude = Number(lng);
-  if(!Number.isFinite(latitude) || !Number.isFinite(longitude)){
-    alert("Invalid navigation location.");
-    return;
-  }
-  const appUrl = "waze://?ll="+latitude+","+longitude+"&navigate=yes";
-  const webUrl = "https://www.waze.com/ul?ll="+latitude+"%2C"+longitude+"&navigate=yes";
-  window.location.href = appUrl;
-  setTimeout(()=>{ window.location.href = webUrl; }, 1200);
-}
-
-function wazeToPickup(){
-  if(!currentRide){
-    if(!passengerLocation){
-      alert("Pickup location is not available.");
-      return;
-    }
-    openWaze(passengerLocation.lat, passengerLocation.lng);
-    return;
-  }
-  openWaze(currentRide.pickup_lat, currentRide.pickup_lng);
-}
-
-function wazeToDestination(){
-  if(!currentRide){
-    if(!destinationLocation){
-      alert("Destination is not available.");
-      return;
-    }
-    openWaze(destinationLocation.lat, destinationLocation.lng);
-    return;
-  }
-  openWaze(currentRide.destination_lat, currentRide.destination_lng);
+  window.location.href = "https://www.waze.com/ul?ll="+lat+"%2C"+lng+"&navigate=yes";
 }
 
 function showRiderLocation(ride){
   if(ride.rider_lat == null || ride.rider_lng == null) return;
-  const lat = Number(ride.rider_lat);
-  const lng = Number(ride.rider_lng);
-  if(!Number.isFinite(lat) || !Number.isFinite(lng)) return;
-
-  if(riderMarker){
-    riderMarker.setLatLng([lat,lng]);
-  }else{
-    riderMarker = L.marker([lat,lng]).addTo(map).bindPopup("🏍️ Rider");
-  }
+  if(riderMarker) riderMarker.setLatLng([ride.rider_lat, ride.rider_lng]);
+  else riderMarker = L.marker([ride.rider_lat, ride.rider_lng]).addTo(map).bindPopup("🏍️ Rider");
 }
 
 async function cancelRide(){
   if(!currentRide || cancelInProgress) return;
-  const status = String(currentRide.status || "").toLowerCase();
-  if(["completed", "cancelled"].includes(status)) return;
   if(!confirm("Cancel this ride?")) return;
-
   cancelInProgress = true;
-  const rideToCancel = currentRide;
-  const btn = document.getElementById("cancelBtn");
-  btn.disabled = true;
-
   try{
-    const { data, error } = await supabaseClient
-      .from("rides")
-      .update({ status: "cancelled" })
-      .eq("id", rideToCancel.id)
-      .select()
-      .single();
-
-    if(error){
-      alert("Unable to cancel ride:\n" + error.message);
-      return;
-    }
-
+    const { data } = await supabaseClient.from("rides").update({ status: "cancelled" }).eq("id", currentRide.id).select().single();
     currentRide = data;
     showRide(data);
-
-    if(riderMarker){
-      map.removeLayer(riderMarker);
-      riderMarker = null;
-    }
-
-    if(chatChannel){
-      await supabaseClient.removeChannel(chatChannel);
-      chatChannel = null;
-    }
-
-    chatRideId = null;
-    chatMessagesSeen.clear();
-
-    const bookBtn = document.getElementById("bookRideBtn");
-    bookBtn.disabled = false;
-    bookBtn.innerText = "🏍️ BOOK RIDE";
-
-    alert("Ride cancelled. You can book another ride.");
-  }catch(e){
-    alert("Cancel error:\n" + e.message);
-  }finally{
-    cancelInProgress = false;
-    btn.disabled = false;
-  }
+    alert("Ride cancelled.");
+  }catch(e){}
+  finally{ cancelInProgress = false; }
 }
 
-let historyRequestId = 0;
-
 async function loadHistory(){
-  const contactInput = document.getElementById("passengerContact");
+  const contact = document.getElementById("passengerContact").value.trim();
   const history = document.getElementById("history");
-  const contact = contactInput.value.trim();
-  const requestId = ++historyRequestId;
-
-  if(!contact){
-    history.innerText = "Enter contact number to view booking history.";
-    return;
-  }
-
-  history.innerText = "Loading booking history...";
+  if(!contact){ history.innerText = "Enter contact number to view history."; return; }
 
   try{
-    const { data, error } = await supabaseClient
-      .from("rides")
-      .select("*")
-      .eq("passenger_contact", contact)
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if(requestId !== historyRequestId) return;
-
-    if(error){
-      history.innerText = "Unable to load booking history: " + error.message;
-      return;
-    }
-
-    if(!data || data.length === 0){
-      history.innerText = "No booking history found for this contact number.";
-      return;
-    }
-
-    history.innerHTML = data.map(ride => {
-      const status = String(ride.status || "unknown").toLowerCase();
-      const date = ride.created_at ? new Date(ride.created_at).toLocaleString() : "Date unavailable";
-      return `
-        <div class="historyItem">
-          <div class="historyStatus">${escapeHTML(statusText(status))}</div>
-          <div class="small">Booking ID: ${escapeHTML(ride.id)}</div>
-          <div class="small">Destination: ${escapeHTML(ride.destination || "Not specified")}</div>
-          <div class="small">Fare: ₱${Number(ride.estimated_fare || 0).toFixed(2)}</div>
-          <div class="small">Date: ${escapeHTML(date)}</div>
-        </div>
-      `;
-    }).join("");
-  }catch(error){
-    if(requestId === historyRequestId){
-      history.innerText = "History error. Please try again.";
-    }
-  }
+    const { data } = await supabaseClient.from("rides").select("*").eq("passenger_contact", contact).order("created_at", { ascending: false }).limit(20);
+    if(!data || !data.length){ history.innerText = "No booking history found."; return; }
+    history.innerHTML = data.map(ride => `
+      <div class="historyItem">
+        <div class="historyStatus">${escapeHTML(statusText(ride.status))}</div>
+        <div class="small">Destination: ${escapeHTML(ride.destination || "N/A")}</div>
+        <div class="small">Fare: ₱${Number(ride.estimated_fare || 0).toFixed(2)}</div>
+      </div>
+    `).join("");
+  }catch(e){}
 }
 
 async function checkExistingActiveRide(){
   const recovery = getRecoveryInfo();
   if(!recovery?.contact) return;
-
-  document.getElementById("recoveryNotice").classList.remove("hidden");
-
   try{
-    const { data, error } = await supabaseClient
-      .from("rides")
-      .select("*")
-      .eq("passenger_contact", recovery.contact)
-      .in("status", ["searching", "accepted", "arrived", "ongoing"])
-      .order("created_at", { ascending:false })
-      .limit(1);
-
-    if(error) return;
-
+    const { data } = await supabaseClient.from("rides").select("*").eq("passenger_contact", recovery.contact).in("status", ["searching", "accepted", "arrived", "ongoing"]).order("created_at", { ascending:false }).limit(1);
     if(data && data.length){
-      recoverActiveRide(data[0]);
+      currentRide=data[0];
+      showRide(currentRide);
+      subscribeRealtime();
     }
-  }catch(e){
-  }finally{
-    document.getElementById("recoveryNotice").classList.add("hidden");
-  }
-}
-
-function recoverActiveRide(ride){
-  currentRide=ride;
-  if(ride.pickup_lat != null && ride.pickup_lng != null){
-    setPickup(ride.pickup_lat, ride.pickup_lng, ride.pickup_location || "Pickup");
-  }
-  if(ride.destination_lat != null && ride.destination_lng != null){
-    setDestination(ride.destination_lat, ride.destination_lng, ride.destination || "Destination");
-  }
-  showRide(ride);
-  subscribeRealtime();
+  }catch(e){}
 }
 
 function subscribeRealtime(){
   if(!currentRide?.id) return;
-  if(chatChannel){
-    try{ supabaseClient.removeChannel(chatChannel); }catch(e){}
-  }
-
-  chatChannel = supabaseClient
-    .channel("ride-"+currentRide.id)
-    .on(
-      "postgres_changes",
-      { event:"UPDATE", schema:"public", table:"rides", filter:"id=eq."+currentRide.id },
-      payload=>{
-        if(!payload.new) return;
-        currentRide = payload.new;
-        showRide(currentRide);
-        loadHistory();
-      }
-    )
-    .subscribe();
+  supabaseClient.channel("ride-"+currentRide.id).on("postgres_changes", { event:"UPDATE", schema:"public", table:"rides", filter:"id=eq."+currentRide.id }, payload=>{
+    if(payload.new){ currentRide = payload.new; showRide(currentRide); }
+  }).subscribe();
 }
-
-function formatChatTime(value){
-  if(!value) return "";
-  const date = new Date(value);
-  if(Number.isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString([], { hour:"numeric", minute:"2-digit" });
-}
-
-function appendChatMessage(message){
-  if(!message) return;
-  const id = message.id || (String(message.created_at || "")+String(message.message || ""));
-  if(chatMessagesSeen.has(id)) return;
-  chatMessagesSeen.add(id);
-
-  const box = document.getElementById("chatMessages");
-  const empty = box.querySelector(".chatEmpty");
-  if(empty) empty.remove();
-
-  const sender = String(message.sender_type || message.sender || "").toLowerCase();
-  const me = sender==="passenger" || sender==="user";
-
-  const row = document.createElement("div");
-  row.className = "chatRow "+(me ? "me" : "other");
-  row.innerHTML = `
-    <div class="chatBubble">
-      <div class="chatSender">${escapeHTML(me ? "You" : (message.sender_name || "Rider"))}</div>
-      <div class="chatMessageText">${escapeHTML(message.message || "")}</div>
-      <div class="chatMeta">${formatChatTime(message.created_at)}</div>
-    </div>
-  `;
-  box.appendChild(row);
-  box.scrollTop = box.scrollHeight;
-}
-
-async function loadChatMessages(){
-  if(!chatRideId) return;
-  chatLoading=true;
-  const box = document.getElementById("chatMessages");
-  box.innerHTML = `<div class="chatEmpty">Loading messages...</div>`;
-  chatMessagesSeen.clear();
-
-  try{
-    const { data, error } = await supabaseClient
-      .from("ride_messages")
-      .select("*")
-      .eq("ride_id", chatRideId)
-      .order("created_at", { ascending:true });
-
-    if(error){
-      box.innerHTML = `<div class="chatEmpty">Unable to load messages.</div>`;
-      return;
-    }
-
-    box.innerHTML="";
-    if(!data || !data.length){
-      box.innerHTML = `<div class="chatEmpty">No messages yet.</div>`;
-      return;
-    }
-    data.forEach(appendChatMessage);
-  }catch(e){
-  }finally{
-    chatLoading=false;
-  }
-}
-
-function subscribeChat(){
-  if(!chatRideId) return;
-  if(chatChannel){
-    try{ supabaseClient.removeChannel(chatChannel); }catch(e){}
-  }
-
-  chatChannel = supabaseClient
-    .channel("chat-"+chatRideId)
-    .on(
-      "postgres_changes",
-      { event:"INSERT", schema:"public", table:"ride_messages", filter:"ride_id=eq."+chatRideId },
-      payload=>{ appendChatMessage(payload.new); }
-    )
-    .subscribe();
-}
-
-async function openChat(){
-  if(!currentRide?.id){
-    alert("No active ride.");
-    return;
-  }
-  chatRideId = currentRide.id;
-  document.getElementById("chatRideLabel").innerText = "Ride #"+currentRide.id;
-  document.getElementById("chatModal").classList.add("open");
-  await loadChatMessages();
-  subscribeChat();
-}
-
-function closeChat(){
-  document.getElementById("chatModal").classList.remove("open");
-}
-
-function chatBackdropClose(event){
-  if(event.target.id==="chatModal"){
-    closeChat();
-  }
-}
-
-async function sendChatMessage(){
-  if(!chatRideId) return;
-  const input = document.getElementById("chatInput");
-  const message = input.value.trim();
-  if(!message) return;
-
-  input.disabled=true;
-  try{
-    const name = document.getElementById("passengerName").value.trim();
-    const { data, error } = await supabaseClient
-      .from("ride_messages")
-      .insert({
-        ride_id:chatRideId,
-        sender_type:"passenger",
-        sender_name:name || "Passenger",
-        message:message
-      })
-      .select()
-      .single();
-
-    if(error){
-      alert("Message failed:\n"+error.message);
-      return;
-    }
-
-    input.value="";
-    if(data) appendChatMessage(data);
-  }catch(e){
-    alert("Chat error:\n"+e.message);
-  }finally{
-    input.disabled=false;
-    input.focus();
-  }
-}
-
-document.getElementById("passengerName").addEventListener("input", saveRecoveryInfo);
-document.getElementById("passengerContact").addEventListener("input", function(){
-  saveRecoveryInfo();
-  clearTimeout(window.historyTimer);
-  window.historyTimer = setTimeout(loadHistory, 500);
-});
-
-document.getElementById("chatInput").addEventListener("keydown", function(e){
-  if(e.key==="Enter" && !e.shiftKey){
-    e.preventDefault();
-    sendChatMessage();
-  }
-});
 
 function updateBookingMenu(ride){
   const section = document.getElementById("pickupDestinationSection");
   if(!section) return;
   const status = String(ride?.status || "").trim().toLowerCase();
-  const activeStatuses = ["searching", "accepted", "arrived", "ongoing", "picked_up"];
-  const hasActiveRide = Boolean(ride) && activeStatuses.includes(status);
+  const hasActiveRide = Boolean(ride) && ["searching", "accepted", "arrived", "ongoing", "picked_up"].includes(status);
   section.classList.toggle("sectionHidden", hasActiveRide);
 }
 
+/* SIMPLIFIED TOGGLE FOR WEBVIEW */
 function toggleBookingSheet(){
   const sheet = document.getElementById("bookingSheet");
   const btn = document.getElementById("toggleBtn");
