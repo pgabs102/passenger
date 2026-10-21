@@ -342,12 +342,24 @@ button:disabled{ opacity:.6; }
   cursor:pointer;
 }
 
+.suggestion-title{
+  font-weight: bold;
+  font-size: 14px;
+  color: #222;
+}
+
+.suggestion-sub{
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
 .suggestions{
   border:1px solid #ddd;
   border-radius:8px;
   overflow:hidden;
   margin-top:4px;
-  max-height: 180px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
@@ -694,9 +706,9 @@ button:disabled{ opacity:.6; }
     <div id="pickupDestinationSection" class="bookingSection">
       <h3>Pickup & Destination</h3>
       <button onclick="getPickupGPS()">📍 Use My Current Location</button>
-      <input id="pickupInput" placeholder="Pickup location" autocomplete="off">
+      <input id="pickupInput" placeholder="Pickup location / Establishment" autocomplete="off">
       <div id="pickupSuggestions" class="suggestions hidden"></div>
-      <input id="destinationInput" placeholder="Destination" autocomplete="off">
+      <input id="destinationInput" placeholder="Destination / Establishment" autocomplete="off">
       <div id="destinationSuggestions" class="suggestions hidden"></div>
       <button onclick="chooseDestination()">🎯 Tap Map for Destination</button>
       <div class="status" id="locationStatus">Set your pickup and destination.</div>
@@ -874,13 +886,30 @@ function updateStatus(){
   el.innerText = "✅ Pickup and destination are ready.";
 }
 
-async function mapboxSearch(query){
+// Mapbox Search Box API - Suggestions (Naghahanap ng POI, Street, at Brgy)
+async function mapboxSearchSuggestions(query){
   if(!query.trim()) return [];
   try{
-    const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=ph&limit=8`);
+    let proximity = "";
+    if(passengerLocation){
+      proximity = `&proximity=${passengerLocation.lng},${passengerLocation.lat}`;
+    }
+    const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&language=en&country=ph&limit=8${proximity}&access_token=${MAPBOX_ACCESS_TOKEN}`);
     const data = await res.json();
-    return data.features || [];
+    return data.suggestions || [];
   }catch(e){ return []; }
+}
+
+// Mapbox Search Box API - Retrieve details para makuha ang eksaktong Coordinates ng napiling suggestion
+async function mapboxRetrieveDetails(mapboxId){
+  try{
+    const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/retrieve/${mapboxId}?access_token=${MAPBOX_ACCESS_TOKEN}`);
+    const data = await res.json();
+    if(data.features && data.features.length > 0){
+      return data.features[0];
+    }
+    return null;
+  }catch(e){ return null; }
 }
 
 function setupPhoton(){
@@ -897,33 +926,59 @@ function setupPhoton(){
 async function searchPickup(query){
   const box = document.getElementById("pickupSuggestions");
   if(query.length<2){ box.classList.add("hidden"); return; }
-  const results = await mapboxSearch(query);
+  const suggestions = await mapboxSearchSuggestions(query);
   box.innerHTML="";
-  results.forEach(feature=>{
-    const coords = feature.center;
-    const item = document.createElement("div");
-    item.className="suggestion";
-    item.textContent = feature.place_name;
-    item.onclick=()=>{ setPickup(coords[1], coords[0], feature.place_name); box.classList.add("hidden"); };
-    box.appendChild(item);
+  suggestions.forEach(item=>{
+    const elem = document.createElement("div");
+    elem.className="suggestion";
+    elem.innerHTML = `
+      <div class="suggestion-title">${escapeHTML(item.name)}</div>
+      <div class="suggestion-sub">${escapeHTML(item.full_address || item.place_formatted || "")}</div>
+    `;
+    elem.onclick = async ()=>{
+      box.classList.add("hidden");
+      document.getElementById("locationStatus").innerText = "📍 Loading location details...";
+      const details = await mapboxRetrieveDetails(item.mapbox_id);
+      if(details && details.geometry){
+        const coords = details.geometry.coordinates;
+        const placeName = details.properties.full_address || details.properties.name;
+        setPickup(coords[1], coords[0], placeName);
+      } else {
+        alert("Failed to retrieve location details.");
+      }
+    };
+    box.appendChild(elem);
   });
-  box.classList.toggle("hidden", results.length===0);
+  box.classList.toggle("hidden", suggestions.length===0);
 }
 
 async function searchDestination(query){
   const box = document.getElementById("destinationSuggestions");
   if(query.length<2){ box.classList.add("hidden"); return; }
-  const results = await mapboxSearch(query);
+  const suggestions = await mapboxSearchSuggestions(query);
   box.innerHTML="";
-  results.forEach(feature=>{
-    const coords = feature.center;
-    const item = document.createElement("div");
-    item.className="suggestion";
-    item.textContent = feature.place_name;
-    item.onclick=()=>{ setDestination(coords[1], coords[0], feature.place_name); box.classList.add("hidden"); };
-    box.appendChild(item);
+  suggestions.forEach(item=>{
+    const elem = document.createElement("div");
+    elem.className="suggestion";
+    elem.innerHTML = `
+      <div class="suggestion-title">${escapeHTML(item.name)}</div>
+      <div class="suggestion-sub">${escapeHTML(item.full_address || item.place_formatted || "")}</div>
+    `;
+    elem.onclick = async ()=>{
+      box.classList.add("hidden");
+      document.getElementById("locationStatus").innerText = "🎯 Loading destination details...";
+      const details = await mapboxRetrieveDetails(item.mapbox_id);
+      if(details && details.geometry){
+        const coords = details.geometry.coordinates;
+        const placeName = details.properties.full_address || details.properties.name;
+        setDestination(coords[1], coords[0], placeName);
+      } else {
+        alert("Failed to retrieve location details.");
+      }
+    };
+    box.appendChild(elem);
   });
-  box.classList.toggle("hidden", results.length===0);
+  box.classList.toggle("hidden", suggestions.length===0);
 }
 
 // Mapbox Directions API na may exclude=toll para iwas Expressway
@@ -994,7 +1049,6 @@ async function bookRide(){
       }
     }
 
-    // Ginamit ang standard columns na tiyak na meron sa iyong rides table
     const payload={
       passenger_name: name,
       passenger_contact: contact,
