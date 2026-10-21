@@ -760,6 +760,9 @@ button:disabled{ opacity:.6; }
 const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoicGdhYnMxMDIiLCJhIjoiY212YjFzZGlvMGJsOTJ3b3Bzb2g1cGxkYSJ9.Suudm4I9Q6eREsyo9M6YtA";
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
+// LOCATIONIQ ACCESS TOKEN
+const LOCATIONIQ_ACCESS_TOKEN = "pk.2026acce1d055532d0b96957c54ffe2f";
+
 const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -886,30 +889,22 @@ function updateStatus(){
   el.innerText = "✅ Pickup and destination are ready.";
 }
 
-// Mapbox Search Box API - Suggestions (Naghahanap ng POI, Street, at Brgy)
-async function mapboxSearchSuggestions(query){
+// LocationIQ Autocomplete API - Nakatutok sa Pilipinas (countrycodes=ph)
+async function locationIqSearch(query){
   if(!query.trim()) return [];
   try{
-    let proximity = "";
-    if(passengerLocation){
-      proximity = `&proximity=${passengerLocation.lng},${passengerLocation.lat}`;
-    }
-    const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&language=en&country=ph&limit=8${proximity}&access_token=${MAPBOX_ACCESS_TOKEN}`);
+    const url = `https://api.locationiq.com/v1/autocomplete?key=${LOCATIONIQ_ACCESS_TOKEN}&q=${encodeURIComponent(query)}&countrycodes=ph&limit=8&format=json`;
+    const res = await fetch(url);
+    if(!res.ok) return [];
+    
     const data = await res.json();
-    return data.suggestions || [];
+    return data.map(item => ({
+      name: item.display_place || item.display_name.split(',')[0],
+      full_address: item.display_name,
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon)
+    }));
   }catch(e){ return []; }
-}
-
-// Mapbox Search Box API - Retrieve details para makuha ang eksaktong Coordinates ng napiling suggestion
-async function mapboxRetrieveDetails(mapboxId){
-  try{
-    const res = await fetch(`https://api.mapbox.com/search/searchbox/v1/retrieve/${mapboxId}?access_token=${MAPBOX_ACCESS_TOKEN}`);
-    const data = await res.json();
-    if(data.features && data.features.length > 0){
-      return data.features[0];
-    }
-    return null;
-  }catch(e){ return null; }
 }
 
 function setupPhoton(){
@@ -926,59 +921,49 @@ function setupPhoton(){
 async function searchPickup(query){
   const box = document.getElementById("pickupSuggestions");
   if(query.length<2){ box.classList.add("hidden"); return; }
-  const suggestions = await mapboxSearchSuggestions(query);
+  
+  const results = await locationIqSearch(query);
   box.innerHTML="";
-  suggestions.forEach(item=>{
+  
+  results.forEach(item => {
     const elem = document.createElement("div");
     elem.className="suggestion";
     elem.innerHTML = `
       <div class="suggestion-title">${escapeHTML(item.name)}</div>
-      <div class="suggestion-sub">${escapeHTML(item.full_address || item.place_formatted || "")}</div>
+      <div class="suggestion-sub">${escapeHTML(item.full_address)}</div>
     `;
-    elem.onclick = async ()=>{
+    elem.onclick = () => {
       box.classList.add("hidden");
-      document.getElementById("locationStatus").innerText = "📍 Loading location details...";
-      const details = await mapboxRetrieveDetails(item.mapbox_id);
-      if(details && details.geometry){
-        const coords = details.geometry.coordinates;
-        const placeName = details.properties.full_address || details.properties.name;
-        setPickup(coords[1], coords[0], placeName);
-      } else {
-        alert("Failed to retrieve location details.");
-      }
+      setPickup(item.lat, item.lng, item.full_address);
     };
     box.appendChild(elem);
   });
-  box.classList.toggle("hidden", suggestions.length===0);
+  
+  box.classList.toggle("hidden", results.length===0);
 }
 
 async function searchDestination(query){
   const box = document.getElementById("destinationSuggestions");
   if(query.length<2){ box.classList.add("hidden"); return; }
-  const suggestions = await mapboxSearchSuggestions(query);
+  
+  const results = await locationIqSearch(query);
   box.innerHTML="";
-  suggestions.forEach(item=>{
+  
+  results.forEach(item => {
     const elem = document.createElement("div");
     elem.className="suggestion";
     elem.innerHTML = `
       <div class="suggestion-title">${escapeHTML(item.name)}</div>
-      <div class="suggestion-sub">${escapeHTML(item.full_address || item.place_formatted || "")}</div>
+      <div class="suggestion-sub">${escapeHTML(item.full_address)}</div>
     `;
-    elem.onclick = async ()=>{
+    elem.onclick = () => {
       box.classList.add("hidden");
-      document.getElementById("locationStatus").innerText = "🎯 Loading destination details...";
-      const details = await mapboxRetrieveDetails(item.mapbox_id);
-      if(details && details.geometry){
-        const coords = details.geometry.coordinates;
-        const placeName = details.properties.full_address || details.properties.name;
-        setDestination(coords[1], coords[0], placeName);
-      } else {
-        alert("Failed to retrieve location details.");
-      }
+      setDestination(item.lat, item.lng, item.full_address);
     };
     box.appendChild(elem);
   });
-  box.classList.toggle("hidden", suggestions.length===0);
+  
+  box.classList.toggle("hidden", results.length===0);
 }
 
 // Mapbox Directions API na may exclude=toll para iwas Expressway
