@@ -289,6 +289,20 @@ input{
   margin:0 0 10px;
 }
 
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.button-group button {
+  flex: 1;
+  margin-top: 0;
+  font-size: 13px;
+  padding: 10px 6px;
+}
+
 button{
   width:100%;
   padding:12px;
@@ -705,12 +719,20 @@ button:disabled{ opacity:.6; }
   <div class="bookingContent">
     <div id="pickupDestinationSection" class="bookingSection">
       <h3>Pickup & Destination</h3>
-      <button onclick="getPickupGPS()">📍 Use My Current Location</button>
+      
+      <!-- PICKUP SECTION -->
+      <div class="button-group">
+        <button onclick="getPickupGPS()" class="blue">📍 Current Location</button>
+        <button onclick="choosePickupOnMap()" class="orange">📍 Tap Map for Pickup</button>
+      </div>
       <input id="pickupInput" placeholder="Pickup location / Establishment" autocomplete="off">
       <div id="pickupSuggestions" class="suggestions hidden"></div>
-      <input id="destinationInput" placeholder="Destination / Establishment" autocomplete="off">
+
+      <!-- DESTINATION SECTION -->
+      <input id="destinationInput" placeholder="Destination / Establishment" autocomplete="off" style="margin-top: 12px;">
       <div id="destinationSuggestions" class="suggestions hidden"></div>
-      <button onclick="chooseDestination()">🎯 Tap Map for Destination</button>
+      <button onclick="chooseDestinationOnMap()" class="orange" style="margin-top: 6px;">🎯 Tap Map for Destination</button>
+      
       <div class="status" id="locationStatus">Set your pickup and destination.</div>
       <div id="recoveryNotice" class="recoveryNotice hidden">🔄 Checking previous active booking...</div>
       <button class="green" id="bookRideBtn" onclick="bookRide()">🏍️ BOOK RIDE</button>
@@ -768,7 +790,8 @@ const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let map=null, pickupMarker=null, destinationMarker=null, riderMarker=null;
-let passengerLocation=null, destinationLocation=null, currentRide=null, destinationMode=false;
+let passengerLocation=null, destinationLocation=null, currentRide=null;
+let tapMode = null; // 'pickup' o 'destination'
 let pickupSearchTimer=null, destinationSearchTimer=null, cancelInProgress=false;
 let heartbeatInterval=null;
 
@@ -804,16 +827,34 @@ function initMap(){
 
   map.addControl(new mapboxgl.NavigationControl());
 
-  map.on('click', function(e){
-    if(!destinationMode) return;
-    setDestination(e.lngLat.lat, e.lngLat.lng, "Map selected destination");
-    destinationMode=false;
+  // Click event listener sa Mapa para sa Pin Targeting
+  map.on('click', async function(e){
+    if(!tapMode) return;
+
+    const lat = e.lngLat.lat;
+    const lng = e.lngLat.lng;
+
+    document.getElementById("locationStatus").innerText = "⏳ Getting location name...";
+    const addressName = await reverseGeocode(lat, lng);
+
+    if(tapMode === 'pickup'){
+      setPickup(lat, lng, addressName);
+      tapMode = null;
+    } else if(tapMode === 'destination'){
+      setDestination(lat, lng, addressName);
+      tapMode = null;
+    }
   });
 }
 
-function chooseDestination(){
-  destinationMode=true;
-  document.getElementById("locationStatus").innerText = "🎯 Tap the map to select your destination.";
+function choosePickupOnMap(){
+  tapMode = 'pickup';
+  document.getElementById("locationStatus").innerText = "📍 Tap anywhere on the map to set PICKUP location.";
+}
+
+function chooseDestinationOnMap(){
+  tapMode = 'destination';
+  document.getElementById("locationStatus").innerText = "🎯 Tap anywhere on the map to set DESTINATION location.";
 }
 
 async function reverseGeocode(lat, lng){
@@ -847,13 +888,23 @@ function setPickup(lat, lng, name){
   if(pickupMarker){
     pickupMarker.setLngLat([lng, lat]);
   } else {
-    pickupMarker = new mapboxgl.Marker({ color: "#8b0000" })
+    pickupMarker = new mapboxgl.Marker({ color: "#8b0000", draggable: true })
       .setLngLat([lng, lat])
       .setPopup(new mapboxgl.Popup().setText("📍 Pickup"))
       .addTo(map);
+
+    pickupMarker.on('dragend', async function(){
+      const lngLat = pickupMarker.getLngLat();
+      const address = await reverseGeocode(lngLat.lat, lngLat.lng);
+      setPickup(lngLat.lat, lngLat.lng, address);
+    });
   }
   
-  document.getElementById("pickupInput").value = passengerLocation.name;
+  // Lalabas ang pangalan ng lugar sa Pickup Input Placeholder at Value
+  const pInput = document.getElementById("pickupInput");
+  pInput.value = passengerLocation.name;
+  pInput.placeholder = passengerLocation.name;
+
   map.flyTo({ center: [lng, lat], zoom: 15 });
   updateStatus();
   if(destinationLocation) drawRoute();
@@ -877,7 +928,11 @@ function setDestination(lat, lng, name){
     });
   }
 
-  document.getElementById("destinationInput").value = destinationLocation.name;
+  // Lalabas ang pangalan ng lugar sa Destination Input Placeholder at Value
+  const dInput = document.getElementById("destinationInput");
+  dInput.value = destinationLocation.name;
+  dInput.placeholder = destinationLocation.name;
+
   updateStatus();
   if(passengerLocation) drawRoute();
 }
@@ -1034,14 +1089,16 @@ async function bookRide(){
       }
     }
 
+    // Malinis na payload para sa Supabase gamit ang 'pickup_location'
     const payload={
       passenger_name: name,
       passenger_contact: contact,
+      pickup_location: passengerLocation.name,
       pickup_lat: passengerLocation.lat,
       pickup_lng: passengerLocation.lng,
+      destination: destinationLocation.name,
       destination_lat: destinationLocation.lat,
       destination_lng: destinationLocation.lng,
-      destination: destinationLocation.name,
       distance_km: Number(distanceKm.toFixed(2)),
       estimated_fare: Number(estimatedFare.toFixed(2)),
       status: "searching"
@@ -1088,8 +1145,14 @@ function resetBookingState(){
 
   passengerLocation = null;
   destinationLocation = null;
-  document.getElementById("pickupInput").value = "";
-  document.getElementById("destinationInput").value = "";
+  
+  const pInput = document.getElementById("pickupInput");
+  const dInput = document.getElementById("destinationInput");
+  pInput.value = "";
+  pInput.placeholder = "Pickup location / Establishment";
+  dInput.value = "";
+  dInput.placeholder = "Destination / Establishment";
+
   document.getElementById("locationStatus").innerText = "Set your pickup and destination.";
   
   updateBookingMenu(null);
