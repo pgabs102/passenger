@@ -85,10 +85,8 @@ button,input{
   border-radius: 20px;
   border: none;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
-  margin: 0;
-  width: auto;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
@@ -118,6 +116,7 @@ button,input{
   justify-content:center;
   box-shadow:0 2px 7px rgba(0,0,0,.25);
   cursor:pointer;
+  border:none;
 }
 
 .mapArea{
@@ -126,6 +125,7 @@ button,input{
   z-index:1;
 }
 
+/* IWAS BLACK SCREEN FALLBACK COLOR */
 #map{
   position:absolute!important;
   top:0!important;
@@ -137,7 +137,7 @@ button,input{
   z-index:1!important;
   border-radius:0!important;
   overflow:hidden!important;
-  background:#ddd;
+  background-color:#e5e3df !important;
 }
 
 .profilePanel{
@@ -191,6 +191,7 @@ button,input{
   color:white!important;
   font-size:25px!important;
   cursor:pointer;
+  border:none;
 }
 
 .profileContent{
@@ -494,6 +495,7 @@ button:disabled{ opacity:.6; }
   background:rgba(255,255,255,.18);
   color:white;
   font-size:25px;
+  border:none;
 }
 
 .chatMessages{
@@ -805,7 +807,7 @@ button:disabled{ opacity:.6; }
   </div>
 </div>
 
-<!-- MapLibre GL JS Library -->
+<!-- MapLibre GL JS Library (Open-Source Mapbox Fork) -->
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -815,13 +817,12 @@ const LOCATIONIQ_ACCESS_TOKEN = "pk.2026acce1d055532d0b96957c54ffe2f";
 const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
 
-/* INITIALIZE SUPABASE WITH REALTIME KEEP-ALIVE WORKER */
+/* SUPABASE CLIENT WITH KEEP-ALIVE WORKER */
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   realtime: {
     worker: true,
     heartbeatCallback: (status) => {
       if (status === 'disconnected' && isOnlineState) {
-        console.log('Realtime disconnected, attempting reconnect...');
         supabaseClient.realtime.connect();
       }
     }
@@ -840,27 +841,15 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
-/* ================= SCREEN WAKE LOCK & KEEP-ALIVE SYSTEM ================= */
+/* ================= KEEP-AWAKE SYSTEM ================= */
 
 async function requestWakeLock() {
   if (!isOnlineState) return;
   try {
     if ('wakeLock' in navigator) {
       wakeLock = await navigator.wakeLock.request('screen');
-      console.log('Screen Wake Lock active: Screen will stay awake.');
     }
-  } catch (err) {
-    console.warn(`Wake Lock error: ${err.message}`);
-  }
-}
-
-function releaseWakeLock() {
-  if (wakeLock !== null) {
-    wakeLock.release().then(() => {
-      wakeLock = null;
-      console.log('Wake Lock released.');
-    });
-  }
+  } catch (err) {}
 }
 
 function toggleOnlineState() {
@@ -877,7 +866,7 @@ function toggleOnlineState() {
   } else {
     btn.className = "onlineToggleBtn offline";
     btn.innerText = "🔴 OFFLINE";
-    releaseWakeLock();
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
     stopHeartbeat();
     if (chatChannel) {
       supabaseClient.removeChannel(chatChannel);
@@ -887,7 +876,6 @@ function toggleOnlineState() {
   }
 }
 
-// Auto reconnect kapag nag-tab switch / naging active uli ang window
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible' && isOnlineState) {
     await requestWakeLock();
@@ -926,7 +914,7 @@ function getRecoveryInfo(){
   try{ const raw = localStorage.getItem(RECOVERY_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
 }
 
-/* INITIALIZE MAPLIBRE MAP (LIBRENG OPENSTREETMAP TILES) */
+/* INITIALIZE MAPLIBRE MAP WITH WEBGL AUTO-RECOVERY */
 function initMap(){
   map = new maplibregl.Map({
     container: 'map',
@@ -953,6 +941,32 @@ function initMap(){
     center: [121.0415, 14.4086],
     zoom: 13
   });
+
+  /* ================= WEBGL AUTO-RECOVERY FIX (ANTI-BLACK SCREEN) ================= */
+  const mapCanvas = map.getCanvas();
+
+  mapCanvas.addEventListener('webglcontextlost', function(e) {
+    e.preventDefault();
+    console.warn('WebGL Context Lost! Preventing black screen...');
+    document.getElementById("locationStatus").innerText = "🔄 Restoring map display...";
+  }, false);
+
+  mapCanvas.addEventListener('webglcontextrestored', function() {
+    console.log('WebGL Context Restored! Reloading map...');
+    map.setStyle({
+      version: 8,
+      sources: {
+        'osm-tiles': {
+          type: 'raster',
+          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256
+        }
+      },
+      layers: [{ id: 'osm-tiles-layer', type: 'raster', source: 'osm-tiles' }]
+    });
+    if (passengerLocation && destinationLocation) drawRoute();
+  }, false);
+  /* ============================================================================== */
 
   map.addControl(new maplibregl.NavigationControl());
 
@@ -985,7 +999,7 @@ function chooseDestinationOnMap(){
   document.getElementById("locationStatus").innerText = "🎯 Tap anywhere on the map to set DESTINATION location.";
 }
 
-/* LIBRENG REVERSE GEOCODING */
+/* LIBRENG REVERSE GEOCODING (NOMINATIM / OPENSTREETMAP API) */
 async function reverseGeocode(lat, lng){
   try{
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
@@ -1285,7 +1299,6 @@ function startHeartbeat(){
   if(!isOnlineState) return;
   heartbeatInterval = setInterval(async () => {
     if(!currentRide || !currentRide.id) return;
-    // Ping/Heartbeat query sa Supabase
     if(supabaseClient.realtime.status !== 'open') {
       supabaseClient.realtime.connect();
     }
@@ -1662,7 +1675,7 @@ async function startApp(){
   try{
     initMap();
     setupPhoton();
-    requestWakeLock(); // Aktibahin ang Keep Screen Awake
+    requestWakeLock();
     const recovery = getRecoveryInfo();
     if(recovery){
       if(recovery.name) document.getElementById("passengerName").value = recovery.name;
