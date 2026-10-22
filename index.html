@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>TUKLAS - Passenger (No Expressway)</title>
+<title>TUKLAS - Passenger (No Tollgate Route)</title>
 
-<!-- MapLibre GL JS Stylesheet (100% Free & Open Source) -->
+<!-- MapLibre GL JS Stylesheet -->
 <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 
 <style>
@@ -679,7 +679,7 @@ button:disabled{ opacity:.6; }
 <header class="topHeader">
   <div class="headerTitle">
     <strong>T U K L A S</strong>
-    <small>Passenger (MapLibre)</small>
+    <small>Passenger (No Tollgate Route)</small>
   </div>
   <button id="profileButton" class="profileButton" onclick="toggleProfileMenu()">
     👤
@@ -774,7 +774,7 @@ button:disabled{ opacity:.6; }
   </div>
 </div>
 
-<!-- MapLibre GL JS Library (Open-Source Mapbox Fork) -->
+<!-- MapLibre GL JS Library -->
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -795,9 +795,6 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
-let calculatedDistanceKm = 0;
-let calculatedEstimatedFare = FARE_BASE;
-
 function escapeHTML(value){
   return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
@@ -816,7 +813,7 @@ function getRecoveryInfo(){
   try{ const raw = localStorage.getItem(RECOVERY_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
 }
 
-/* INITIALIZE MAPLIBRE MAP (LIBRENG OPENSTREETMAP TILES) */
+/* INITIALIZE MAPLIBRE MAP */
 function initMap(){
   map = new maplibregl.Map({
     container: 'map',
@@ -845,10 +842,6 @@ function initMap(){
   });
 
   map.addControl(new maplibregl.NavigationControl());
-
-  map.on('load', function() {
-    // Siguraduhing handa ang map sources para sa route lines
-  });
 
   map.on('click', async function(e){
     if(!tapMode) return;
@@ -879,7 +872,7 @@ function chooseDestinationOnMap(){
   document.getElementById("locationStatus").innerText = "🎯 Tap anywhere on the map to set DESTINATION location.";
 }
 
-/* LIBRENG REVERSE GEOCODING (NOMINATIM / OPENSTREETMAP API) */
+/* REVERSE GEOCODING */
 async function reverseGeocode(lat, lng){
   try{
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
@@ -1043,80 +1036,172 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* LIBRENG OSRM ROUTING API (Pickup to Destination) - WALANG EXPRESSWAY + MAY ROUTE LINE & FARE/DISTANCE */
-async function drawRoute(){
-  if(!passengerLocation || !destinationLocation) return;
-  try{
-    const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=full&geometries=geojson&exclude=expressway`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(!data.routes || !data.routes.length) return;
-    
-    const route = data.routes[0];
-    const geojson = {
-      'type': 'Feature',
-      'properties': {},
-      'geometry': route.geometry
+/* HELPER: VALHALLA / NO TOLL ROUTING FETCH ENGINE */
+async function fetchNoTollRouteData(startLng, startLat, endLng, endLat) {
+  // Option 1: Valhalla API (Iniiwasan ang Toll sa pamamagitan ng "use_tolls": 0)
+  try {
+    const valhallaPayload = {
+      locations: [
+        { lat: startLat, lon: startLng },
+        { lat: endLat, lon: endLng }
+      ],
+      costing: "auto",
+      costing_options: {
+        auto: {
+          use_tolls: 0 // <--- ITO ANG NAGPAPA-IWAS SA TOLLGATE!
+        }
+      }
     };
 
-    if (map.getSource('route')) {
-      map.getSource('route').setData(geojson);
-    } else {
-      if (!map.getSource('route')) {
-        map.addSource('route', {
-          'type': 'geojson',
-          'data': geojson
-        });
-        map.addLayer({
-          'id': 'route',
-          'type': 'line',
-          'source': 'route',
-          'layout': { 'line-join': 'round', 'line-cap': 'round' },
-          'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
-        });
+    const res = await fetch(`https://valhalla1.openstreetmap.de/route`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(valhallaPayload)
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.trip && data.trip.legs && data.trip.legs[0]) {
+        const polyline = data.trip.legs[0].shape;
+        const coords = decodePolyline(polyline);
+        const distanceKm = data.trip.summary.length;
+        
+        return {
+          geometry: {
+            type: 'LineString',
+            coordinates: coords
+          },
+          distanceKm: distanceKm
+        };
       }
     }
+  } catch (err) {
+    console.warn("Valhalla API error, trying fallback...", err);
+  }
 
-    calculatedDistanceKm = route.distance / 1000;
-    calculatedEstimatedFare = FARE_BASE + (calculatedDistanceKm * FARE_PER_KM);
-    
-    document.getElementById("locationStatus").innerText = "✅ Ready • "+calculatedDistanceKm.toFixed(2)+" km • Estimated ₱"+Math.round(calculatedEstimatedFare);
-  }catch(e){}
+  // Fallback Option 2: OpenRouteService (gamit ang avoid_features: ["tollways"])
+  try {
+    const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248c82302ca219747c3bd2b1236113b2d1d&start=${startLng},${startLat}&end=${endLng},${endLat}&options={"avoid_features":["tollways"]}`;
+    const res = await fetch(orsUrl);
+    if(res.ok){
+      const data = await res.json();
+      if(data.features && data.features[0]){
+        const km = data.features[0].properties.summary.distance / 1000;
+        return {
+          geometry: data.features[0].geometry,
+          distanceKm: km
+        };
+      }
+    }
+  } catch(e) {}
+
+  return null;
 }
 
-/* LIBRENG OSRM ROUTING API (Rider to Pickup) - WALANG EXPRESSWAY */
+// Polyline decoding utility para sa Valhalla shape string
+function decodePolyline(str, precision) {
+  var index = 0,
+      lat = 0,
+      lng = 0,
+      coordinates = [],
+      shift = 0,
+      result = 0,
+      byte = null,
+      factor = Math.pow(10, precision || 6);
+
+  while (index < str.length) {
+    byte = null;
+    shift = 0;
+    result = 0;
+    do {
+      byte = str.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+    var latitude = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+    shift = 0;
+    result = 0;
+    do {
+      byte = str.charCodeAt(index++) - 63;
+      result |= (byte & 0x1f) << shift;
+      shift += 5;
+    } while (byte >= 0x20);
+    var longitude = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+    lat += latitude;
+    lng += longitude;
+    coordinates.push([lng / factor, lat / factor]);
+  }
+  return coordinates;
+}
+
+/* NO TOLLGATE ROUTING (Pickup to Destination) */
+async function drawRoute(){
+  if(!passengerLocation || !destinationLocation) return;
+  
+  const routeData = await fetchNoTollRouteData(
+    passengerLocation.lng, passengerLocation.lat,
+    destinationLocation.lng, destinationLocation.lat
+  );
+
+  if(!routeData) return;
+
+  const geojson = {
+    'type': 'Feature',
+    'properties': {},
+    'geometry': routeData.geometry
+  };
+
+  if (map.getSource('route')) {
+    map.getSource('route').setData(geojson);
+  } else {
+    map.addSource('route', {
+      'type': 'geojson',
+      'data': geojson
+    });
+    map.addLayer({
+      'id': 'route',
+      'type': 'line',
+      'source': 'route',
+      'layout': { 'line-join': 'round', 'line-cap': 'round' },
+      'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
+    });
+  }
+
+  const km = routeData.distanceKm;
+  const fare = FARE_BASE + (km * FARE_PER_KM);
+  document.getElementById("locationStatus").innerText = "✅ Ready (No Toll) • "+km.toFixed(2)+" km • Estimated ₱"+Math.round(fare);
+}
+
+/* NO TOLLGATE ROUTING (Rider to Pickup - Kulay Berde) */
 async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
   if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
-  try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${riderLng},${riderLat};${pickupLng},${pickupLat}?overview=full&geometries=geojson&exclude=expressway`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (!data.routes || !data.routes.length) return;
+  
+  const routeData = await fetchNoTollRouteData(riderLng, riderLat, pickupLng, pickupLat);
+  if (!routeData) return;
 
-    const geojson = {
-      type: 'Feature',
-      properties: {},
-      geometry: data.routes[0].geometry
-    };
+  const geojson = {
+    type: 'Feature',
+    properties: {},
+    geometry: routeData.geometry
+  };
 
-    if (map.getSource('rider-route')) {
-      map.getSource('rider-route').setData(geojson);
-    } else {
-      if (!map.getSource('rider-route')) {
-        map.addSource('rider-route', {
-          type: 'geojson',
-          data: geojson
-        });
-        map.addLayer({
-          id: 'rider-route',
-          type: 'line',
-          source: 'rider-route',
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
-        });
-      }
-    }
-  } catch (e) {}
+  if (map.getSource('rider-route')) {
+    map.getSource('rider-route').setData(geojson);
+  } else {
+    map.addSource('rider-route', {
+      type: 'geojson',
+      data: geojson
+    });
+    map.addLayer({
+      id: 'rider-route',
+      type: 'line',
+      source: 'rider-route',
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
+    });
+  }
 }
 
 async function bookRide(){
@@ -1138,6 +1223,18 @@ async function bookRide(){
   btn.disabled=true; btn.innerText = "BOOKING...";
 
   try{
+    let distanceKm=0, estimatedFare=FARE_BASE;
+    if(passengerLocation && destinationLocation){
+      const routeData = await fetchNoTollRouteData(
+        passengerLocation.lng, passengerLocation.lat,
+        destinationLocation.lng, destinationLocation.lat
+      );
+      if(routeData){
+        distanceKm = routeData.distanceKm;
+        estimatedFare = FARE_BASE + distanceKm * FARE_PER_KM;
+      }
+    }
+
     const payload={
       passenger_name: name,
       passenger_contact: contact,
@@ -1147,8 +1244,8 @@ async function bookRide(){
       destination: destinationLocation.name,
       destination_lat: destinationLocation.lat,
       destination_lng: destinationLocation.lng,
-      distance_km: Number(calculatedDistanceKm.toFixed(2)),
-      estimated_fare: Number(calculatedEstimatedFare.toFixed(2)),
+      distance_km: Number(distanceKm.toFixed(2)),
+      estimated_fare: Number(estimatedFare.toFixed(2)),
       status: "searching"
     };
 
@@ -1320,6 +1417,7 @@ function callRider(){
   if(phone) window.location.href = "tel:"+phone;
 }
 
+// Waze link - idinagdag din ang avoid toll parameter sa Waze (avoid=tolls)
 function wazeToRider(){ if(currentRide?.rider_lat) openWaze(currentRide.rider_lat, currentRide.rider_lng); }
 function wazeToPickup(){ 
   if(currentRide?.pickup_lat) openWaze(currentRide.pickup_lat, currentRide.pickup_lng);
@@ -1331,7 +1429,7 @@ function wazeToDestination(){
 }
 
 function openWaze(lat, lng){
-  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes&avoid=tolls,highways";
+  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes&avoid=tolls";
   const a = document.createElement("a");
   a.href = wazeAppUrl;
   a.click();
