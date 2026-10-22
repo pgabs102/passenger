@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>TUKLAS - Passenger</title>
+<title>TUKLAS - Passenger (No Expressway)</title>
 
 <!-- Mapbox GL JS Stylesheet -->
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet" />
@@ -782,7 +782,6 @@ button:disabled{ opacity:.6; }
 const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoicGdhYnMxMDIiLCJhIjoiY212YjFzZGlvMGJsOTJ3b3Bzb2g1cGxkYSJ9.Suudm4I9Q6eREsyo9M6YtA";
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 
-// LOCATIONIQ ACCESS TOKEN
 const LOCATIONIQ_ACCESS_TOKEN = "pk.2026acce1d055532d0b96957c54ffe2f";
 
 const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
@@ -791,7 +790,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let map=null, pickupMarker=null, destinationMarker=null, riderMarker=null;
 let passengerLocation=null, destinationLocation=null, currentRide=null;
-let tapMode = null; // 'pickup' o 'destination'
+let tapMode = null; 
 let pickupSearchTimer=null, destinationSearchTimer=null, cancelInProgress=false;
 let heartbeatInterval=null;
 
@@ -827,7 +826,6 @@ function initMap(){
 
   map.addControl(new mapboxgl.NavigationControl());
 
-  // Click event listener sa Mapa para sa Pin Targeting
   map.on('click', async function(e){
     if(!tapMode) return;
 
@@ -900,7 +898,6 @@ function setPickup(lat, lng, name){
     });
   }
   
-  // Lalabas ang pangalan ng lugar sa Pickup Input Placeholder at Value
   const pInput = document.getElementById("pickupInput");
   pInput.value = passengerLocation.name;
   pInput.placeholder = passengerLocation.name;
@@ -928,7 +925,6 @@ function setDestination(lat, lng, name){
     });
   }
 
-  // Lalabas ang pangalan ng lugar sa Destination Input Placeholder at Value
   const dInput = document.getElementById("destinationInput");
   dInput.value = destinationLocation.name;
   dInput.placeholder = destinationLocation.name;
@@ -944,7 +940,6 @@ function updateStatus(){
   el.innerText = "✅ Pickup and destination are ready.";
 }
 
-// LocationIQ Autocomplete API - Nakatutok sa Pilipinas (countrycodes=ph)
 async function locationIqSearch(query){
   if(!query.trim()) return [];
   try{
@@ -1021,7 +1016,7 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-// Mapbox Directions API na may exclude=toll para iwas Expressway
+// Draw Main Route (Pickup to Destination) na walang Expressway (&exclude=toll)
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   try{
@@ -1059,6 +1054,39 @@ async function drawRoute(){
   }catch(e){}
 }
 
+// 💚 DRAW ROUTE FROM RIDER TO PICKUP (Kulay Berde #28a745, walang Expressway)
+async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
+  if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
+  try {
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${riderLng},${riderLat};${pickupLng},${pickupLat}?geometries=geojson&exclude=toll&access_token=${MAPBOX_ACCESS_TOKEN}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.routes || !data.routes.length) return;
+
+    const geojson = {
+      type: 'Feature',
+      properties: {},
+      geometry: data.routes[0].geometry
+    };
+
+    if (map.getSource('rider-route')) {
+      map.getSource('rider-route').setData(geojson);
+    } else {
+      map.addSource('rider-route', {
+        type: 'geojson',
+        data: geojson
+      });
+      map.addLayer({
+        id: 'rider-route',
+        type: 'line',
+        source: 'rider-route',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 } // 💚 Kulay Berde
+      });
+    }
+  } catch (e) {}
+}
+
 async function bookRide(){
   if(currentRide){
     const status = String(currentRide.status || "").toLowerCase();
@@ -1089,7 +1117,6 @@ async function bookRide(){
       }
     }
 
-    // Malinis na payload para sa Supabase gamit ang 'pickup_location'
     const payload={
       passenger_name: name,
       passenger_contact: contact,
@@ -1120,7 +1147,6 @@ function startHeartbeat(){
   stopHeartbeat();
   heartbeatInterval = setInterval(() => {
     if(!currentRide || !currentRide.id) return;
-    console.log("💓 Passenger Heartbeat active for ride:", currentRide.id);
   }, 10000);
 }
 
@@ -1141,6 +1167,9 @@ function resetBookingState(){
   if(destinationMarker){ destinationMarker.remove(); destinationMarker = null; }
   if(map && map.getSource('route')) {
     map.getSource('route').setData({ 'type': 'FeatureCollection', 'features': [] });
+  }
+  if(map && map.getSource('rider-route')) {
+    map.getSource('rider-route').setData({ 'type': 'FeatureCollection', 'features': [] });
   }
 
   passengerLocation = null;
@@ -1195,10 +1224,31 @@ function showRide(ride){
   
   const riderName = ride.rider_name || ride.driver_name || "";
   const riderContact = ride.rider_contact || ride.driver_contact || "";
-  const pickupName = passengerLocation?.name || "GPS Location";
+  const pickupName = passengerLocation?.name || ride.pickup_location || "GPS Location";
   const destinationName = ride.destination || "Destination";
   const distance = Number(ride.distance_km || 0).toFixed(2);
   const fare = Number(ride.estimated_fare || 0).toFixed(2);
+
+  // Siguraduhing naka-plot ang pickup at destination markers sa mapa kahit active na ang biyahe
+  if (ride.pickup_lat && ride.pickup_lng) {
+    if (!pickupMarker) {
+      pickupMarker = new mapboxgl.Marker({ color: "#8b0000" })
+        .setLngLat([ride.pickup_lng, ride.pickup_lat])
+        .addTo(map);
+    } else {
+      pickupMarker.setLngLat([ride.pickup_lng, ride.pickup_lat]);
+    }
+  }
+
+  if (ride.destination_lat && ride.destination_lng) {
+    if (!destinationMarker) {
+      destinationMarker = new mapboxgl.Marker({ color: "#16823b" })
+        .setLngLat([ride.destination_lng, ride.destination_lat])
+        .addTo(map);
+    } else {
+      destinationMarker.setLngLat([ride.destination_lng, ride.destination_lat]);
+    }
+  }
 
   let waitingMessage = statusText(status);
 
@@ -1269,13 +1319,22 @@ function openWaze(lat, lng){
 
 function showRiderLocation(ride){
   if(ride.rider_lat == null || ride.rider_lng == null) return;
+  
+  // Update o i-set ang Orange Pin para sa Rider
   if(riderMarker){
     riderMarker.setLngLat([ride.rider_lng, ride.rider_lat]);
   } else {
-    riderMarker = new mapboxgl.Marker({ color: "#d97706" })
+    riderMarker = new mapboxgl.Marker({ color: "#d97706" }) // Orange Pin
       .setLngLat([ride.rider_lng, ride.rider_lat])
       .setPopup(new mapboxgl.Popup().setText("🏍️ Rider"))
       .addTo(map);
+  }
+
+  // Gumuhit ng 💚 Kulay Berdeng Ruta patungo sa Pickup Location (walang expressway)
+  const pLat = ride.pickup_lat || passengerLocation?.lat;
+  const pLng = ride.pickup_lng || passengerLocation?.lng;
+  if(pLat && pLng){
+    drawRiderRouteToPickup(ride.rider_lng, ride.rider_lat, pLng, pLat);
   }
 }
 
