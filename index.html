@@ -1036,11 +1036,11 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* LIBRENG OSRM ROUTING API (Pickup to Destination) */
+/* LIBRENG OSRM ROUTING API (Pickup to Destination) - INI-EXCLUDE ANG EXPRESSWAY */
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   try{
-    const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=full&geometries=geojson&exclude=expressway`;
     const res = await fetch(url);
     const data = await res.json();
     if(!data.routes || !data.routes.length) return;
@@ -1074,11 +1074,11 @@ async function drawRoute(){
   }catch(e){}
 }
 
-/* LIBRENG OSRM ROUTING API (Rider to Pickup - Kulay Berde #28a745) */
+/* LIBRENG OSRM ROUTING API (Rider to Pickup) - INI-EXCLUDE ANG EXPRESSWAY */
 async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
   if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
   try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${riderLng},${riderLat};${pickupLng},${pickupLat}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${riderLng},${riderLat};${pickupLng},${pickupLat}?overview=full&geometries=geojson&exclude=expressway`;
     const res = await fetch(url);
     const data = await res.json();
     if (!data.routes || !data.routes.length) return;
@@ -1128,7 +1128,7 @@ async function bookRide(){
   try{
     let distanceKm=0, estimatedFare=FARE_BASE;
     if(passengerLocation && destinationLocation){
-      const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=false`;
+      const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=false&exclude=expressway`;
       const res = await fetch(url);
       const data = await res.json();
       if(data.routes?.[0]){
@@ -1330,7 +1330,7 @@ function wazeToDestination(){
 }
 
 function openWaze(lat, lng){
-  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes";
+  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes&avoid=tolls,highways";
   const a = document.createElement("a");
   a.href = wazeAppUrl;
   a.click();
