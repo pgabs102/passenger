@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>TUKLAS - Passenger (No Tollgate Route)</title>
+<title>TUKLAS - Passenger (No Expressway)</title>
 
-<!-- MapLibre GL JS Stylesheet -->
+<!-- MapLibre GL JS Stylesheet (100% Free & Open Source) -->
 <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 
 <style>
@@ -72,6 +72,34 @@ button,input{
 .headerTitle small{
   font-size:11px;
   opacity:.85;
+}
+
+.topControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onlineToggleBtn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 0;
+  width: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.onlineToggleBtn.online {
+  background: #28a745;
+  color: #fff;
+}
+
+.onlineToggleBtn.offline {
+  background: #dc3545;
+  color: #fff;
 }
 
 .profileButton{
@@ -679,11 +707,14 @@ button:disabled{ opacity:.6; }
 <header class="topHeader">
   <div class="headerTitle">
     <strong>T U K L A S</strong>
-    <small>Passenger (No Tollgate Route)</small>
+    <small>Passenger (MapLibre)</small>
   </div>
-  <button id="profileButton" class="profileButton" onclick="toggleProfileMenu()">
-    👤
-  </button>
+  <div class="topControls">
+    <button id="onlineToggleBtn" class="onlineToggleBtn online" onclick="toggleOnlineState()">🟢 ONLINE</button>
+    <button id="profileButton" class="profileButton" onclick="toggleProfileMenu()">
+      👤
+    </button>
+  </div>
 </header>
 
 <main class="mapArea">
@@ -783,17 +814,99 @@ const LOCATIONIQ_ACCESS_TOKEN = "pk.2026acce1d055532d0b96957c54ffe2f";
 
 const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* INITIALIZE SUPABASE WITH REALTIME KEEP-ALIVE WORKER */
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  realtime: {
+    worker: true,
+    heartbeatCallback: (status) => {
+      if (status === 'disconnected' && isOnlineState) {
+        console.log('Realtime disconnected, attempting reconnect...');
+        supabaseClient.realtime.connect();
+      }
+    }
+  }
+});
 
 let map=null, pickupMarker=null, destinationMarker=null, riderMarker=null;
 let passengerLocation=null, destinationLocation=null, currentRide=null;
 let tapMode = null; 
 let pickupSearchTimer=null, destinationSearchTimer=null, cancelInProgress=false;
 let heartbeatInterval=null;
+let wakeLock = null;
+let isOnlineState = true;
 
 const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
+
+/* ================= SCREEN WAKE LOCK & KEEP-ALIVE SYSTEM ================= */
+
+async function requestWakeLock() {
+  if (!isOnlineState) return;
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Screen Wake Lock active: Screen will stay awake.');
+    }
+  } catch (err) {
+    console.warn(`Wake Lock error: ${err.message}`);
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock !== null) {
+    wakeLock.release().then(() => {
+      wakeLock = null;
+      console.log('Wake Lock released.');
+    });
+  }
+}
+
+function toggleOnlineState() {
+  isOnlineState = !isOnlineState;
+  const btn = document.getElementById("onlineToggleBtn");
+  if (isOnlineState) {
+    btn.className = "onlineToggleBtn online";
+    btn.innerText = "🟢 ONLINE";
+    requestWakeLock();
+    if (supabaseClient.realtime.status !== 'open') {
+      supabaseClient.realtime.connect();
+    }
+    if (currentRide) subscribeRealtime();
+  } else {
+    btn.className = "onlineToggleBtn offline";
+    btn.innerText = "🔴 OFFLINE";
+    releaseWakeLock();
+    stopHeartbeat();
+    if (chatChannel) {
+      supabaseClient.removeChannel(chatChannel);
+      chatChannel = null;
+    }
+    supabaseClient.realtime.disconnect();
+  }
+}
+
+// Auto reconnect kapag nag-tab switch / naging active uli ang window
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && isOnlineState) {
+    await requestWakeLock();
+    if (supabaseClient.realtime.status !== 'open') {
+      supabaseClient.realtime.connect();
+    }
+  }
+});
+
+window.addEventListener('focus', async () => {
+  if (isOnlineState) {
+    await requestWakeLock();
+    if (supabaseClient.realtime.status !== 'open') {
+      supabaseClient.realtime.connect();
+    }
+  }
+});
+
+/* ========================================================================= */
 
 function escapeHTML(value){
   return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
@@ -813,7 +926,7 @@ function getRecoveryInfo(){
   try{ const raw = localStorage.getItem(RECOVERY_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
 }
 
-/* INITIALIZE MAPLIBRE MAP */
+/* INITIALIZE MAPLIBRE MAP (LIBRENG OPENSTREETMAP TILES) */
 function initMap(){
   map = new maplibregl.Map({
     container: 'map',
@@ -872,7 +985,7 @@ function chooseDestinationOnMap(){
   document.getElementById("locationStatus").innerText = "🎯 Tap anywhere on the map to set DESTINATION location.";
 }
 
-/* REVERSE GEOCODING */
+/* LIBRENG REVERSE GEOCODING */
 async function reverseGeocode(lat, lng){
   try{
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
@@ -1036,175 +1149,82 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* HELPER: VALHALLA / NO TOLL ROUTING FETCH ENGINE */
-async function fetchNoTollRouteData(startLng, startLat, endLng, endLat) {
-  // Option 1: Valhalla API (Iniiwasan ang Toll sa pamamagitan ng "use_tolls": 0)
-  try {
-    const valhallaPayload = {
-      locations: [
-        { lat: startLat, lon: startLng },
-        { lat: endLat, lon: endLng }
-      ],
-      costing: "auto",
-      costing_options: {
-        auto: {
-          use_tolls: 0 // <--- ITO ANG NAGPAPA-IWAS SA TOLLGATE!
-        }
-      }
-    };
-
-    const res = await fetch(`https://valhalla1.openstreetmap.de/route`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(valhallaPayload)
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.trip && data.trip.legs && data.trip.legs[0]) {
-        const polyline = data.trip.legs[0].shape;
-        const coords = decodePolyline(polyline);
-        const distanceKm = data.trip.summary.length;
-        
-        return {
-          geometry: {
-            type: 'LineString',
-            coordinates: coords
-          },
-          distanceKm: distanceKm
-        };
-      }
-    }
-  } catch (err) {
-    console.warn("Valhalla API error, trying fallback...", err);
-  }
-
-  // Fallback Option 2: OpenRouteService (gamit ang avoid_features: ["tollways"])
-  try {
-    const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248c82302ca219747c3bd2b1236113b2d1d&start=${startLng},${startLat}&end=${endLng},${endLat}&options={"avoid_features":["tollways"]}`;
-    const res = await fetch(orsUrl);
-    if(res.ok){
-      const data = await res.json();
-      if(data.features && data.features[0]){
-        const km = data.features[0].properties.summary.distance / 1000;
-        return {
-          geometry: data.features[0].geometry,
-          distanceKm: km
-        };
-      }
-    }
-  } catch(e) {}
-
-  return null;
-}
-
-// Polyline decoding utility para sa Valhalla shape string
-function decodePolyline(str, precision) {
-  var index = 0,
-      lat = 0,
-      lng = 0,
-      coordinates = [],
-      shift = 0,
-      result = 0,
-      byte = null,
-      factor = Math.pow(10, precision || 6);
-
-  while (index < str.length) {
-    byte = null;
-    shift = 0;
-    result = 0;
-    do {
-      byte = str.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-    var latitude = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-    shift = 0;
-    result = 0;
-    do {
-      byte = str.charCodeAt(index++) - 63;
-      result |= (byte & 0x1f) << shift;
-      shift += 5;
-    } while (byte >= 0x20);
-    var longitude = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-    lat += latitude;
-    lng += longitude;
-    coordinates.push([lng / factor, lat / factor]);
-  }
-  return coordinates;
-}
-
-/* NO TOLLGATE ROUTING (Pickup to Destination) */
+/* LIBRENG OSRM ROUTING API (Pickup to Destination) */
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
-  
-  const routeData = await fetchNoTollRouteData(
-    passengerLocation.lng, passengerLocation.lat,
-    destinationLocation.lng, destinationLocation.lat
-  );
+  try{
+    const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=full&geometries=geojson`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.routes || !data.routes.length) return;
+    
+    const route = data.routes[0];
+    const geojson = {
+      'type': 'Feature',
+      'properties': {},
+      'geometry': route.geometry
+    };
 
-  if(!routeData) return;
+    if (map.getSource('route')) {
+      map.getSource('route').setData(geojson);
+    } else {
+      map.addSource('route', {
+        'type': 'geojson',
+        'data': geojson
+      });
+      map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': 'route',
+        'layout': { 'line-join': 'round', 'line-cap': 'round' },
+        'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
+      });
+    }
 
-  const geojson = {
-    'type': 'Feature',
-    'properties': {},
-    'geometry': routeData.geometry
-  };
-
-  if (map.getSource('route')) {
-    map.getSource('route').setData(geojson);
-  } else {
-    map.addSource('route', {
-      'type': 'geojson',
-      'data': geojson
-    });
-    map.addLayer({
-      'id': 'route',
-      'type': 'line',
-      'source': 'route',
-      'layout': { 'line-join': 'round', 'line-cap': 'round' },
-      'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
-    });
-  }
-
-  const km = routeData.distanceKm;
-  const fare = FARE_BASE + (km * FARE_PER_KM);
-  document.getElementById("locationStatus").innerText = "✅ Ready (No Toll) • "+km.toFixed(2)+" km • Estimated ₱"+Math.round(fare);
+    const km = route.distance / 1000;
+    const fare = FARE_BASE + (km * FARE_PER_KM);
+    document.getElementById("locationStatus").innerText = "✅ Ready • "+km.toFixed(2)+" km • Estimated ₱"+Math.round(fare);
+  }catch(e){}
 }
 
-/* NO TOLLGATE ROUTING (Rider to Pickup - Kulay Berde) */
+/* LIBRENG OSRM ROUTING API (Rider to Pickup) */
 async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
   if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
-  
-  const routeData = await fetchNoTollRouteData(riderLng, riderLat, pickupLng, pickupLat);
-  if (!routeData) return;
+  try {
+    const url = `https://router.project-osrm.org/route/v1/driving/${riderLng},${riderLat};${pickupLng},${pickupLat}?overview=full&geometries=geojson`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.routes || !data.routes.length) return;
 
-  const geojson = {
-    type: 'Feature',
-    properties: {},
-    geometry: routeData.geometry
-  };
+    const geojson = {
+      type: 'Feature',
+      properties: {},
+      geometry: data.routes[0].geometry
+    };
 
-  if (map.getSource('rider-route')) {
-    map.getSource('rider-route').setData(geojson);
-  } else {
-    map.addSource('rider-route', {
-      type: 'geojson',
-      data: geojson
-    });
-    map.addLayer({
-      id: 'rider-route',
-      type: 'line',
-      source: 'rider-route',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
-    });
-  }
+    if (map.getSource('rider-route')) {
+      map.getSource('rider-route').setData(geojson);
+    } else {
+      map.addSource('rider-route', {
+        type: 'geojson',
+        data: geojson
+      });
+      map.addLayer({
+        id: 'rider-route',
+        type: 'line',
+        source: 'rider-route',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
+      });
+    }
+  } catch (e) {}
 }
 
 async function bookRide(){
+  if(!isOnlineState) {
+    alert("You are currently OFFLINE. Please turn on ONLINE mode first.");
+    return;
+  }
   if(currentRide){
     const status = String(currentRide.status || "").toLowerCase();
     if(!["completed", "cancelled"].includes(status)){ alert("You already have an active ride."); return; }
@@ -1225,12 +1245,11 @@ async function bookRide(){
   try{
     let distanceKm=0, estimatedFare=FARE_BASE;
     if(passengerLocation && destinationLocation){
-      const routeData = await fetchNoTollRouteData(
-        passengerLocation.lng, passengerLocation.lat,
-        destinationLocation.lng, destinationLocation.lat
-      );
-      if(routeData){
-        distanceKm = routeData.distanceKm;
+      const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=false`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if(data.routes?.[0]){
+        distanceKm = data.routes[0].distance / 1000;
         estimatedFare = FARE_BASE + distanceKm * FARE_PER_KM;
       }
     }
@@ -1263,8 +1282,13 @@ async function bookRide(){
 
 function startHeartbeat(){
   stopHeartbeat();
-  heartbeatInterval = setInterval(() => {
+  if(!isOnlineState) return;
+  heartbeatInterval = setInterval(async () => {
     if(!currentRide || !currentRide.id) return;
+    // Ping/Heartbeat query sa Supabase
+    if(supabaseClient.realtime.status !== 'open') {
+      supabaseClient.realtime.connect();
+    }
   }, 10000);
 }
 
@@ -1417,7 +1441,6 @@ function callRider(){
   if(phone) window.location.href = "tel:"+phone;
 }
 
-// Waze link - idinagdag din ang avoid toll parameter sa Waze (avoid=tolls)
 function wazeToRider(){ if(currentRide?.rider_lat) openWaze(currentRide.rider_lat, currentRide.rider_lng); }
 function wazeToPickup(){ 
   if(currentRide?.pickup_lat) openWaze(currentRide.pickup_lat, currentRide.pickup_lng);
@@ -1429,7 +1452,7 @@ function wazeToDestination(){
 }
 
 function openWaze(lat, lng){
-  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes&avoid=tolls";
+  const wazeAppUrl = "waze://?ll=" + lat + "," + lng + "&navigate=yes";
   const a = document.createElement("a");
   a.href = wazeAppUrl;
   a.click();
@@ -1499,7 +1522,7 @@ async function checkExistingActiveRide(){
 }
 
 function subscribeRealtime(){
-  if(!currentRide?.id) return;
+  if(!currentRide?.id || !isOnlineState) return;
   if(chatChannel) supabaseClient.removeChannel(chatChannel);
 
   chatChannel = supabaseClient.channel("ride-"+currentRide.id).on("postgres_changes", { event:"UPDATE", schema:"public", table:"rides", filter:"id=eq."+currentRide.id }, payload=>{
@@ -1571,7 +1594,7 @@ async function loadChatMessages(){
 }
 
 function subscribeChat(){
-  if(!chatRideId) return;
+  if(!chatRideId || !isOnlineState) return;
   supabaseClient.channel("chat-"+chatRideId).on(
     "postgres_changes",
     { event:"INSERT", schema:"public", table:"ride_messages", filter:"ride_id=eq."+chatRideId },
@@ -1639,6 +1662,7 @@ async function startApp(){
   try{
     initMap();
     setupPhoton();
+    requestWakeLock(); // Aktibahin ang Keep Screen Awake
     const recovery = getRecoveryInfo();
     if(recovery){
       if(recovery.name) document.getElementById("passengerName").value = recovery.name;
