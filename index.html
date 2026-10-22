@@ -795,6 +795,9 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
+let calculatedDistanceKm = 0;
+let calculatedEstimatedFare = FARE_BASE;
+
 function escapeHTML(value){
   return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
@@ -842,6 +845,10 @@ function initMap(){
   });
 
   map.addControl(new maplibregl.NavigationControl());
+
+  map.on('load', function() {
+    // Siguraduhing handa ang map sources para sa route lines
+  });
 
   map.on('click', async function(e){
     if(!tapMode) return;
@@ -1036,7 +1043,7 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* LIBRENG OSRM ROUTING API (Pickup to Destination) - INI-EXCLUDE ANG EXPRESSWAY */
+/* LIBRENG OSRM ROUTING API (Pickup to Destination) - WALANG EXPRESSWAY + MAY ROUTE LINE & FARE/DISTANCE */
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   try{
@@ -1055,26 +1062,29 @@ async function drawRoute(){
     if (map.getSource('route')) {
       map.getSource('route').setData(geojson);
     } else {
-      map.addSource('route', {
-        'type': 'geojson',
-        'data': geojson
-      });
-      map.addLayer({
-        'id': 'route',
-        'type': 'line',
-        'source': 'route',
-        'layout': { 'line-join': 'round', 'line-cap': 'round' },
-        'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
-      });
+      if (!map.getSource('route')) {
+        map.addSource('route', {
+          'type': 'geojson',
+          'data': geojson
+        });
+        map.addLayer({
+          'id': 'route',
+          'type': 'line',
+          'source': 'route',
+          'layout': { 'line-join': 'round', 'line-cap': 'round' },
+          'paint': { 'line-color': '#1769aa', 'line-width': 5, 'line-opacity': 0.8 }
+        });
+      }
     }
 
-    const km = route.distance / 1000;
-    const fare = FARE_BASE + (km * FARE_PER_KM);
-    document.getElementById("locationStatus").innerText = "✅ Ready • "+km.toFixed(2)+" km • Estimated ₱"+Math.round(fare);
+    calculatedDistanceKm = route.distance / 1000;
+    calculatedEstimatedFare = FARE_BASE + (calculatedDistanceKm * FARE_PER_KM);
+    
+    document.getElementById("locationStatus").innerText = "✅ Ready • "+calculatedDistanceKm.toFixed(2)+" km • Estimated ₱"+Math.round(calculatedEstimatedFare);
   }catch(e){}
 }
 
-/* LIBRENG OSRM ROUTING API (Rider to Pickup) - INI-EXCLUDE ANG EXPRESSWAY */
+/* LIBRENG OSRM ROUTING API (Rider to Pickup) - WALANG EXPRESSWAY */
 async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
   if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
   try {
@@ -1092,17 +1102,19 @@ async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) 
     if (map.getSource('rider-route')) {
       map.getSource('rider-route').setData(geojson);
     } else {
-      map.addSource('rider-route', {
-        type: 'geojson',
-        data: geojson
-      });
-      map.addLayer({
-        id: 'rider-route',
-        type: 'line',
-        source: 'rider-route',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
-      });
+      if (!map.getSource('rider-route')) {
+        map.addSource('rider-route', {
+          type: 'geojson',
+          data: geojson
+        });
+        map.addLayer({
+          id: 'rider-route',
+          type: 'line',
+          source: 'rider-route',
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': '#28a745', 'line-width': 6, 'line-opacity': 0.85 }
+        });
+      }
     }
   } catch (e) {}
 }
@@ -1126,17 +1138,6 @@ async function bookRide(){
   btn.disabled=true; btn.innerText = "BOOKING...";
 
   try{
-    let distanceKm=0, estimatedFare=FARE_BASE;
-    if(passengerLocation && destinationLocation){
-      const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=false&exclude=expressway`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if(data.routes?.[0]){
-        distanceKm = data.routes[0].distance / 1000;
-        estimatedFare = FARE_BASE + distanceKm * FARE_PER_KM;
-      }
-    }
-
     const payload={
       passenger_name: name,
       passenger_contact: contact,
@@ -1146,8 +1147,8 @@ async function bookRide(){
       destination: destinationLocation.name,
       destination_lat: destinationLocation.lat,
       destination_lng: destinationLocation.lng,
-      distance_km: Number(distanceKm.toFixed(2)),
-      estimated_fare: Number(estimatedFare.toFixed(2)),
+      distance_km: Number(calculatedDistanceKm.toFixed(2)),
+      estimated_fare: Number(calculatedEstimatedFare.toFixed(2)),
       status: "searching"
     };
 
