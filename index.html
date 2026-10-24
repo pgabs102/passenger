@@ -354,6 +354,7 @@ button.green{ background:#16823b; }
 button.orange{ background:#d97706; }
 button.danger{ background:#b00020; }
 button.blue{ background:#1769aa; }
+button.purple{ background:#6b21a8; }
 button:disabled{ opacity:.6; }
 
 .status{
@@ -769,6 +770,9 @@ button:disabled{ opacity:.6; }
       <div class="status" id="locationStatus">Set your pickup and destination.</div>
       <div id="recoveryNotice" class="recoveryNotice hidden">🔄 Checking previous active booking...</div>
       <button class="green" id="bookRideBtn" onclick="bookRide()">🏍️ BOOK RIDE</button>
+      
+      <!-- TEAMILY AI ASSISTANT BUTTON -->
+      <button class="purple" style="margin-top: 10px;" onclick="openTeamilyChat()">🤖 AI Assistant Help</button>
     </div>
 
     <div id="currentRideSection" class="bookingSection hidden">
@@ -1671,6 +1675,14 @@ function toggleBookingSheet(){
   }
 }
 
+function openTeamilyChat() {
+  if (window.TeamilyWidget && typeof window.TeamilyWidget.open === 'function') {
+    window.TeamilyWidget.open();
+  } else {
+    alert("Teamily AI Widget is loading or initializing. Please click the widget button at the bottom right corner.");
+  }
+}
+
 async function startApp(){
   try{
     initMap();
@@ -1687,6 +1699,11 @@ async function startApp(){
 
 startApp();
 </script>
+
+<!-- TEAMILY AI WEBSITE WIDGET SCRIPT -->
+<script async src="https://teamily.ai/v1/widget/widget.js"
+        data-agent="c6e4ee2c-feef-4613-8b19-54f2ab1b5eb9"
+        data-key="tmly_pk_web_AMo2jDDUit-Ngo3IiHS45YWbd9KAz_sMJnliHhDbfg8"></script>
 
 </body>
 </html>
