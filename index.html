@@ -472,97 +472,22 @@ button:disabled{ opacity:.6; }
 #callBtn{ background:#16823b; }
 #wazeRiderBtn{ background:#d97706; }
 
-/* AI ASSISTANT CHAT TAB STYLING */
-.assistantBox {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 320px;
-}
-
-.assistantHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-}
-
-.btn-official-handoff {
-  background-color: #28a745;
-  color: white;
+/* TEAMILY AI CHAT CONTAINER STYLING */
+.teamilyChatContainer {
+  width: 100%;
+  height: calc(80vh - 160px);
+  min-height: 380px;
   border: none;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 0;
-  width: auto;
-}
-
-.assistantMessages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 10px;
-  max-height: 280px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.aiMsg {
-  background: #e9ecef;
-  color: #222;
-  padding: 8px 12px;
   border-radius: 12px;
-  max-width: 85%;
-  align-self: flex-start;
-  font-size: 13px;
-  line-height: 1.4;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: #ffffff;
 }
 
-.userAiMsg {
-  background: #8b0000;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 12px;
-  max-width: 85%;
-  align-self: flex-end;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.sysAiMsg {
-  background: #fff3cd;
-  color: #856404;
-  padding: 6px 10px;
-  border-radius: 8px;
-  align-self: center;
-  font-size: 11px;
-  text-align: center;
-}
-
-.assistantInputArea {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.assistantInputArea input {
-  margin-top: 0;
-  font-size: 13px;
-  padding: 8px 12px;
-}
-
-.assistantInputArea button {
-  margin-top: 0;
-  width: 70px;
-  padding: 8px;
-  font-size: 13px;
+.teamilyIframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .chatModal{
@@ -914,22 +839,15 @@ button:disabled{ opacity:.6; }
       </div>
     </div>
 
-    <!-- TAB 2: AI CHATBOT & LIVE SUPPORT -->
+    <!-- TAB 2: TEAMILY AI CHATBOT INTEGRATION -->
     <div id="tabAssistantView" class="hidden">
-      <div class="bookingSection assistantBox">
-        <div class="assistantHeader">
-          <span id="aiModeLabel" style="font-size: 12px; font-weight: bold; color: #555;">Mode: AI Assistant</span>
-          <button class="btn-official-handoff" onclick="connectToOfficial()">👤 Kausapin ang Official</button>
-        </div>
-        <div class="assistantMessages" id="aiChatBody">
-          <div class="aiMsg">
-            Magandang araw! Ako ang Tuklas Assistant. May katanungan ka ba sa pagbo-book o biyahe sa Tuklas?
-          </div>
-        </div>
-        <div class="assistantInputArea">
-          <input type="text" id="aiInput" placeholder="Magtanong sa AI..." onkeypress="handleAiKeyPress(event)">
-          <button class="green" onclick="sendAiMessage()">Send</button>
-        </div>
+      <div class="teamilyChatContainer">
+        <iframe 
+          class="teamilyIframe"
+          src="https://teamily.ai/v1/widget/frame?agent=b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9&key=tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w&embed=1"
+          allow="microphone; camera"
+          title="TUKLAS Teamily AI Assistant">
+        </iframe>
       </div>
     </div>
 
@@ -984,7 +902,6 @@ let pickupSearchTimer=null, destinationSearchTimer=null, cancelInProgress=false;
 let heartbeatInterval=null;
 let wakeLock = null;
 let isOnlineState = true;
-let isOfficialMode = false;
 
 const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
@@ -1008,63 +925,6 @@ function switchTab(tabName) {
     navTabBooking.classList.remove("active");
     navTabAssistant.classList.add("active");
   }
-}
-
-/* ================= AI CHATBOT & SUPPORT SYSTEM ================= */
-function sendAiMessage() {
-  const input = document.getElementById("aiInput");
-  const text = input.value.trim();
-  if (!text) return;
-
-  appendAiBubble(text, 'userAiMsg');
-  input.value = '';
-
-  setTimeout(() => {
-    if (isOfficialMode) {
-      appendAiBubble("Mensahe mula sa Tuklas Official Support: Natanggap ang iyong mensahe. Isang opisyal ang tutulong sa iyo ngayon.", 'aiMsg');
-    } else {
-      const q = text.toLowerCase();
-      if (q.includes('magkano') || q.includes('fare') || q.includes('pamasahe')) {
-        appendAiBubble("Ang pamasahe sa Tuklas ay ₱50 Base Fare + ₱15 bawat kilometro.", 'aiMsg');
-      } else if (q.includes('book') || q.includes('paano')) {
-        appendAiBubble("Para mag-book: Piliin ang iyong Pickup at Destination gamit ang GPS o pag-tap sa mapa, tsaka i-click ang 'BOOK RIDE'.", 'aiMsg');
-      } else if (q.includes('cancel') || q.includes('paalam')) {
-        appendAiBubble("Maaari mong i-cancel ang biyahe sa pamamagitan ng pag-click sa pulang '❌' button sa Current Ride section.", 'aiMsg');
-      } else {
-        appendAiBubble("Salamat sa iyong mensahe! Kung may isyu sa booking, i-click lamang ang '👤 Kausapin ang Official' para direktang makausap ang Support Admin ng Tuklas.", 'aiMsg');
-      }
-    }
-  }, 900);
-}
-
-function connectToOfficial() {
-  if (isOfficialMode) return;
-  isOfficialMode = true;
-  document.getElementById("aiModeLabel").innerText = "Mode: Live Official Support";
-
-  const aiBody = document.getElementById("aiChatBody");
-  const sysDiv = document.createElement("div");
-  sysDiv.className = "sysAiMsg";
-  sysDiv.innerText = "Inihahanda ang koneksyon sa Tuklas Official... Maghintay lamang ng ilang sandali.";
-  aiBody.appendChild(sysDiv);
-  aiBody.scrollTop = aiBody.scrollHeight;
-
-  setTimeout(() => {
-    appendAiBubble("Magandang araw! Ako ay opisyal ng Tuklas. Paano ko po kayo matutulungan sa inyong biyahe o booking ngayon?", 'aiMsg');
-  }, 1500);
-}
-
-function appendAiBubble(msg, className) {
-  const aiBody = document.getElementById("aiChatBody");
-  const div = document.createElement("div");
-  div.className = className;
-  div.innerText = msg;
-  aiBody.appendChild(div);
-  aiBody.scrollTop = aiBody.scrollHeight;
-}
-
-function handleAiKeyPress(e) {
-  if (e.key === 'Enter') sendAiMessage();
 }
 
 /* ================= KEEP-AWAKE SYSTEM ================= */
@@ -1498,7 +1358,6 @@ async function bookRide(){
       }
     }
 
-    // ERROR HANDLING: WALANG ROUTE O FARE = HINDI ITUTULOY ANG BOOKING!
     if(!distanceKm || distanceKm <= 0 || !estimatedFare || estimatedFare <= 0){
       alert("⚠️ Hindi pa natatapos ang pag-compute ng ruta at pamasahe. Paki-subok ulit o pumili muna ng tamang lokasyon sa mapa.");
       document.getElementById("locationStatus").innerText = "❌ Bigo sa pag-compute ng ruta. Paki-pili ulit ng lokasyon.";
@@ -1928,19 +1787,6 @@ async function startApp(){
 
 startApp();
 </script>
-// Kunin ang iyong Chat Button sa HTML (halimbawa: id="chatBtn")
-const chatButton = document.getElementById('chatBtn');
 
-chatButton.addEventListener('click', function() {
-  const teamilyUrl = "https://teamily.ai/v1/widget/frame?agent=b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9&key=tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w";
-  
-  // Buksan ang URL sa bagong window/tab para hindi i-block ng WebView
-  window.open(teamilyUrl, '_blank');
-});
-
-
-async src="https://teamily.ai/v1/widget/widget.js"
-        data-agent="b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9"
-        data-key="tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w"
 </body>
 </html>
