@@ -1928,9 +1928,19 @@ async function startApp(){
 
 startApp();
 </script>
+// Kunin ang iyong Chat Button sa HTML (halimbawa: id="chatBtn")
+const chatButton = document.getElementById('chatBtn');
 
-<script async src="https://teamily.ai/v1/widget/widget.js"
+chatButton.addEventListener('click', function() {
+  const teamilyUrl = "https://teamily.ai/v1/widget/frame?agent=b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9&key=tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w";
+  
+  // Buksan ang URL sa bagong window/tab para hindi i-block ng WebView
+  window.open(teamilyUrl, '_blank');
+});
+
+
+async src="https://teamily.ai/v1/widget/widget.js"
         data-agent="b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9"
-        data-key="tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w"></script>
+        data-key="tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w"
 </body>
 </html>
