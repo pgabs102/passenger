@@ -472,6 +472,24 @@ button:disabled{ opacity:.6; }
 #callBtn{ background:#16823b; }
 #wazeRiderBtn{ background:#d97706; }
 
+/* TEAMILY AI CHAT CONTAINER STYLING */
+.teamilyChatContainer {
+  width: 100%;
+  height: calc(80vh - 160px);
+  min-height: 380px;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: #ffffff;
+}
+
+.teamilyIframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 .chatModal{
   position:fixed;
   inset:0;
@@ -821,16 +839,15 @@ button:disabled{ opacity:.6; }
       </div>
     </div>
 
-    <!-- TAB 2: TEAMILY AI CHATBOT INTEGRATION (EXTERNAL LINK) -->
+    <!-- TAB 2: TEAMILY AI CHATBOT INTEGRATION -->
     <div id="tabAssistantView" class="hidden">
-      <div class="bookingSection" style="text-align: center; padding: 30px 20px;">
-        <h3>🤖 TUKLAS AI Support</h3>
-        <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
-          I-click ang button sa ibaba para buksan ang opisyal na Teamily AI Chatbot sa iyong browser.
-        </p>
-        <button class="green" onclick="openTeamilyChat()" style="padding: 14px; font-size: 16px;">
-          💬 Buksan ang AI Chatbot
-        </button>
+      <div class="teamilyChatContainer">
+        <iframe 
+          class="teamilyIframe"
+          src="https://teamily.ai/v1/widget/frame?agent=b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9&key=tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w&embed=1"
+          allow="microphone; camera"
+          title="TUKLAS Teamily AI Assistant">
+        </iframe>
       </div>
     </div>
 
@@ -908,11 +925,6 @@ function switchTab(tabName) {
     navTabBooking.classList.remove("active");
     navTabAssistant.classList.add("active");
   }
-}
-
-function openTeamilyChat() {
-  const teamilyUrl = "https://teamily.ai/v1/widget/frame?agent=b83c58c0-e148-4a17-b8e8-9a17f5ec0ac9&key=tmly_pk_web_15GBCUO0MdJZeHdprkRrw1LaztaeDfsC-GrLcrp1X2w";
-  window.open(teamilyUrl, '_blank');
 }
 
 /* ================= KEEP-AWAKE SYSTEM ================= */
