@@ -6,7 +6,7 @@
 
 <title>TUKLAS - Passenger (No Expressway)</title>
 
-<!-- MapLibre GL JS Stylesheet (100% Free & Open Source) -->
+<!-- MapLibre GL JS Stylesheet -->
 <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
 
 <style>
@@ -125,7 +125,6 @@ button,input{
   z-index:1;
 }
 
-/* IWAS BLACK SCREEN FALLBACK COLOR */
 #map{
   position:absolute!important;
   top:0!important;
@@ -294,8 +293,35 @@ input{
   background: #b00020 !important;
 }
 
+/* NAVBAR SA LOOB NG BOOKING MENU */
+.bookingNav {
+  display: flex;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+  padding: 6px;
+  gap: 6px;
+}
+
+.bookingNavTab {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: #555;
+  font-weight: bold;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0;
+}
+
+.bookingNavTab.active {
+  background: #8b0000;
+  color: white;
+}
+
 .bookingContent{
-  height:calc(80vh - 82px);
+  height:calc(80vh - 128px);
   overflow-y:auto;
   padding:12px;
   -webkit-overflow-scrolling:touch;
@@ -354,7 +380,6 @@ button.green{ background:#16823b; }
 button.orange{ background:#d97706; }
 button.danger{ background:#b00020; }
 button.blue{ background:#1769aa; }
-button.purple{ background:#6b21a8; }
 button:disabled{ opacity:.6; }
 
 .status{
@@ -446,6 +471,99 @@ button:disabled{ opacity:.6; }
 #cancelBtn.rideActionBtn::before{ content:"❌"; font-size:22px; }
 #callBtn{ background:#16823b; }
 #wazeRiderBtn{ background:#d97706; }
+
+/* AI ASSISTANT CHAT TAB STYLING */
+.assistantBox {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 320px;
+}
+
+.assistantHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.btn-official-handoff {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0;
+  width: auto;
+}
+
+.assistantMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aiMsg {
+  background: #e9ecef;
+  color: #222;
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  align-self: flex-start;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.userAiMsg {
+  background: #8b0000;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 85%;
+  align-self: flex-end;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.sysAiMsg {
+  background: #fff3cd;
+  color: #856404;
+  padding: 6px 10px;
+  border-radius: 8px;
+  align-self: center;
+  font-size: 11px;
+  text-align: center;
+}
+
+.assistantInputArea {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.assistantInputArea input {
+  margin-top: 0;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.assistantInputArea button {
+  margin-top: 0;
+  width: 70px;
+  padding: 8px;
+  font-size: 13px;
+}
 
 .chatModal{
   position:fixed;
@@ -750,43 +868,71 @@ button:disabled{ opacity:.6; }
       BOOK<br>NOW
     </button>
   </div>
+
+  <!-- QUICK NAV TAB SA LOOB NG BOOKING MENU -->
+  <div class="bookingNav">
+    <button id="navTabBooking" class="bookingNavTab active" onclick="switchTab('booking')">📍 Map & Booking</button>
+    <button id="navTabAssistant" class="bookingNavTab" onclick="switchTab('assistant')">🤖 AI Support / Chat</button>
+  </div>
+
   <div class="bookingContent">
-    <div id="pickupDestinationSection" class="bookingSection">
-      <h3>Pickup & Destination</h3>
-      
-      <!-- PICKUP SECTION -->
-      <div class="button-group">
-        <button onclick="getPickupGPS()" class="blue">📍 Current Location</button>
-        <button onclick="choosePickupOnMap()" class="orange">📍 Tap Map for Pickup</button>
-      </div>
-      <input id="pickupInput" placeholder="Pickup location / Establishment" autocomplete="off">
-      <div id="pickupSuggestions" class="suggestions hidden"></div>
+    
+    <!-- TAB 1: BOOKING & MAP SECTION -->
+    <div id="tabBookingView">
+      <div id="pickupDestinationSection" class="bookingSection">
+        <h3>Pickup & Destination</h3>
+        
+        <!-- PICKUP SECTION -->
+        <div class="button-group">
+          <button onclick="getPickupGPS()" class="blue">📍 Current Location</button>
+          <button onclick="choosePickupOnMap()" class="orange">📍 Tap Map for Pickup</button>
+        </div>
+        <input id="pickupInput" placeholder="Pickup location / Establishment" autocomplete="off">
+        <div id="pickupSuggestions" class="suggestions hidden"></div>
 
-      <!-- DESTINATION SECTION -->
-      <input id="destinationInput" placeholder="Destination / Establishment" autocomplete="off" style="margin-top: 12px;">
-      <div id="destinationSuggestions" class="suggestions hidden"></div>
-      <button onclick="chooseDestinationOnMap()" class="orange" style="margin-top: 6px;">🎯 Tap Map for Destination</button>
-      
-      <div class="status" id="locationStatus">Set your pickup and destination.</div>
-      <div id="recoveryNotice" class="recoveryNotice hidden">🔄 Checking previous active booking...</div>
-      <button class="green" id="bookRideBtn" onclick="bookRide()">🏍️ BOOK RIDE</button>
-      
-      <!-- CALL TEAMILY AGENT BUTTON -->
-      <button class="purple" style="margin-top: 10px;" onclick="callAgent()">🎧 Call Agent</button>
+        <!-- DESTINATION SECTION -->
+        <input id="destinationInput" placeholder="Destination / Establishment" autocomplete="off" style="margin-top: 12px;">
+        <div id="destinationSuggestions" class="suggestions hidden"></div>
+        <button onclick="chooseDestinationOnMap()" class="orange" style="margin-top: 6px;">🎯 Tap Map for Destination</button>
+        
+        <div class="status" id="locationStatus">Set your pickup and destination.</div>
+        <div id="recoveryNotice" class="recoveryNotice hidden">🔄 Checking previous active booking...</div>
+        <button class="green" id="bookRideBtn" onclick="bookRide()">🏍️ BOOK RIDE</button>
+      </div>
+
+      <div id="currentRideSection" class="bookingSection hidden">
+        <h3>Current Ride</h3>
+        <div id="rideInfo">No active ride.</div>
+        <div id="rideActions" class="rideActions">
+          <button id="callBtn" class="rideActionBtn hidden" onclick="callRider()" title="Call">📞</button>
+          <button id="chatBtn" class="blue rideActionBtn hidden" onclick="openChat()" title="Chat">💬</button>
+          <button id="wazeRiderBtn" class="rideActionBtn hidden" onclick="wazeToRider()" title="Waze">🧭</button>
+          <button id="cancelBtn" class="danger rideActionBtn hidden" onclick="cancelRide()" title="Cancel">❌</button>
+        </div>
+        <button id="wazePickupBtn" class="secondary hidden" onclick="wazeToPickup()">🧭 Navigate to Pickup (Waze App)</button>
+        <button id="wazeDestinationBtn" class="secondary hidden" onclick="wazeToDestination()">🧭 Navigate to Destination (Waze App)</button>
+      </div>
     </div>
 
-    <div id="currentRideSection" class="bookingSection hidden">
-      <h3>Current Ride</h3>
-      <div id="rideInfo">No active ride.</div>
-      <div id="rideActions" class="rideActions">
-        <button id="callBtn" class="rideActionBtn hidden" onclick="callRider()" title="Call">📞</button>
-        <button id="chatBtn" class="blue rideActionBtn hidden" onclick="openChat()" title="Chat">💬</button>
-        <button id="wazeRiderBtn" class="rideActionBtn hidden" onclick="wazeToRider()" title="Waze">🧭</button>
-        <button id="cancelBtn" class="danger rideActionBtn hidden" onclick="cancelRide()" title="Cancel">❌</button>
+    <!-- TAB 2: AI CHATBOT & LIVE SUPPORT -->
+    <div id="tabAssistantView" class="hidden">
+      <div class="bookingSection assistantBox">
+        <div class="assistantHeader">
+          <span id="aiModeLabel" style="font-size: 12px; font-weight: bold; color: #555;">Mode: AI Assistant</span>
+          <button class="btn-official-handoff" onclick="connectToOfficial()">👤 Kausapin ang Official</button>
+        </div>
+        <div class="assistantMessages" id="aiChatBody">
+          <div class="aiMsg">
+            Magandang araw! Ako ang Tuklas Assistant. May katanungan ka ba sa pagbo-book o biyahe sa Tuklas?
+          </div>
+        </div>
+        <div class="assistantInputArea">
+          <input type="text" id="aiInput" placeholder="Magtanong sa AI..." onkeypress="handleAiKeyPress(event)">
+          <button class="green" onclick="sendAiMessage()">Send</button>
+        </div>
       </div>
-      <button id="wazePickupBtn" class="secondary hidden" onclick="wazeToPickup()">🧭 Navigate to Pickup (Waze App)</button>
-      <button id="wazeDestinationBtn" class="secondary hidden" onclick="wazeToDestination()">🧭 Navigate to Destination (Waze App)</button>
     </div>
+
   </div>
 </section>
 
@@ -811,7 +957,6 @@ button:disabled{ opacity:.6; }
   </div>
 </div>
 
-<!-- MapLibre GL JS Library (Open-Source Mapbox Fork) -->
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -821,7 +966,6 @@ const LOCATIONIQ_ACCESS_TOKEN = "pk.2026acce1d055532d0b96957c54ffe2f";
 const SUPABASE_URL = "https://omkgcczffjtevwzsscwg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_-7gCKDHORQ5gIACet6vJUg_X7HmdMeg";
 
-/* SUPABASE CLIENT WITH KEEP-ALIVE WORKER */
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   realtime: {
     worker: true,
@@ -840,10 +984,88 @@ let pickupSearchTimer=null, destinationSearchTimer=null, cancelInProgress=false;
 let heartbeatInterval=null;
 let wakeLock = null;
 let isOnlineState = true;
+let isOfficialMode = false;
 
 const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
+
+/* ================= TAB NAVIGATION SYSTEM ================= */
+function switchTab(tabName) {
+  const bookingView = document.getElementById("tabBookingView");
+  const assistantView = document.getElementById("tabAssistantView");
+  const navTabBooking = document.getElementById("navTabBooking");
+  const navTabAssistant = document.getElementById("navTabAssistant");
+
+  if (tabName === 'booking') {
+    bookingView.classList.remove("hidden");
+    assistantView.classList.add("hidden");
+    navTabBooking.classList.add("active");
+    navTabAssistant.classList.remove("active");
+  } else {
+    bookingView.classList.add("hidden");
+    assistantView.classList.remove("hidden");
+    navTabBooking.classList.remove("active");
+    navTabAssistant.classList.add("active");
+  }
+}
+
+/* ================= AI CHATBOT & SUPPORT SYSTEM ================= */
+function sendAiMessage() {
+  const input = document.getElementById("aiInput");
+  const text = input.value.trim();
+  if (!text) return;
+
+  appendAiBubble(text, 'userAiMsg');
+  input.value = '';
+
+  setTimeout(() => {
+    if (isOfficialMode) {
+      appendAiBubble("Mensahe mula sa Tuklas Official Support: Natanggap ang iyong mensahe. Isang opisyal ang tutulong sa iyo ngayon.", 'aiMsg');
+    } else {
+      const q = text.toLowerCase();
+      if (q.includes('magkano') || q.includes('fare') || q.includes('pamasahe')) {
+        appendAiBubble("Ang pamasahe sa Tuklas ay ₱50 Base Fare + ₱15 bawat kilometro.", 'aiMsg');
+      } else if (q.includes('book') || q.includes('paano')) {
+        appendAiBubble("Para mag-book: Piliin ang iyong Pickup at Destination gamit ang GPS o pag-tap sa mapa, tsaka i-click ang 'BOOK RIDE'.", 'aiMsg');
+      } else if (q.includes('cancel') || q.includes('paalam')) {
+        appendAiBubble("Maaari mong i-cancel ang biyahe sa pamamagitan ng pag-click sa pulang '❌' button sa Current Ride section.", 'aiMsg');
+      } else {
+        appendAiBubble("Salamat sa iyong mensahe! Kung may isyu sa booking, i-click lamang ang '👤 Kausapin ang Official' para direktang makausap ang Support Admin ng Tuklas.", 'aiMsg');
+      }
+    }
+  }, 900);
+}
+
+function connectToOfficial() {
+  if (isOfficialMode) return;
+  isOfficialMode = true;
+  document.getElementById("aiModeLabel").innerText = "Mode: Live Official Support";
+
+  const aiBody = document.getElementById("aiChatBody");
+  const sysDiv = document.createElement("div");
+  sysDiv.className = "sysAiMsg";
+  sysDiv.innerText = "Inihahanda ang koneksyon sa Tuklas Official... Maghintay lamang ng ilang sandali.";
+  aiBody.appendChild(sysDiv);
+  aiBody.scrollTop = aiBody.scrollHeight;
+
+  setTimeout(() => {
+    appendAiBubble("Magandang araw! Ako ay opisyal ng Tuklas. Paano ko po kayo matutulungan sa inyong biyahe o booking ngayon?", 'aiMsg');
+  }, 1500);
+}
+
+function appendAiBubble(msg, className) {
+  const aiBody = document.getElementById("aiChatBody");
+  const div = document.createElement("div");
+  div.className = className;
+  div.innerText = msg;
+  aiBody.appendChild(div);
+  aiBody.scrollTop = aiBody.scrollHeight;
+}
+
+function handleAiKeyPress(e) {
+  if (e.key === 'Enter') sendAiMessage();
+}
 
 /* ================= KEEP-AWAKE SYSTEM ================= */
 
@@ -898,8 +1120,6 @@ window.addEventListener('focus', async () => {
   }
 });
 
-/* ========================================================================= */
-
 function escapeHTML(value){
   return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
@@ -918,7 +1138,6 @@ function getRecoveryInfo(){
   try{ const raw = localStorage.getItem(RECOVERY_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
 }
 
-/* INITIALIZE MAPLIBRE MAP WITH WEBGL AUTO-RECOVERY */
 function initMap(){
   map = new maplibregl.Map({
     container: 'map',
@@ -946,7 +1165,6 @@ function initMap(){
     zoom: 13
   });
 
-  /* ================= WEBGL AUTO-RECOVERY FIX (ANTI-BLACK SCREEN) ================= */
   const mapCanvas = map.getCanvas();
 
   mapCanvas.addEventListener('webglcontextlost', function(e) {
@@ -970,7 +1188,6 @@ function initMap(){
     });
     if (passengerLocation && destinationLocation) drawRoute();
   }, false);
-  /* ============================================================================== */
 
   map.addControl(new maplibregl.NavigationControl());
 
@@ -1003,7 +1220,6 @@ function chooseDestinationOnMap(){
   document.getElementById("locationStatus").innerText = "🎯 Tap anywhere on the map to set DESTINATION location.";
 }
 
-/* LIBRENG REVERSE GEOCODING (NOMINATIM / OPENSTREETMAP API) */
 async function reverseGeocode(lat, lng){
   try{
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
@@ -1088,7 +1304,7 @@ function updateStatus(){
   const el = document.getElementById("locationStatus");
   if(!passengerLocation){ el.innerText = "📍 Set pickup location."; return; }
   if(!destinationLocation){ el.innerText = "🎯 Set destination."; return; }
-  el.innerText = "✅ Pickup and destination are ready.";
+  el.innerText = "⏳ Pinaproseso ang ruta at pamasahe...";
 }
 
 async function locationIqSearch(query){
@@ -1167,7 +1383,6 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* LIBRENG OSRM ROUTING API (Pickup to Destination) */
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   try{
@@ -1202,10 +1417,11 @@ async function drawRoute(){
     const km = route.distance / 1000;
     const fare = FARE_BASE + (km * FARE_PER_KM);
     document.getElementById("locationStatus").innerText = "✅ Ready • "+km.toFixed(2)+" km • Estimated ₱"+Math.round(fare);
-  }catch(e){}
+  }catch(e){
+    document.getElementById("locationStatus").innerText = "❌ Hindi maikonekta ang ruta. Paki-pili ulit ang lokasyon.";
+  }
 }
 
-/* LIBRENG OSRM ROUTING API (Rider to Pickup) */
 async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) {
   if (!riderLng || !riderLat || !pickupLng || !pickupLat) return;
   try {
@@ -1238,41 +1454,58 @@ async function drawRiderRouteToPickup(riderLng, riderLat, pickupLng, pickupLat) 
   } catch (e) {}
 }
 
+/* ================= BOOK RIDE WITH ERROR HANDLING ================= */
 async function bookRide(){
   if(!isOnlineState) {
-    alert("You are currently OFFLINE. Please turn on ONLINE mode first.");
+    alert("Naka-OFFLINE ka ngayon. Paki-ON muna ang ONLINE mode para makapag-book.");
     return;
   }
   if(currentRide){
     const status = String(currentRide.status || "").toLowerCase();
-    if(!["completed", "cancelled"].includes(status)){ alert("You already have an active ride."); return; }
+    if(!["completed", "cancelled"].includes(status)){ 
+      alert("May kasalukuyan ka pang aktibong biyahe."); 
+      return; 
+    }
     currentRide = null;
   }
-  if(!passengerLocation){ alert("Please set pickup location."); return; }
-  if(!destinationLocation){ alert("Please set destination."); return; }
+  
+  if(!passengerLocation){ alert("Pumili muna ng Pickup Location."); return; }
+  if(!destinationLocation){ alert("Pumili muna ng Destination Location."); return; }
 
   const name = document.getElementById("passengerName").value.trim();
   const contact = document.getElementById("passengerContact").value.trim();
-  if(!name){ alert("Please enter your name."); return; }
-  if(!contact){ alert("Please enter contact number."); return; }
+  if(!name){ alert("Mangyaring ilagay ang iyong pangalan sa Profile."); return; }
+  if(!contact){ alert("Mangyaring ilagay ang iyong contact number sa Profile."); return; }
 
   saveRecoveryInfo();
   const btn = document.getElementById("bookRideBtn");
-  btn.disabled=true; btn.innerText = "BOOKING...";
+  btn.disabled = true; 
+  btn.innerText = "⏳ PINAPROSESO PA ANG RUTA...";
 
   try{
-    let distanceKm=0, estimatedFare=FARE_BASE;
+    let distanceKm = 0, estimatedFare = 0;
+
     if(passengerLocation && destinationLocation){
+      document.getElementById("locationStatus").innerText = "⏳ Pinaproseso pa ang booking at ruta...";
+      
       const url = `https://router.project-osrm.org/route/v1/driving/${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}?overview=false`;
       const res = await fetch(url);
       const data = await res.json();
-      if(data.routes?.[0]){
+      
+      if(data.routes && data.routes[0]){
         distanceKm = data.routes[0].distance / 1000;
-        estimatedFare = FARE_BASE + distanceKm * FARE_PER_KM;
+        estimatedFare = FARE_BASE + (distanceKm * FARE_PER_KM);
       }
     }
 
-    const payload={
+    // ERROR HANDLING: WALANG ROUTE O FARE = HINDI ITUTULOY ANG BOOKING!
+    if(!distanceKm || distanceKm <= 0 || !estimatedFare || estimatedFare <= 0){
+      alert("⚠️ Hindi pa natatapos ang pag-compute ng ruta at pamasahe. Paki-subok ulit o pumili muna ng tamang lokasyon sa mapa.");
+      document.getElementById("locationStatus").innerText = "❌ Bigo sa pag-compute ng ruta. Paki-pili ulit ng lokasyon.";
+      return; 
+    }
+
+    const payload = {
       passenger_name: name,
       passenger_contact: contact,
       pickup_location: passengerLocation.name,
@@ -1287,15 +1520,19 @@ async function bookRide(){
     };
 
     const { data, error } = await supabaseClient.from("rides").insert(payload).select().single();
-    if(error){ alert("Booking failed:\n"+error.message); return; }
+    if(error){ alert("Bigo sa pag-book:\n" + error.message); return; }
 
-    currentRide=data;
+    currentRide = data;
     showRide(data);
     subscribeRealtime();
     startHeartbeat();
     loadHistory();
-  }catch(e){ alert("Booking error:\n"+e.message); }
-  finally{ btn.disabled=false; btn.innerText = "🏍️ BOOK RIDE"; }
+  } catch(e){ 
+    alert("Nagka-error sa pag-book:\n" + e.message); 
+  } finally { 
+    btn.disabled = false; 
+    btn.innerText = "🏍️ BOOK RIDE"; 
+  }
 }
 
 function startHeartbeat(){
@@ -1675,15 +1912,6 @@ function toggleBookingSheet(){
   }
 }
 
-/* FUNCTION PARA SA CALL AGENT (TEAMILY AI BOT) */
-function callAgent() {
-  if (window.TeamilyWidget && typeof window.TeamilyWidget.open === 'function') {
-    window.TeamilyWidget.open();
-  } else {
-    alert("Nagloload pa ang Teamily AI Agent widget. Paki-click rin ang chat button sa ibabang kanang bahagi ng screen.");
-  }
-}
-
 async function startApp(){
   try{
     initMap();
@@ -1700,12 +1928,6 @@ async function startApp(){
 
 startApp();
 </script>
-
-<!-- TEAMILY AI WEBSITE WIDGET SCRIPT NA MAY BUONG PUBLISHABLE KEY -->
-<script async src="https://teamily.ai/v1/widget/widget.js"
-        data-agent="c6e4ee2c-feef-4613-8b19-54f2ab1b5eb9"
-        data-key="tmly_pk_web_LH8me-62Zj3sd7QIYvfeapG-mVHr7HuSwRTQubqoevw"></script>
-
 
 </body>
 </html>
