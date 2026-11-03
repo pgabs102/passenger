@@ -1004,7 +1004,8 @@ button:disabled{ opacity:.6; }
           <div class="fmStationLoc" id="fmLocDisplay">Metro Manila • Tugstugan Na!</div>
         </div>
 
-        <audio id="audioPlayer" preload="none"></audio>
+        <!-- AUDIO ELEMENT WITH CROSSORIGIN -->
+        <audio id="audioPlayer" crossorigin="anonymous" preload="none"></audio>
 
         <div class="fmControls">
           <button class="green fmBtn" id="fmPlayBtn" onclick="playFmRadio()">▶️ PLAY LIVE</button>
@@ -1100,7 +1101,7 @@ const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 /* ================= PHILIPPINE FM RADIO STREAMING SYSTEM ================= */
 const phFmStations = [
   { freq: "97.1 FM", name: "Barangay LS 97.1", loc: "Metro Manila • Tugstugan Na!", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
-  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://stream.zeno.fm/4v344f6208quv" },
+  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://stream-162.zeno.fm/4v344f6208quv" },
   { freq: "106.7 FM", name: "Energy FM 106.7", loc: "Metro Manila • Hi Pangga!", url: "https://stream.zeno.fm/3s2v449208quv" },
   { freq: "107.5 FM", name: "Win Radio 107.5", loc: "Metro Manila • Pinatugtog Win Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
   { freq: "90.1 FM", name: "DZRH News FM", loc: "Philippines • Unang Sa Pagbabalita", url: "https://stream.zeno.fm/1f4x9v3924zuv" },
@@ -1119,7 +1120,6 @@ function changeFmStation(index) {
   document.getElementById("fmLocDisplay").innerText = st.loc;
   document.getElementById("fmStationSelect").value = index;
 
-  // Highlight Quick Chips
   for (let i = 0; i < phFmStations.length; i++) {
     const chip = document.getElementById("chip-" + i);
     if (chip) {
@@ -1132,6 +1132,7 @@ function changeFmStation(index) {
   const isPlaying = !player.paused && player.src;
 
   player.src = st.url;
+  player.load();
 
   if (isPlaying) {
     player.play().catch(e => console.log("FM Play Error:", e));
@@ -1145,6 +1146,7 @@ function playFmRadio() {
 
   if (!player.src || player.src !== st.url) {
     player.src = st.url;
+    player.load();
   }
 
   document.getElementById("fmLiveBadge").innerText = "CONNECTING...";
@@ -1152,8 +1154,9 @@ function playFmRadio() {
   player.play().then(() => {
     document.getElementById("fmLiveBadge").innerText = "LIVE ON AIR";
   }).catch(err => {
-    alert("Bigo sa pag-stream ng FM Radio. Siguraduhing may internet connection.");
-    document.getElementById("fmLiveBadge").innerText = "OFFLINE";
+    console.error("Audio Play Error:", err);
+    document.getElementById("fmLiveBadge").innerText = "OFFLINE / BLOCKED";
+    alert("⚠️ Na-block ng browser o offline ang stream. Pindutin ulit ang PLAY LIVE button.");
   });
 }
 
