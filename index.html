@@ -490,45 +490,58 @@ button:disabled{ opacity:.6; }
   border: 0;
 }
 
-/* LIVE FM RADIO PLAYER STYLING */
-.fmRadioContainer {
-  background: linear-gradient(145deg, #1e1e24, #121215);
+/* RADIO STYLES (DARK CARD UI) */
+.radioAppCard {
+  background: #0f111a;
   color: #fff;
   border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
-
-.fmRadioHeader {
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  height: calc(80vh - 130px);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #333;
-  padding-bottom: 10px;
-  margin-bottom: 14px;
+  flex-direction: column;
 }
 
-.fmRadioTitle {
-  font-size: 16px;
-  font-weight: 900;
-  color: #ff4d4d;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.fmBadge {
-  background: #ff4d4d;
-  color: white;
-  font-size: 10px;
-  padding: 2px 8px;
+.radioSearchHeader input {
+  background: #1a1d2e;
+  border: 1px solid #2a2e45;
+  color: #fff;
+  padding: 10px 14px;
   border-radius: 10px;
+  font-size: 13px;
+  margin-top: 0;
+  width: 100%;
+}
+
+.radioStatusBanner {
+  font-size: 11px;
+  color: #00e676;
+  padding: 8px 4px;
   font-weight: bold;
 }
 
-.fmBadge.live {
-  background: #28a745;
-  animation: pulse 1.5s infinite;
+.nowPlayingBar {
+  background: linear-gradient(135deg, #2b1055, #7597de);
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.npInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.npDot {
+  width: 10px;
+  height: 10px;
+  background: #00e676;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
 }
 
 @keyframes pulse {
@@ -537,101 +550,85 @@ button:disabled{ opacity:.6; }
   100% { opacity: 1; }
 }
 
-.fmSelectSelect {
-  background: #2a2a32;
-  color: #fff;
-  border: 1px solid #444;
-  font-weight: bold;
+.npStopBtn {
+  width: auto !important;
+  margin: 0 !important;
+  padding: 6px 12px !important;
+  font-size: 11px !important;
+  background: #ff3366 !important;
 }
 
-.fmRadioCard {
-  background: #25252e;
-  border-radius: 12px;
-  padding: 14px;
-  text-align: center;
-  margin-bottom: 14px;
-  border: 1px solid #383845;
-}
-
-.fmStationFreq {
-  font-size: 28px;
-  font-weight: 900;
-  color: #00e676;
-  letter-spacing: 1px;
-}
-
-.fmStationName {
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-top: 2px;
-}
-
-.fmStationLoc {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 2px;
-}
-
-.fmControls {
+.stationListContainer {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.radioCardItem {
+  background: #181b29;
+  border: 1px solid #252a3f;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.radioCardItem:active, .radioCardItem.playing {
+  background: #272d47;
+  border-color: #6c5ce7;
+}
+
+.radioCardLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.radioPlayIconBtn {
+  width: 40px;
+  height: 40px;
+  background: #252a3f;
+  border-radius: 10px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 10px;
+  font-size: 16px;
+  color: #a29bfe;
+  flex-shrink: 0;
 }
 
-.fmBtn {
-  flex: 1;
-  padding: 12px;
+.radioCardItem.playing .radioPlayIconBtn {
+  background: #6c5ce7;
+  color: #fff;
+}
+
+.radioCardMeta strong {
+  display: block;
   font-size: 14px;
-  border-radius: 10px;
-  margin-top: 0;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
-.fmVolumeContainer {
+.radioCardMeta small {
+  font-size: 11px;
+  color: #8c94a8;
+}
+
+.radioCardRight {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  background: #1a1a20;
-  padding: 8px 12px;
-  border-radius: 10px;
-}
-
-.fmVolumeContainer span {
-  font-size: 16px;
-}
-
-.fmVolumeSlider {
-  flex: 1;
-  accent-color: #ff4d4d;
-}
-
-.fmQuickList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.fmChip {
-  background: #2d2d38;
-  color: #ddd;
-  border: 1px solid #444;
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: bold;
-  cursor: pointer;
-  flex: 1 1 calc(50% - 6px);
-  text-align: center;
-}
-
-.fmChip.active {
-  background: #ff4d4d;
-  color: #fff;
-  border-color: #ff4d4d;
+  gap: 8px;
+  font-size: 14px;
 }
 
 .chatModal{
@@ -984,53 +981,32 @@ button:disabled{ opacity:.6; }
       </div>
     </div>
 
-    <!-- TAB 2: LIVE PHILIPPINE FM RADIO STREAMING -->
+    <!-- TAB 2: LIVE PHILIPPINE FM RADIO STREAMING (CARD STYLE) -->
     <div id="tabRadioView" class="hidden">
-      <div class="fmRadioContainer">
-        <div class="fmRadioHeader">
-          <div class="fmRadioTitle">📻 STREAMING LIVE FM <span class="fmBadge" id="fmLiveBadge">OFFLINE</span></div>
+      <div class="radioAppCard">
+        <div class="radioSearchHeader">
+          <input type="text" id="radioSearchInput" placeholder="🔍 Search name, genre, country..." oninput="filterStations(this.value)">
+        </div>
+        <div class="radioStatusBanner">
+          🇵🇭 <span id="stationCountText">Loading Philippine stations...</span>
         </div>
 
-        <!-- TOGGLE / SELECTOR FOR PHILIPPINE STATIONS -->
-        <label style="font-size: 12px; font-weight: bold; color: #ccc;">PUMILI NG STREAMING STATION (PH ONLY):</label>
-        <select id="fmStationSelect" class="fmSelectSelect" onchange="changeFmStation(this.value)">
-          <option value="0">Barangay LS 97.1 FM (Metro Manila)</option>
-          <option value="1">Wish 107.5 FM (Metro Manila)</option>
-          <option value="2">Energy FM 106.7 (Metro Manila)</option>
-          <option value="3">Win Radio 107.5 (Metro Manila)</option>
-          <option value="4">DZRH 90.1 FM News (Philippines)</option>
-          <option value="5">Barangay RT 99.5 FM (Cebu / Visayas)</option>
-        </select>
-
-        <div class="fmRadioCard">
-          <div class="fmStationFreq" id="fmFreqDisplay">97.1 FM</div>
-          <div class="fmStationName" id="fmNameDisplay">Barangay LS 97.1</div>
-          <div class="fmStationLoc" id="fmLocDisplay">Metro Manila • Tugstugan Na!</div>
+        <div id="nowPlayingBar" class="nowPlayingBar hidden">
+          <div class="npInfo">
+            <span class="npDot"></span>
+            <div>
+              <strong id="npTitle">Station Name</strong><br>
+              <small id="npSub">PLAYING LIVE</small>
+            </div>
+          </div>
+          <button onclick="stopFmRadio()" class="npStopBtn">⏹️ STOP</button>
         </div>
 
-        <!-- AUDIO ELEMENT WITH CROSSORIGIN -->
+        <div class="stationListContainer" id="stationListContainer">
+          <!-- Stations loaded dynamically -->
+        </div>
+
         <audio id="audioPlayer" crossorigin="anonymous" preload="none"></audio>
-
-        <div class="fmControls">
-          <button class="green fmBtn" id="fmPlayBtn" onclick="playFmRadio()">▶️ PLAY LIVE</button>
-          <button class="danger fmBtn" id="fmStopBtn" onclick="stopFmRadio()">⏹️ STOP</button>
-        </div>
-
-        <div class="fmVolumeContainer">
-          <span>🔊</span>
-          <input type="range" id="fmVolume" class="fmVolumeSlider" min="0" max="1" step="0.05" value="0.8" oninput="setFmVolume(this.value)">
-        </div>
-
-        <!-- QUICK TOGGLE CHIPS -->
-        <div style="margin-top: 14px; font-size: 12px; font-weight: bold; color: #aaa;">QUICK TOGGLE:</div>
-        <div class="fmQuickList">
-          <div class="fmChip active" id="chip-0" onclick="changeFmStation(0)">Barangay 97.1</div>
-          <div class="fmChip" id="chip-1" onclick="changeFmStation(1)">Wish 107.5</div>
-          <div class="fmChip" id="chip-2" onclick="changeFmStation(2)">Energy 106.7</div>
-          <div class="fmChip" id="chip-3" onclick="changeFmStation(3)">Win Radio</div>
-          <div class="fmChip" id="chip-4" onclick="changeFmStation(4)">DZRH News</div>
-          <div class="fmChip" id="chip-5" onclick="changeFmStation(5)">Barangay Cebu</div>
-        </div>
       </div>
     </div>
 
@@ -1102,98 +1078,109 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
-/* ================= PHILIPPINE FM RADIO STREAMING SYSTEM (UPDATED & STABLE) ================= */
-const phFmStations = [
-  { freq: "97.1 FM", name: "Barangay LS 97.1", loc: "Metro Manila • Tugstugan Na!", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
-  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://icecast.wish1075.com/live" },
-  { freq: "106.7 FM", name: "Energy FM 106.7", loc: "Metro Manila • Hi Pangga!", url: "https://stream.zeno.fm/3s2v449208quv" },
-  { freq: "107.5 FM", name: "Win Radio 107.5", loc: "Metro Manila • Pinatugtog Win Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
-  { freq: "90.1 FM", name: "DZRH News FM", loc: "Philippines • Unang Sa Pagbabalita", url: "https://stream.zeno.fm/1f4x9v3924zuv" },
-  { freq: "99.5 FM", name: "Barangay RT 99.5", loc: "Cebu City • Nindota Ah!", url: "https://stream.zeno.fm/99bb443208quv" }
-];
-
-let currentStationIndex = 0;
+/* ================= PHILIPPINE RADIO STREAMING SYSTEM ================= */
+let phRadioStations = [];
+let activeStation = null;
 const audioPlayer = document.getElementById("audioPlayer");
 
-audioPlayer.addEventListener("playing", () => {
-  const badge = document.getElementById("fmLiveBadge");
-  badge.innerText = "LIVE ON AIR";
-  badge.classList.add("live");
-});
+async function fetchPhRadioStations() {
+  const countText = document.getElementById("stationCountText");
+  try {
+    const res = await fetch("https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/PH");
+    const data = await res.json();
 
-audioPlayer.addEventListener("waiting", () => {
-  const badge = document.getElementById("fmLiveBadge");
-  badge.innerText = "BUFFERING...";
-  badge.classList.remove("live");
-});
+    phRadioStations = data.filter(st => st.url_resolved && st.name).map(st => ({
+      name: st.name.trim(),
+      tags: st.tags ? st.tags.split(',').slice(0,2).join(' / ') : "Radio",
+      url: st.url_resolved
+    }));
 
-audioPlayer.addEventListener("error", () => {
-  const badge = document.getElementById("fmLiveBadge");
-  badge.innerText = "RETRYING...";
-  badge.classList.remove("live");
-  setTimeout(() => {
-    if(audioPlayer.src) audioPlayer.play().catch(e => {});
-  }, 3000);
-});
+    const staticFallbacks = [
+      { name: "Barangay LS 97.1 Manila", tags: "Opm / Talk", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
+      { name: "Wish 107.5 FM", tags: "Pop / Hits", url: "https://icecast.wish1075.com/live" },
+      { name: "Win Radio Manila 107.5", tags: "Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
+      { name: "98.3 Love Radio Manila", tags: "Pop", url: "https://stream.zeno.fm/5s2v449208quv" },
+      { name: "DZRH News 90.1 FM", tags: "Radio / News", url: "https://stream.zeno.fm/1f4x9v3924zuv" },
+      { name: "Energy FM 106.7", tags: "Radio", url: "https://stream.zeno.fm/3s2v449208quv" }
+    ];
 
-function changeFmStation(index) {
-  index = parseInt(index);
-  currentStationIndex = index;
+    staticFallbacks.forEach(fb => {
+      if (!phRadioStations.some(s => s.name.toLowerCase().includes(fb.name.toLowerCase()))) {
+        phRadioStations.unshift(fb);
+      }
+    });
 
-  const st = phFmStations[index];
-  document.getElementById("fmFreqDisplay").innerText = st.freq;
-  document.getElementById("fmNameDisplay").innerText = st.name;
-  document.getElementById("fmLocDisplay").innerText = st.loc;
-  document.getElementById("fmStationSelect").value = index;
-
-  for (let i = 0; i < phFmStations.length; i++) {
-    const chip = document.getElementById("chip-" + i);
-    if (chip) {
-      if (i === index) chip.classList.add("active");
-      else chip.classList.remove("active");
-    }
-  }
-
-  const isPlaying = !audioPlayer.paused && audioPlayer.src;
-
-  audioPlayer.src = st.url;
-  audioPlayer.load();
-
-  if (isPlaying) {
-    audioPlayer.play().catch(e => console.log("Stream auto-switch error:", e));
+    countText.innerText = `${phRadioStations.length} Philippine stations loaded — listed first below.`;
+    renderStationList(phRadioStations);
+  } catch (err) {
+    countText.innerText = "Philippine stations loaded.";
+    phRadioStations = [
+      { name: "Barangay LS 97.1 Manila", tags: "Opm / Talk", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
+      { name: "Wish 107.5 FM", tags: "Pop / Hits", url: "https://icecast.wish1075.com/live" },
+      { name: "Win Radio Manila 107.5", tags: "Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
+      { name: "DZRH News 90.1 FM", tags: "Radio / News", url: "https://stream.zeno.fm/1f4x9v3924zuv" }
+    ];
+    renderStationList(phRadioStations);
   }
 }
 
-function playFmRadio() {
-  const st = phFmStations[currentStationIndex];
-  if (!audioPlayer.src || audioPlayer.src !== st.url) {
-    audioPlayer.src = st.url;
-    audioPlayer.load();
-  }
+function renderStationList(list) {
+  const container = document.getElementById("stationListContainer");
+  container.innerHTML = "";
 
-  const badge = document.getElementById("fmLiveBadge");
-  badge.innerText = "CONNECTING...";
+  list.forEach((st) => {
+    const isPlaying = activeStation && activeStation.url === st.url;
+    const card = document.createElement("div");
+    card.className = `radioCardItem ${isPlaying ? 'playing' : ''}`;
+    card.onclick = () => playStation(st);
 
-  audioPlayer.play().then(() => {
-    badge.innerText = "LIVE ON AIR";
-    badge.classList.add("live");
-  }).catch(err => {
-    console.warn("Autoplay / Network restriction handled silently:", err);
-    badge.innerText = "RECONNECTING...";
+    card.innerHTML = `
+      <div class="radioCardLeft">
+        <div class="radioPlayIconBtn">${isPlaying ? '🔊' : '▶'}</div>
+        <div class="radioCardMeta">
+          <strong>${escapeHTML(st.name)}</strong>
+          <small>${escapeHTML(st.tags)}</small>
+        </div>
+      </div>
+      <div class="radioCardRight">
+        <span>🇵🇭</span>
+        <span style="color:#666;">🤍</span>
+      </div>
+    `;
+    container.appendChild(card);
   });
+}
+
+function filterStations(query) {
+  const q = query.toLowerCase().trim();
+  const filtered = phRadioStations.filter(st => 
+    st.name.toLowerCase().includes(q) || st.tags.toLowerCase().includes(q)
+  );
+  renderStationList(filtered);
+}
+
+function playStation(st) {
+  activeStation = st;
+  audioPlayer.src = st.url;
+  audioPlayer.load();
+
+  document.getElementById("nowPlayingBar").classList.remove("hidden");
+  document.getElementById("npTitle").innerText = st.name;
+  document.getElementById("npSub").innerText = st.tags;
+
+  audioPlayer.play().catch(e => console.log("Stream play error:", e));
+  renderStationList(phRadioStations);
 }
 
 function stopFmRadio() {
   audioPlayer.pause();
   audioPlayer.src = "";
-  const badge = document.getElementById("fmLiveBadge");
-  badge.innerText = "OFFLINE";
-  badge.classList.remove("live");
+  activeStation = null;
+  document.getElementById("nowPlayingBar").classList.add("hidden");
+  renderStationList(phRadioStations);
 }
 
-function setFmVolume(val) {
-  audioPlayer.volume = val;
-}
+fetchPhRadioStations();
 
 /* ================= TAB NAVIGATION SYSTEM ================= */
 function switchTab(tabName) {
