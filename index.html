@@ -524,6 +524,10 @@ button:disabled{ opacity:.6; }
   padding: 2px 8px;
   border-radius: 10px;
   font-weight: bold;
+}
+
+.fmBadge.live {
+  background: #28a745;
   animation: pulse 1.5s infinite;
 }
 
@@ -1098,10 +1102,10 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
-/* ================= PHILIPPINE FM RADIO STREAMING SYSTEM ================= */
+/* ================= PHILIPPINE FM RADIO STREAMING SYSTEM (UPDATED & STABLE) ================= */
 const phFmStations = [
   { freq: "97.1 FM", name: "Barangay LS 97.1", loc: "Metro Manila • Tugstugan Na!", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
-  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://stream-162.zeno.fm/4v344f6208quv" },
+  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://icecast.wish1075.com/live" },
   { freq: "106.7 FM", name: "Energy FM 106.7", loc: "Metro Manila • Hi Pangga!", url: "https://stream.zeno.fm/3s2v449208quv" },
   { freq: "107.5 FM", name: "Win Radio 107.5", loc: "Metro Manila • Pinatugtog Win Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
   { freq: "90.1 FM", name: "DZRH News FM", loc: "Philippines • Unang Sa Pagbabalita", url: "https://stream.zeno.fm/1f4x9v3924zuv" },
@@ -1109,6 +1113,28 @@ const phFmStations = [
 ];
 
 let currentStationIndex = 0;
+const audioPlayer = document.getElementById("audioPlayer");
+
+audioPlayer.addEventListener("playing", () => {
+  const badge = document.getElementById("fmLiveBadge");
+  badge.innerText = "LIVE ON AIR";
+  badge.classList.add("live");
+});
+
+audioPlayer.addEventListener("waiting", () => {
+  const badge = document.getElementById("fmLiveBadge");
+  badge.innerText = "BUFFERING...";
+  badge.classList.remove("live");
+});
+
+audioPlayer.addEventListener("error", () => {
+  const badge = document.getElementById("fmLiveBadge");
+  badge.innerText = "RETRYING...";
+  badge.classList.remove("live");
+  setTimeout(() => {
+    if(audioPlayer.src) audioPlayer.play().catch(e => {});
+  }, 3000);
+});
 
 function changeFmStation(index) {
   index = parseInt(index);
@@ -1128,48 +1154,45 @@ function changeFmStation(index) {
     }
   }
 
-  const player = document.getElementById("audioPlayer");
-  const isPlaying = !player.paused && player.src;
+  const isPlaying = !audioPlayer.paused && audioPlayer.src;
 
-  player.src = st.url;
-  player.load();
+  audioPlayer.src = st.url;
+  audioPlayer.load();
 
   if (isPlaying) {
-    player.play().catch(e => console.log("FM Play Error:", e));
-    document.getElementById("fmLiveBadge").innerText = "LIVE ON AIR";
+    audioPlayer.play().catch(e => console.log("Stream auto-switch error:", e));
   }
 }
 
 function playFmRadio() {
-  const player = document.getElementById("audioPlayer");
   const st = phFmStations[currentStationIndex];
-
-  if (!player.src || player.src !== st.url) {
-    player.src = st.url;
-    player.load();
+  if (!audioPlayer.src || audioPlayer.src !== st.url) {
+    audioPlayer.src = st.url;
+    audioPlayer.load();
   }
 
-  document.getElementById("fmLiveBadge").innerText = "CONNECTING...";
+  const badge = document.getElementById("fmLiveBadge");
+  badge.innerText = "CONNECTING...";
 
-  player.play().then(() => {
-    document.getElementById("fmLiveBadge").innerText = "LIVE ON AIR";
+  audioPlayer.play().then(() => {
+    badge.innerText = "LIVE ON AIR";
+    badge.classList.add("live");
   }).catch(err => {
-    console.error("Audio Play Error:", err);
-    document.getElementById("fmLiveBadge").innerText = "OFFLINE / BLOCKED";
-    alert("⚠️ Na-block ng browser o offline ang stream. Pindutin ulit ang PLAY LIVE button.");
+    console.warn("Autoplay / Network restriction handled silently:", err);
+    badge.innerText = "RECONNECTING...";
   });
 }
 
 function stopFmRadio() {
-  const player = document.getElementById("audioPlayer");
-  player.pause();
-  player.src = "";
-  document.getElementById("fmLiveBadge").innerText = "OFFLINE";
+  audioPlayer.pause();
+  audioPlayer.src = "";
+  const badge = document.getElementById("fmLiveBadge");
+  badge.innerText = "OFFLINE";
+  badge.classList.remove("live");
 }
 
 function setFmVolume(val) {
-  const player = document.getElementById("audioPlayer");
-  player.volume = val;
+  audioPlayer.volume = val;
 }
 
 /* ================= TAB NAVIGATION SYSTEM ================= */
