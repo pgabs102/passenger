@@ -30,7 +30,7 @@ body{
   position:relative;
 }
 
-button,input{
+button,input,select{
   font-family:Arial,sans-serif;
 }
 
@@ -219,7 +219,7 @@ button,input{
   color:#555;
 }
 
-input{
+input, select{
   width:100%;
   padding:12px;
   margin-top:6px;
@@ -488,6 +488,146 @@ button:disabled{ opacity:.6; }
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* LIVE FM RADIO PLAYER STYLING */
+.fmRadioContainer {
+  background: linear-gradient(145deg, #1e1e24, #121215);
+  color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.fmRadioHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.fmRadioTitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ff4d4d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fmBadge {
+  background: #ff4d4d;
+  color: white;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.fmSelectSelect {
+  background: #2a2a32;
+  color: #fff;
+  border: 1px solid #444;
+  font-weight: bold;
+}
+
+.fmRadioCard {
+  background: #25252e;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 14px;
+  border: 1px solid #383845;
+}
+
+.fmStationFreq {
+  font-size: 28px;
+  font-weight: 900;
+  color: #00e676;
+  letter-spacing: 1px;
+}
+
+.fmStationName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.fmStationLoc {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.fmControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.fmBtn {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  margin-top: 0;
+}
+
+.fmVolumeContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  background: #1a1a20;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.fmVolumeContainer span {
+  font-size: 16px;
+}
+
+.fmVolumeSlider {
+  flex: 1;
+  accent-color: #ff4d4d;
+}
+
+.fmQuickList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.fmChip {
+  background: #2d2d38;
+  color: #ddd;
+  border: 1px solid #444;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  flex: 1 1 calc(50% - 6px);
+  text-align: center;
+}
+
+.fmChip.active {
+  background: #ff4d4d;
+  color: #fff;
+  border-color: #ff4d4d;
 }
 
 .chatModal{
@@ -797,7 +937,8 @@ button:disabled{ opacity:.6; }
   <!-- QUICK NAV TAB SA LOOB NG BOOKING MENU -->
   <div class="bookingNav">
     <button id="navTabBooking" class="bookingNavTab active" onclick="switchTab('booking')">📍 Map & Booking</button>
-    <button id="navTabAssistant" class="bookingNavTab" onclick="switchTab('assistant')">🤖 AI Support / Chat</button>
+    <button id="navTabRadio" class="bookingNavTab" onclick="switchTab('radio')">📻 Live FM (PH)</button>
+    <button id="navTabAssistant" class="bookingNavTab" onclick="switchTab('assistant')">🤖 AI Support</button>
   </div>
 
   <div class="bookingContent">
@@ -839,7 +980,56 @@ button:disabled{ opacity:.6; }
       </div>
     </div>
 
-    <!-- TAB 2: TEAMILY AI CHATBOT INTEGRATION -->
+    <!-- TAB 2: LIVE PHILIPPINE FM RADIO STREAMING -->
+    <div id="tabRadioView" class="hidden">
+      <div class="fmRadioContainer">
+        <div class="fmRadioHeader">
+          <div class="fmRadioTitle">📻 STREAMING LIVE FM <span class="fmBadge" id="fmLiveBadge">OFFLINE</span></div>
+        </div>
+
+        <!-- TOGGLE / SELECTOR FOR PHILIPPINE STATIONS -->
+        <label style="font-size: 12px; font-weight: bold; color: #ccc;">PUMILI NG STREAMING STATION (PH ONLY):</label>
+        <select id="fmStationSelect" class="fmSelectSelect" onchange="changeFmStation(this.value)">
+          <option value="0">Barangay LS 97.1 FM (Metro Manila)</option>
+          <option value="1">Wish 107.5 FM (Metro Manila)</option>
+          <option value="2">Energy FM 106.7 (Metro Manila)</option>
+          <option value="3">Win Radio 107.5 (Metro Manila)</option>
+          <option value="4">DZRH 90.1 FM News (Philippines)</option>
+          <option value="5">Barangay RT 99.5 FM (Cebu / Visayas)</option>
+        </select>
+
+        <div class="fmRadioCard">
+          <div class="fmStationFreq" id="fmFreqDisplay">97.1 FM</div>
+          <div class="fmStationName" id="fmNameDisplay">Barangay LS 97.1</div>
+          <div class="fmStationLoc" id="fmLocDisplay">Metro Manila • Tugstugan Na!</div>
+        </div>
+
+        <audio id="audioPlayer" preload="none"></audio>
+
+        <div class="fmControls">
+          <button class="green fmBtn" id="fmPlayBtn" onclick="playFmRadio()">▶️ PLAY LIVE</button>
+          <button class="danger fmBtn" id="fmStopBtn" onclick="stopFmRadio()">⏹️ STOP</button>
+        </div>
+
+        <div class="fmVolumeContainer">
+          <span>🔊</span>
+          <input type="range" id="fmVolume" class="fmVolumeSlider" min="0" max="1" step="0.05" value="0.8" oninput="setFmVolume(this.value)">
+        </div>
+
+        <!-- QUICK TOGGLE CHIPS -->
+        <div style="margin-top: 14px; font-size: 12px; font-weight: bold; color: #aaa;">QUICK TOGGLE:</div>
+        <div class="fmQuickList">
+          <div class="fmChip active" id="chip-0" onclick="changeFmStation(0)">Barangay 97.1</div>
+          <div class="fmChip" id="chip-1" onclick="changeFmStation(1)">Wish 107.5</div>
+          <div class="fmChip" id="chip-2" onclick="changeFmStation(2)">Energy 106.7</div>
+          <div class="fmChip" id="chip-3" onclick="changeFmStation(3)">Win Radio</div>
+          <div class="fmChip" id="chip-4" onclick="changeFmStation(4)">DZRH News</div>
+          <div class="fmChip" id="chip-5" onclick="changeFmStation(5)">Barangay Cebu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: TEAMILY AI CHATBOT INTEGRATION -->
     <div id="tabAssistantView" class="hidden">
       <div class="teamilyChatContainer">
         <iframe 
@@ -907,22 +1097,104 @@ const FARE_BASE=50, FARE_PER_KM=15;
 let chatChannel=null, chatRideId=null, chatMessagesSeen=new Set();
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 
+/* ================= PHILIPPINE FM RADIO STREAMING SYSTEM ================= */
+const phFmStations = [
+  { freq: "97.1 FM", name: "Barangay LS 97.1", loc: "Metro Manila • Tugstugan Na!", url: "https://stream.zeno.fm/f3wvbb3924zuv" },
+  { freq: "107.5 FM", name: "Wish 107.5 FM", loc: "Metro Manila • Your Cool Ride", url: "https://stream.zeno.fm/4v344f6208quv" },
+  { freq: "106.7 FM", name: "Energy FM 106.7", loc: "Metro Manila • Hi Pangga!", url: "https://stream.zeno.fm/3s2v449208quv" },
+  { freq: "107.5 FM", name: "Win Radio 107.5", loc: "Metro Manila • Pinatugtog Win Radio", url: "https://stream.zeno.fm/u44ba63208quv" },
+  { freq: "90.1 FM", name: "DZRH News FM", loc: "Philippines • Unang Sa Pagbabalita", url: "https://stream.zeno.fm/1f4x9v3924zuv" },
+  { freq: "99.5 FM", name: "Barangay RT 99.5", loc: "Cebu City • Nindota Ah!", url: "https://stream.zeno.fm/99bb443208quv" }
+];
+
+let currentStationIndex = 0;
+
+function changeFmStation(index) {
+  index = parseInt(index);
+  currentStationIndex = index;
+
+  const st = phFmStations[index];
+  document.getElementById("fmFreqDisplay").innerText = st.freq;
+  document.getElementById("fmNameDisplay").innerText = st.name;
+  document.getElementById("fmLocDisplay").innerText = st.loc;
+  document.getElementById("fmStationSelect").value = index;
+
+  // Highlight Quick Chips
+  for (let i = 0; i < phFmStations.length; i++) {
+    const chip = document.getElementById("chip-" + i);
+    if (chip) {
+      if (i === index) chip.classList.add("active");
+      else chip.classList.remove("active");
+    }
+  }
+
+  const player = document.getElementById("audioPlayer");
+  const isPlaying = !player.paused && player.src;
+
+  player.src = st.url;
+
+  if (isPlaying) {
+    player.play().catch(e => console.log("FM Play Error:", e));
+    document.getElementById("fmLiveBadge").innerText = "LIVE ON AIR";
+  }
+}
+
+function playFmRadio() {
+  const player = document.getElementById("audioPlayer");
+  const st = phFmStations[currentStationIndex];
+
+  if (!player.src || player.src !== st.url) {
+    player.src = st.url;
+  }
+
+  document.getElementById("fmLiveBadge").innerText = "CONNECTING...";
+
+  player.play().then(() => {
+    document.getElementById("fmLiveBadge").innerText = "LIVE ON AIR";
+  }).catch(err => {
+    alert("Bigo sa pag-stream ng FM Radio. Siguraduhing may internet connection.");
+    document.getElementById("fmLiveBadge").innerText = "OFFLINE";
+  });
+}
+
+function stopFmRadio() {
+  const player = document.getElementById("audioPlayer");
+  player.pause();
+  player.src = "";
+  document.getElementById("fmLiveBadge").innerText = "OFFLINE";
+}
+
+function setFmVolume(val) {
+  const player = document.getElementById("audioPlayer");
+  player.volume = val;
+}
+
 /* ================= TAB NAVIGATION SYSTEM ================= */
 function switchTab(tabName) {
   const bookingView = document.getElementById("tabBookingView");
+  const radioView = document.getElementById("tabRadioView");
   const assistantView = document.getElementById("tabAssistantView");
+
   const navTabBooking = document.getElementById("navTabBooking");
+  const navTabRadio = document.getElementById("navTabRadio");
   const navTabAssistant = document.getElementById("navTabAssistant");
+
+  bookingView.classList.add("hidden");
+  radioView.classList.add("hidden");
+  assistantView.classList.add("hidden");
+
+  navTabBooking.classList.remove("active");
+  navTabRadio.classList.remove("active");
+  navTabAssistant.classList.remove("active");
 
   if (tabName === 'booking') {
     bookingView.classList.remove("hidden");
-    assistantView.classList.add("hidden");
     navTabBooking.classList.add("active");
-    navTabAssistant.classList.remove("active");
+  } else if (tabName === 'radio') {
+    radioView.classList.remove("hidden");
+    navTabRadio.classList.add("active");
   } else {
-    bookingView.classList.add("hidden");
     assistantView.classList.remove("hidden");
-    navTabBooking.classList.remove("active");
     navTabAssistant.classList.add("active");
   }
 }
