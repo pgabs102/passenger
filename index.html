@@ -1091,6 +1091,80 @@ button:disabled{
   font-size:14px;
 }
 
+/* PRE-BOOKING AGREEMENT POP-UP MODAL */
+.tuklasAgreementModal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,0.72);
+}
+
+.tuklasAgreementModal.open{
+  display:flex;
+}
+
+.tuklasAgreementCard{
+  width:100%;
+  max-width:440px;
+  max-height:88dvh;
+  overflow-y:auto;
+  background:var(--bg-card);
+  color:var(--text-light);
+  border:1px solid var(--border-dark);
+  border-radius:var(--card-radius);
+  padding:18px;
+  box-shadow:0 14px 36px rgba(0,0,0,0.55);
+}
+
+.tuklasAgreementCard h3{
+  margin:0 0 10px;
+  font-size:18px;
+  color:var(--orange);
+}
+
+.tuklasAgreementCard p{
+  margin:0 0 10px;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text-light);
+}
+
+.tuklasAgreementCheck{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  font-size:12.5px;
+  line-height:1.45;
+  margin:12px 0 16px;
+  cursor:pointer;
+  color:var(--text-light);
+}
+
+.tuklasAgreementCheck input[type="checkbox"]{
+  width:18px;
+  height:18px;
+  min-width:18px;
+  margin:1px 0 0;
+  accent-color:var(--orange);
+}
+
+.tuklasAgreementActions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+}
+
+.tuklasAgreementActions button{
+  width:auto;
+  margin:0;
+  padding:10px 14px;
+  font-size:13px;
+}
+
 @media(min-width:701px){
   .profilePanel{
     right:15px;
@@ -1650,6 +1724,34 @@ button:disabled{
   </div>
 </section>
 
+<!-- PRE-BOOKING POP-UP AGREEMENT -->
+<div id="tuklasBookingModal" class="tuklasAgreementModal">
+  <div class="tuklasAgreementCard">
+    <h3>Kasunduan Bago Mag-Book — Tuklas App</h3>
+    <p>
+      Ang <strong>Tuklas App</strong> ay gagamitin lamang para sa <strong>kabutihan, katapatan, at wastong pagkatao</strong>.
+    </p>
+    <p>
+      Mahigpit na ipinagbabawal ang anumang uri ng <strong>pang-aabuso</strong>, panloloko, o maling paggamit. Ang paglabag ay may <strong>kaukulang parusa</strong>—kabilang ang pag-suspend o pag-ban ng account at posibleng kasong sibil o kriminal alinsunod sa batas.
+    </p>
+    <p>
+      Alinsunod sa <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> at kaugnay na batas gaya ng <strong>RA 10175</strong>, <strong>hindi maaaring ipagsabi, ilathala, i-screenshot/ikalat, o ipamahagi</strong> ang anumang impormasyon, detalye, o datos mula sa app nang walang pahintulot mula sa may-ari ng Tuklas App.
+    </p>
+
+    <label class="tuklasAgreementCheck">
+      <input type="checkbox" id="tuklasAgreeCheck">
+      <span>Nabasa ko, naunawaan, at sumasang-ayon ako sa kasunduan at mga batas na nakasaad.</span>
+    </label>
+
+    <div class="tuklasAgreementActions">
+      <button type="button" class="secondary" onclick="closeTuklasModal()">Kanselahin</button>
+      <button type="button" id="tuklasConfirmBookBtn" disabled onclick="confirmTuklasAgreement()" style="opacity:0.45;cursor:not-allowed;">
+        Sumasang-ayon at Mag-Book
+      </button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <div id="chatModal" class="chatModal" onclick="chatBackdropClose(event)">
@@ -1698,6 +1800,7 @@ let destinationSearchTimer=null;
 let routeRequestId=0;
 let cancelInProgress=false;
 let lastRouteKm=null;
+let pendingBookingCallback=null;
 
 const VEHICLE_RATES = {
   motorcycle: { label: "Motorcycle", iconId: "ic-bike", base: 50, perKm: 15 },
@@ -1716,6 +1819,40 @@ let chatLoading=false;
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 const PREFS_KEY = "HABAL_NA_PASSENGER_PREFS";
 const THEME_KEY = "TUKLAS_UI_THEME_KEY";
+
+/* PRE-BOOKING AGREEMENT POP-UP LOGIC */
+function syncTuklasAgreementBtn(){
+  const check = document.getElementById("tuklasAgreeCheck");
+  const btn = document.getElementById("tuklasConfirmBookBtn");
+  if(!check || !btn) return;
+  btn.disabled = !check.checked;
+  btn.style.opacity = check.checked ? "1" : "0.45";
+  btn.style.cursor = check.checked ? "pointer" : "not-allowed";
+}
+
+function openBookingWithAgreement(onProceed){
+  const modal = document.getElementById("tuklasBookingModal");
+  const check = document.getElementById("tuklasAgreeCheck");
+  if(!modal || !check) return;
+  pendingBookingCallback = onProceed;
+  check.checked = false;
+  syncTuklasAgreementBtn();
+  modal.classList.add("open");
+}
+
+function closeTuklasModal(){
+  const modal = document.getElementById("tuklasBookingModal");
+  if(modal) modal.classList.remove("open");
+  pendingBookingCallback = null;
+}
+
+function confirmTuklasAgreement(){
+  const check = document.getElementById("tuklasAgreeCheck");
+  if(!check || !check.checked) return;
+  const cb = pendingBookingCallback;
+  closeTuklasModal();
+  if(typeof cb === "function") cb();
+}
 
 /* TOGGLE FLOATING THEMES & MAP BASE DRAWER */
 function toggleMapToolsDrawer() {
@@ -2435,6 +2572,10 @@ async function bookRide(){
     return;
   }
 
+  openBookingWithAgreement(() => executeBookRide(name, contact));
+}
+
+async function executeBookRide(name, contact){
   saveRecoveryInfo();
   const btn = document.getElementById("bookRideBtn");
   btn.disabled=true;
@@ -2714,7 +2855,7 @@ async function cancelRide(){
 
     alert("Ride cancelled. You can book another ride.");
   }catch(e){
-    alert("Cancel error:\n" + e.message);
+    alert("Cancel error:\n"+e.message);
   }finally{
     cancelInProgress = false;
     btn.disabled = false;
@@ -2971,6 +3112,8 @@ async function sendChatMessage(){
     input.focus();
   }
 }
+
+document.getElementById("tuklasAgreeCheck").addEventListener("change", syncTuklasAgreementBtn);
 
 document.getElementById("passengerName").addEventListener("input", saveRecoveryInfo);
 document.getElementById("passengerContact").addEventListener("input", function(){
