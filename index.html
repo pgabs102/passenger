@@ -157,79 +157,32 @@ button,input,select{
   background:var(--bg-dark);
 }
 
-/* CIRCULAR FLOATING TOGGLE BUTTON FOR THEMES & MAP BASE */
-.mapToolsToggleBtn{
-  position:fixed;
-  top:76px;
-  left:12px;
-  z-index:2600;
-  width:46px!important;
-  height:46px!important;
-  min-width:46px!important;
-  max-width:46px!important;
-  margin:0!important;
-  padding:0!important;
-  border-radius:50%!important;
-  background:var(--bg-card)!important;
-  border:1.5px solid var(--orange)!important;
-  color:var(--orange)!important;
-  display:flex!important;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 4px 14px rgba(0,0,0,.35);
-  cursor:pointer;
-}
-
-.mapToolsToggleBtn.open{
-  background:var(--orange)!important;
-  color:#ffffff!important;
-}
-
-/* COLLAPSIBLE WRAPPER FOR UI THEMES & MAP BASE */
-.mapToolsDrawer{
-  position:fixed;
-  top:76px;
-  left:66px;
-  right:12px;
-  z-index:2550;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:8px;
-  opacity:0;
-  transform:translateX(-10px) scale(0.96);
-  pointer-events:none;
-  transition:opacity 0.2s ease, transform 0.2s ease;
-}
-
-.mapToolsDrawer.open{
-  opacity:1;
-  transform:translateX(0) scale(1);
-  pointer-events:auto;
-}
-
-/* UI THEMES SWITCHER PILL BAR */
+/* UI THEMES SWITCHER FLOATING TOOLBAR */
 .uiThemeSelectorBar{
+  position:fixed;
+  top:72px;
+  left:12px;
+  z-index:2500;
   display:flex;
   align-items:center;
   gap:4px;
-  padding:5px 7px;
+  padding:4px 6px;
   background:var(--bg-card);
   border:1px solid var(--border-dark);
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.28);
+  border-radius:var(--card-radius);
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
   overflow-x:auto;
-  max-width:100%;
+  max-width:calc(100vw - 24px);
   -webkit-overflow-scrolling:touch;
 }
 
 .uiThemeBtn{
   width:auto!important;
   margin:0!important;
-  padding:6px 12px!important;
+  padding:5px 9px!important;
   font-size:11px!important;
   font-weight:700!important;
-  border-radius:999px!important;
+  border-radius:var(--btn-radius)!important;
   background:transparent!important;
   border:1px solid transparent!important;
   color:var(--text-muted)!important;
@@ -241,38 +194,6 @@ button,input,select{
   background:var(--orange)!important;
   color:#ffffff!important;
   border-color:var(--orange)!important;
-  box-shadow:0 2px 6px rgba(0,0,0,.25);
-}
-
-/* MAP TILE STYLE TOGGLE PILL BAR */
-.styleToggle{
-  display:flex;
-  align-items:center;
-  gap:4px;
-  padding:5px 7px;
-  background:var(--bg-card);
-  border:1px solid var(--border-dark);
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.28);
-  max-width:100%;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-.styleBtn{
-  width:auto!important;
-  margin:0!important;
-  padding:6px 12px!important;
-  font-size:11px!important;
-  font-weight:700!important;
-  border-radius:999px!important;
-  background:transparent!important;
-  border:0!important;
-  color:var(--text-muted)!important;
-  white-space:nowrap;
-}
-.styleBtn.active{
-  background:var(--orange)!important;
-  color:#fff!important;
   box-shadow:0 2px 6px rgba(0,0,0,.25);
 }
 
@@ -436,23 +357,6 @@ button,input,select{
 }
 .maplibregl-ctrl-attrib a{
   color:var(--orange)!important;
-}
-
-/* Popup text contrast across light/dark UI themes */
-.maplibregl-popup-content{
-  background:var(--bg-card)!important;
-  color:var(--text-light)!important;
-  border:1px solid var(--border-dark)!important;
-  border-radius:var(--btn-radius)!important;
-  padding:8px 11px!important;
-  font-size:12px!important;
-  font-weight:700!important;
-  max-width:240px;
-  box-shadow:0 6px 18px rgba(0,0,0,.35)!important;
-}
-.maplibregl-popup-tip{
-  border-top-color:var(--bg-card)!important;
-  border-bottom-color:var(--bg-card)!important;
 }
 
 .mapPinMarker{
@@ -628,11 +532,6 @@ input:focus,select:focus{
   height:20px;
   margin:0;
   accent-color:var(--orange);
-}
-
-.toggleRow input[type="checkbox"]:disabled{
-  opacity:0.65;
-  cursor:not-allowed;
 }
 
 /* BOOKING SHEET */
@@ -1091,80 +990,6 @@ button:disabled{
   font-size:14px;
 }
 
-/* PRE-BOOKING AGREEMENT POP-UP MODAL */
-.tuklasAgreementModal{
-  position:fixed;
-  inset:0;
-  z-index:12000;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:16px;
-  background:rgba(0,0,0,0.72);
-}
-
-.tuklasAgreementModal.open{
-  display:flex;
-}
-
-.tuklasAgreementCard{
-  width:100%;
-  max-width:440px;
-  max-height:88dvh;
-  overflow-y:auto;
-  background:var(--bg-card);
-  color:var(--text-light);
-  border:1px solid var(--border-dark);
-  border-radius:var(--card-radius);
-  padding:18px;
-  box-shadow:0 14px 36px rgba(0,0,0,0.55);
-}
-
-.tuklasAgreementCard h3{
-  margin:0 0 10px;
-  font-size:18px;
-  color:var(--orange);
-}
-
-.tuklasAgreementCard p{
-  margin:0 0 10px;
-  font-size:13px;
-  line-height:1.5;
-  color:var(--text-light);
-}
-
-.tuklasAgreementCheck{
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-  font-size:12.5px;
-  line-height:1.45;
-  margin:12px 0 16px;
-  cursor:pointer;
-  color:var(--text-light);
-}
-
-.tuklasAgreementCheck input[type="checkbox"]{
-  width:18px;
-  height:18px;
-  min-width:18px;
-  margin:1px 0 0;
-  accent-color:var(--orange);
-}
-
-.tuklasAgreementActions{
-  display:flex;
-  gap:10px;
-  justify-content:flex-end;
-}
-
-.tuklasAgreementActions button{
-  width:auto;
-  margin:0;
-  padding:10px 14px;
-  font-size:13px;
-}
-
 @media(min-width:701px){
   .profilePanel{
     right:15px;
@@ -1366,6 +1191,41 @@ button:disabled{
 .bookingSection:has(#rideInfo) > #wazeDestinationBtn {
   margin-bottom: 14px;
 }
+
+/* Map Style Controls Toolbar */
+.styleToggle{
+  position:fixed;
+  top:118px;
+  left:12px;
+  z-index:2000;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 6px;
+  background:var(--bg-card);
+  border:1px solid var(--border-dark);
+  border-radius:var(--card-radius);
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+  max-width:calc(100vw - 24px);
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.styleBtn{
+  width:auto!important;
+  margin:0!important;
+  padding:5px 9px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  border-radius:var(--btn-radius)!important;
+  background:transparent!important;
+  border:0!important;
+  color:var(--text-muted)!important;
+  white-space:nowrap;
+}
+.styleBtn.active{
+  background:var(--orange)!important;
+  color:#fff!important;
+}
 </style>
 </head>
 <body>
@@ -1502,35 +1362,22 @@ button:disabled{
 <main class="mapArea">
   <div id="map"></div>
 
-  <!-- CIRCULAR FLOATING BUTTON TO REVEAL THEMES & MAP BASE -->
-  <button
-    id="mapToolsToggleBtn"
-    class="mapToolsToggleBtn"
-    onclick="toggleMapToolsDrawer()"
-    title="Themes & Map Style"
-  >
-    <span class="monoIcon" style="width:22px;height:22px"><svg><use href="#ic-palette"></use></svg></span>
-  </button>
+  <!-- FLOATING UI THEMES SWITCHER -->
+  <div class="uiThemeSelectorBar" title="Switch UI Theme Skin">
+    <button class="uiThemeBtn active" data-theme="theme-classic" onclick="setUiTheme('theme-classic')">Classic</button>
+    <button class="uiThemeBtn" data-theme="theme-emerald" onclick="setUiTheme('theme-emerald')">Emerald</button>
+    <button class="uiThemeBtn" data-theme="theme-midnight" onclick="setUiTheme('theme-midnight')">Midnight</button>
+    <button class="uiThemeBtn" data-theme="theme-luxe" onclick="setUiTheme('theme-luxe')">Luxe</button>
+    <button class="uiThemeBtn" data-theme="theme-ecomint" onclick="setUiTheme('theme-ecomint')">EcoMint</button>
+  </div>
 
-  <!-- COLLAPSIBLE DRAWER FOR UI THEMES & MAP BASE -->
-  <div id="mapToolsDrawer" class="mapToolsDrawer">
-    <!-- FLOATING UI THEMES SWITCHER -->
-    <div class="uiThemeSelectorBar" title="Switch UI Theme Skin">
-      <button class="uiThemeBtn active" data-theme="theme-classic" onclick="setUiTheme('theme-classic')">Classic</button>
-      <button class="uiThemeBtn" data-theme="theme-emerald" onclick="setUiTheme('theme-emerald')">Emerald</button>
-      <button class="uiThemeBtn" data-theme="theme-midnight" onclick="setUiTheme('theme-midnight')">Midnight</button>
-      <button class="uiThemeBtn" data-theme="theme-luxe" onclick="setUiTheme('theme-luxe')">Luxe</button>
-      <button class="uiThemeBtn" data-theme="theme-ecomint" onclick="setUiTheme('theme-ecomint')">EcoMint</button>
-    </div>
-
-    <!-- MAP TILE STYLE TOGGLE BAR -->
-    <div class="styleToggle" title="Switch Map Base">
-      <button class="styleBtn active" data-style="voyager" onclick="setMapStyle('voyager')">Voyager</button>
-      <button class="styleBtn" data-style="positron" onclick="setMapStyle('positron')">Light</button>
-      <button class="styleBtn" data-style="dark" onclick="setMapStyle('dark')">Dark</button>
-      <button class="styleBtn" data-style="liberty" onclick="setMapStyle('liberty')">Liberty</button>
-      <button class="styleBtn" data-style="bright" onclick="setMapStyle('bright')">Bright</button>
-    </div>
+  <!-- MAP TILE STYLE TOGGLE BAR -->
+  <div class="styleToggle">
+    <button class="styleBtn active" data-style="voyager" onclick="setMapStyle('voyager')">Voyager</button>
+    <button class="styleBtn" data-style="positron" onclick="setMapStyle('positron')">Light</button>
+    <button class="styleBtn" data-style="dark" onclick="setMapStyle('dark')">Dark</button>
+    <button class="styleBtn" data-style="liberty" onclick="setMapStyle('liberty')">Liberty</button>
+    <button class="styleBtn" data-style="bright" onclick="setMapStyle('bright')">Bright</button>
   </div>
 </main>
 
@@ -1608,11 +1455,8 @@ button:disabled{
         <span>Settings</span>
       </h3>
       <div class="toggleRow">
-        <div>
-          <div>Avoid Toll & Expressways</div>
-          <small id="avoidTollHint" class="small" style="font-size:11px;">Locked ON for Motorcycle (No Expressway)</small>
-        </div>
-        <input type="checkbox" id="prefAvoidToll" checked onchange="onAvoidTollToggle()">
+        <span>Avoid Toll & Expressways</span>
+        <input type="checkbox" id="prefAvoidToll" checked onchange="saveSettingsPrefs()">
       </div>
       <div class="toggleRow">
         <span>Auto-center Map on Pickup</span>
@@ -1724,34 +1568,6 @@ button:disabled{
   </div>
 </section>
 
-<!-- PRE-BOOKING POP-UP AGREEMENT -->
-<div id="tuklasBookingModal" class="tuklasAgreementModal">
-  <div class="tuklasAgreementCard">
-    <h3>Kasunduan Bago Mag-Book — Tuklas App</h3>
-    <p>
-      Ang <strong>Tuklas App</strong> ay gagamitin lamang para sa <strong>kabutihan, katapatan, at wastong pagkatao</strong>.
-    </p>
-    <p>
-      Mahigpit na ipinagbabawal ang anumang uri ng <strong>pang-aabuso</strong>, panloloko, o maling paggamit. Ang paglabag ay may <strong>kaukulang parusa</strong>—kabilang ang pag-suspend o pag-ban ng account at posibleng kasong sibil o kriminal alinsunod sa batas.
-    </p>
-    <p>
-      Alinsunod sa <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> at kaugnay na batas gaya ng <strong>RA 10175</strong>, <strong>hindi maaaring ipagsabi, ilathala, i-screenshot/ikalat, o ipamahagi</strong> ang anumang impormasyon, detalye, o datos mula sa app nang walang pahintulot mula sa may-ari ng Tuklas App.
-    </p>
-
-    <label class="tuklasAgreementCheck">
-      <input type="checkbox" id="tuklasAgreeCheck">
-      <span>Nabasa ko, naunawaan, at sumasang-ayon ako sa kasunduan at mga batas na nakasaad.</span>
-    </label>
-
-    <div class="tuklasAgreementActions">
-      <button type="button" class="secondary" onclick="closeTuklasModal()">Kanselahin</button>
-      <button type="button" id="tuklasConfirmBookBtn" disabled onclick="confirmTuklasAgreement()" style="opacity:0.45;cursor:not-allowed;">
-        Sumasang-ayon at Mag-Book
-      </button>
-    </div>
-  </div>
-</div>
-
 </div>
 
 <div id="chatModal" class="chatModal" onclick="chatBackdropClose(event)">
@@ -1800,7 +1616,6 @@ let destinationSearchTimer=null;
 let routeRequestId=0;
 let cancelInProgress=false;
 let lastRouteKm=null;
-let pendingBookingCallback=null;
 
 const VEHICLE_RATES = {
   motorcycle: { label: "Motorcycle", iconId: "ic-bike", base: 50, perKm: 15 },
@@ -1809,9 +1624,12 @@ const VEHICLE_RATES = {
 };
 let selectedVehicle = "motorcycle";
 let selectedPaymentMethod = "Cash";
-let carVanAvoidTollPref = true; // Remembers user toggle when switching between Car/Van and Motorcycle
 
 let chatChannel=null;
+let rideChannel = null;
+let ridePollTimer = null;
+let dropHandled = false;
+
 let chatRideId=null;
 let chatMessagesSeen=new Set();
 let chatLoading=false;
@@ -1819,48 +1637,6 @@ let chatLoading=false;
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
 const PREFS_KEY = "HABAL_NA_PASSENGER_PREFS";
 const THEME_KEY = "TUKLAS_UI_THEME_KEY";
-
-/* PRE-BOOKING AGREEMENT POP-UP LOGIC */
-function syncTuklasAgreementBtn(){
-  const check = document.getElementById("tuklasAgreeCheck");
-  const btn = document.getElementById("tuklasConfirmBookBtn");
-  if(!check || !btn) return;
-  btn.disabled = !check.checked;
-  btn.style.opacity = check.checked ? "1" : "0.45";
-  btn.style.cursor = check.checked ? "pointer" : "not-allowed";
-}
-
-function openBookingWithAgreement(onProceed){
-  const modal = document.getElementById("tuklasBookingModal");
-  const check = document.getElementById("tuklasAgreeCheck");
-  if(!modal || !check) return;
-  pendingBookingCallback = onProceed;
-  check.checked = false;
-  syncTuklasAgreementBtn();
-  modal.classList.add("open");
-}
-
-function closeTuklasModal(){
-  const modal = document.getElementById("tuklasBookingModal");
-  if(modal) modal.classList.remove("open");
-  pendingBookingCallback = null;
-}
-
-function confirmTuklasAgreement(){
-  const check = document.getElementById("tuklasAgreeCheck");
-  if(!check || !check.checked) return;
-  const cb = pendingBookingCallback;
-  closeTuklasModal();
-  if(typeof cb === "function") cb();
-}
-
-/* TOGGLE FLOATING THEMES & MAP BASE DRAWER */
-function toggleMapToolsDrawer() {
-  const drawer = document.getElementById("mapToolsDrawer");
-  const btn = document.getElementById("mapToolsToggleBtn");
-  const isOpen = drawer.classList.toggle("open");
-  btn.classList.toggle("open", isOpen);
-}
 
 /* UI THEMES CONTROL */
 function setUiTheme(themeClass) {
@@ -1903,47 +1679,10 @@ function setBookButtonText(text){
   }
 }
 
-function isAvoidTollActive(){
-  if(selectedVehicle === "motorcycle") return true;
-  return Boolean(document.getElementById("prefAvoidToll")?.checked);
-}
-
-function syncAvoidTollUI(){
-  const checkbox = document.getElementById("prefAvoidToll");
-  const hint = document.getElementById("avoidTollHint");
-  if(!checkbox) return;
-
-  if(selectedVehicle === "motorcycle"){
-    checkbox.checked = true;
-    checkbox.disabled = true;
-    if(hint) hint.innerText = "Locked ON for Motorcycle (No Expressway)";
-  }else{
-    checkbox.disabled = false;
-    checkbox.checked = carVanAvoidTollPref;
-    if(hint) hint.innerText = checkbox.checked
-      ? "ON: Avoiding Toll & Expressways"
-      : "OFF: Expressway & Toll Allowed";
-  }
-}
-
-function onAvoidTollToggle(){
-  const checkbox = document.getElementById("prefAvoidToll");
-  if(selectedVehicle !== "motorcycle" && checkbox){
-    carVanAvoidTollPref = checkbox.checked;
-  }
-  syncAvoidTollUI();
-  updateHeaderSubtitle();
-  saveSettingsPrefs();
-  if(passengerLocation && destinationLocation){
-    drawRoute();
-  }
-}
-
 function updateHeaderSubtitle(){
   const sub = document.getElementById("headerSubtitle");
   if(sub){
-    const tollLabel = isAvoidTollActive() ? "No Toll" : "Toll OK";
-    sub.innerText = `MapLibre • ${selectedPaymentMethod} • ${tollLabel}`;
+    sub.innerText = "MapLibre • Passenger • " + selectedPaymentMethod;
   }
 }
 
@@ -1963,7 +1702,7 @@ function saveSettingsPrefs(){
   const prefs = {
     payment: selectedPaymentMethod,
     vehicle: selectedVehicle,
-    avoidToll: carVanAvoidTollPref,
+    avoidToll: Boolean(document.getElementById("prefAvoidToll")?.checked),
     autoCenter: Boolean(document.getElementById("prefAutoCenter")?.checked),
     alerts: Boolean(document.getElementById("prefAlerts")?.checked)
   };
@@ -1973,54 +1712,39 @@ function saveSettingsPrefs(){
 function loadSettingsPrefs(){
   try{
     const raw = localStorage.getItem(PREFS_KEY);
-    if(raw){
-      const prefs = JSON.parse(raw);
-      if(typeof prefs.avoidToll === "boolean"){
-        carVanAvoidTollPref = prefs.avoidToll;
-      }
-      if(prefs.vehicle && VEHICLE_RATES[prefs.vehicle]){
-        selectedVehicle = prefs.vehicle;
-      }
-      if(prefs.payment){
-        selectedPaymentMethod = prefs.payment;
-      }
-      if(document.getElementById("prefAutoCenter") && typeof prefs.autoCenter === "boolean"){
-        document.getElementById("prefAutoCenter").checked = prefs.autoCenter;
-      }
-      if(document.getElementById("prefAlerts") && typeof prefs.alerts === "boolean"){
-        document.getElementById("prefAlerts").checked = prefs.alerts;
-      }
+    if(!raw) return;
+    const prefs = JSON.parse(raw);
+    if(prefs.vehicle && VEHICLE_RATES[prefs.vehicle]) selectVehicleType(prefs.vehicle);
+    if(prefs.payment) selectPaymentMethod(prefs.payment);
+    if(document.getElementById("prefAvoidToll") && typeof prefs.avoidToll === "boolean"){
+      document.getElementById("prefAvoidToll").checked = prefs.avoidToll;
+    }
+    if(document.getElementById("prefAutoCenter") && typeof prefs.autoCenter === "boolean"){
+      document.getElementById("prefAutoCenter").checked = prefs.autoCenter;
+    }
+    if(document.getElementById("prefAlerts") && typeof prefs.alerts === "boolean"){
+      document.getElementById("prefAlerts").checked = prefs.alerts;
     }
   }catch(e){}
-  selectPaymentMethod(selectedPaymentMethod);
-  selectVehicleType(selectedVehicle, false);
 }
 
-function selectVehicleType(type, recalcRoute = true){
+function selectVehicleType(type){
   if(!VEHICLE_RATES[type]) return;
   selectedVehicle = type;
   ["motorcycle", "car", "van"].forEach(k=>{
     const btn = document.getElementById("vehBtn-" + k);
     if(btn) btn.classList.toggle("active", k === type);
   });
-
-  syncAvoidTollUI();
-  updateHeaderSubtitle();
-
   const info = VEHICLE_RATES[type];
   const bookBtn = document.getElementById("bookRideBtn");
   if(bookBtn && !bookBtn.disabled){
     setBookButtonText(`BOOK ${info.label.toUpperCase()}`);
   }
   saveSettingsPrefs();
-
-  if(recalcRoute && passengerLocation && destinationLocation){
-    drawRoute();
-  }else if(lastRouteKm != null){
+  if(lastRouteKm != null){
     const fare = computeFare(lastRouteKm, type);
-    const tollTag = isAvoidTollActive() ? "No Toll" : "Expressway OK";
     document.getElementById("locationStatus").innerText =
-      `${info.label} (${tollTag}) • ${lastRouteKm.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+      `${info.label} • ${lastRouteKm.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
   }
 }
 
@@ -2152,10 +1876,6 @@ function initMap(){
     zoom: 13
   });
 
-  document.querySelectorAll(".styleBtn").forEach(btn=>{
-    btn.classList.toggle("active", btn.dataset.style === currentStyleKey);
-  });
-
   map.on("load", function(){
     mapLoaded = true;
     map.resize();
@@ -2164,28 +1884,10 @@ function initMap(){
     }
   });
 
-  map.on("click", async function(e){
-    const drawer = document.getElementById("mapToolsDrawer");
-    if(drawer && drawer.classList.contains("open") && !destinationMode){
-      drawer.classList.remove("open");
-      document.getElementById("mapToolsToggleBtn")?.classList.remove("open");
-    }
-
+  map.on("click", function(e){
     if(!destinationMode) return;
-    destinationMode = false;
-
-    const lat = e.lngLat.lat;
-    const lng = e.lngLat.lng;
-    const renderedLabel = getRenderedMapLabel(e.point);
-    const provisional = renderedLabel || `Locating place (${lat.toFixed(4)}, ${lng.toFixed(4)})...`;
-
-    setDestination(lat, lng, provisional);
-    document.getElementById("locationStatus").innerText = "Fetching street & place name...";
-
-    const resolvedName = await reverseGeocode(lat, lng, e.point);
-    if(destinationLocation && Math.abs(destinationLocation.lat - lat) < 1e-6 && Math.abs(destinationLocation.lng - lng) < 1e-6){
-      setDestination(lat, lng, resolvedName);
-    }
+    setDestination(e.lngLat.lat, e.lngLat.lng, "Map selected destination");
+    destinationMode=false;
   });
 }
 
@@ -2194,78 +1896,16 @@ function chooseDestination(){
   document.getElementById("locationStatus").innerText = "Tap the map to select your destination.";
 }
 
-function getRenderedMapLabel(point){
-  if(!map || !point) return "";
+async function reverseGeocode(lat, lng){
   try{
-    const box = [
-      [point.x - 24, point.y - 24],
-      [point.x + 24, point.y + 24]
-    ];
-    const features = map.queryRenderedFeatures(box);
-    for(const f of features){
-      const props = f.properties || {};
-      const candidate = props.name || props["name:en"] || props.ref || props.street || props.road;
-      if(candidate && String(candidate).trim()){
-        return String(candidate).trim();
-      }
-    }
-  }catch(e){}
-  return "";
-}
-
-async function reverseGeocode(lat, lng, point = null){
-  const mapLabel = getRenderedMapLabel(point);
-  const parts = [];
-
-  try{
-    const url = "https://photon.komoot.io/reverse?lat="+encodeURIComponent(lat)+"&lon="+encodeURIComponent(lng);
+    const url = "https://photon.komoot.io/reverse?lat="+lat+"&lon="+lng;
     const res = await fetch(url);
-    if(res.ok){
-      const data = await res.json();
-      const p = data.features?.[0]?.properties || {};
-      const streetOrRoad = p.street || p.road || p.name || "";
-      const subArea = p.district || p.suburb || p.neighbourhood || p.locality || "";
-      const city = p.city || p.town || p.municipality || p.county || "";
-      const region = p.state || "";
-
-      if(mapLabel && (!streetOrRoad || !String(streetOrRoad).toLowerCase().includes(mapLabel.toLowerCase()))){
-        parts.push(mapLabel);
-      }
-      [streetOrRoad, subArea, city, region].forEach(val=>{
-        const clean = String(val || "").trim();
-        if(clean && !parts.some(existing => existing.toLowerCase() === clean.toLowerCase())){
-          parts.push(clean);
-        }
-      });
-      if(parts.length) return parts.join(", ");
-    }
-  }catch(e){}
-
-  try{
-    const nomUrl = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+encodeURIComponent(lat)+"&lon="+encodeURIComponent(lng)+"&zoom=18&addressdetails=1";
-    const nomRes = await fetch(nomUrl, { headers: { "Accept": "application/json" } });
-    if(nomRes.ok){
-      const nom = await nomRes.json();
-      const addr = nom.address || {};
-      const road = addr.road || addr.street || addr.pedestrian || addr.footway || addr.path || "";
-      const place = nom.name || addr.amenity || addr.building || addr.shop || "";
-      const area = addr.neighbourhood || addr.suburb || addr.quarter || addr.village || addr.barangay || "";
-      const city = addr.city || addr.town || addr.municipality || "";
-
-      const nomParts = [];
-      [mapLabel, place, road, area, city].forEach(val=>{
-        const clean = String(val || "").trim();
-        if(clean && !nomParts.some(existing => existing.toLowerCase() === clean.toLowerCase())){
-          nomParts.push(clean);
-        }
-      });
-      if(nomParts.length) return nomParts.slice(0, 4).join(", ");
-      if(nom.display_name) return nom.display_name.split(",").slice(0, 3).map(s=>s.trim()).filter(Boolean).join(", ");
-    }
-  }catch(e){}
-
-  if(mapLabel) return mapLabel;
-  return `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+    const data = await res.json();
+    const p = data.features?.[0]?.properties || {};
+    return [p.name, p.street, p.city, p.state].filter(Boolean).join(", ");
+  }catch(e){
+    return "Selected location";
+  }
 }
 
 function getPickupGPS(){
@@ -2292,11 +1932,10 @@ function setPickup(lat, lng, name){
   passengerLocation = { lat:Number(lat), lng:Number(lng), name:name || "Current Location" };
   if(pickupMarker){
     pickupMarker.setLngLat([lng, lat]);
-    if(pickupMarker.getPopup()) pickupMarker.getPopup().setText("Pickup: " + passengerLocation.name);
   }else if(map){
     pickupMarker = new maplibregl.Marker({ element: createPinEl("", "Pickup") })
       .setLngLat([lng, lat])
-      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Pickup: " + passengerLocation.name))
+      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Pickup"))
       .addTo(map);
   }
   document.getElementById("pickupInput").value = passengerLocation.name;
@@ -2310,17 +1949,15 @@ function setDestination(lat, lng, name){
   destinationLocation = { lat:Number(lat), lng:Number(lng), name:name || "Destination" };
   if(destinationMarker){
     destinationMarker.setLngLat([lng, lat]);
-    if(destinationMarker.getPopup()) destinationMarker.getPopup().setText(destinationLocation.name);
   }else if(map){
     destinationMarker = new maplibregl.Marker({ element: createPinEl("dest", "Destination"), draggable: true })
       .setLngLat([lng, lat])
-      .setPopup(new maplibregl.Popup({ offset: 14 }).setText(destinationLocation.name))
+      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Destination"))
       .addTo(map);
 
     destinationMarker.on("dragend", async function(){
       const p = destinationMarker.getLngLat();
-      const pt = map ? map.project(p) : null;
-      const address = await reverseGeocode(p.lat, p.lng, pt);
+      const address = await reverseGeocode(p.lat, p.lng);
       setDestination(p.lat, p.lng, address);
     });
   }
@@ -2339,7 +1976,7 @@ function updateStatus(){
     el.innerText = "Set destination.";
     return;
   }
-  el.innerText = `Destination: ${destinationLocation.name}`;
+  el.innerText = "Pickup and destination are ready.";
 }
 
 async function photonSearch(query){
@@ -2420,124 +2057,24 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* ROUTING HELPER WITH AVOID TOLL & EXPRESSWAY SUPPORT */
-async function fetchRouteWithTollPreference(avoidToll){
-  const coords = `${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}`;
-
-  if(avoidToll){
-    // 1) Try Valhalla public API (costing: "auto" with use_tolls: 0, use_highways: 0)
-    try{
-      const valhallaPayload = {
-        locations: [
-          { lat: passengerLocation.lat, lon: passengerLocation.lng },
-          { lat: destinationLocation.lat, lon: destinationLocation.lng }
-        ],
-        costing: "auto",
-        costing_options: {
-          auto: {
-            use_tolls: 0,
-            use_highways: 0
-          }
-        },
-        directions_options: { units: "kilometers" }
-      };
-      const vRes = await fetch("https://valhalla1.openstreetmap.de/route", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(valhallaPayload)
-      });
-      if(vRes.ok){
-        const vData = await vRes.json();
-        const leg = vData.trip?.legs?.[0];
-        if(leg && leg.shape){
-          const decoded = decodePolyline6(leg.shape);
-          return {
-            distanceMeters: (vData.trip.summary?.length || 0) * 1000,
-            geometry: { type: "LineString", coordinates: decoded },
-            avoidedToll: true
-          };
-        }
-      }
-    }catch(e){}
-
-    // 2) Fallback: OSRM exclude=toll,motorway
-    try{
-      const osrmExUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&exclude=toll,motorway`;
-      const exRes = await fetch(osrmExUrl);
-      if(exRes.ok){
-        const exData = await exRes.json();
-        if(exData.routes?.[0]){
-          return {
-            distanceMeters: exData.routes[0].distance,
-            geometry: exData.routes[0].geometry,
-            avoidedToll: true
-          };
-        }
-      }
-    }catch(e){}
-  }
-
-  // Standard fastest route (Tolls & Expressways allowed, or final fallback)
-  const stdUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
-  const res = await fetch(stdUrl);
-  const data = await res.json();
-  if(!data.routes || !data.routes.length) return null;
-  return {
-    distanceMeters: data.routes[0].distance,
-    geometry: data.routes[0].geometry,
-    avoidedToll: false
-  };
-}
-
-// Decode Valhalla precision-6 encoded polyline into [lng, lat] coordinates
-function decodePolyline6(encoded){
-  let index = 0, lat = 0, lng = 0, coordinates = [];
-  const factor = 1e6;
-  while(index < encoded.length){
-    let b, shift = 0, result = 0;
-    do {
-      b = encoded.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while(b >= 0x20);
-    lat += ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-    shift = 0;
-    result = 0;
-    do {
-      b = encoded.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while(b >= 0x20);
-    lng += ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-    coordinates.push([lng / factor, lat / factor]);
-  }
-  return coordinates;
-}
-
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   const requestId = ++routeRequestId;
-  const avoidToll = isAvoidTollActive();
-
-  document.getElementById("locationStatus").innerText =
-    avoidToll ? "Calculating non-expressway route..." : "Calculating route...";
-
   try{
-    const routeResult = await fetchRouteWithTollPreference(avoidToll);
-    if(requestId !== routeRequestId || !routeResult) return;
+    const url = "https://router.project-osrm.org/route/v1/driving/"+passengerLocation.lng+","+passengerLocation.lat+";"+destinationLocation.lng+","+destinationLocation.lat+"?overview=full&geometries=geojson";
+    const res = await fetch(url);
+    const data = await res.json();
+    if(requestId!==routeRequestId) return;
+    if(!data.routes || !data.routes.length) return;
+    const route = data.routes[0];
+    applyRouteGeoJSON(route.geometry);
 
-    applyRouteGeoJSON(routeResult.geometry);
-
-    const km = routeResult.distanceMeters / 1000;
+    const km = route.distance / 1000;
     lastRouteKm = km;
     const fare = computeFare(km, selectedVehicle);
     const vLabel = VEHICLE_RATES[selectedVehicle]?.label || "Motorcycle";
-    const tollTag = avoidToll ? "No Toll/Expressway" : "Expressway OK";
-
     document.getElementById("locationStatus").innerText =
-      `${destinationLocation.name} • ${vLabel} (${tollTag}) • ${km.toFixed(2)} km • ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+      `${vLabel} • ${km.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
   }catch(e){}
 }
 
@@ -2572,30 +2109,25 @@ async function bookRide(){
     return;
   }
 
-  openBookingWithAgreement(() => executeBookRide(name, contact));
-}
-
-async function executeBookRide(name, contact){
   saveRecoveryInfo();
   const btn = document.getElementById("bookRideBtn");
   btn.disabled=true;
   setBookButtonText("BOOKING...");
 
   try{
-    const avoidToll = isAvoidTollActive();
-    let distanceKm = lastRouteKm || 0;
-    let estimatedFare = computeFare(distanceKm, selectedVehicle);
-
+    let distanceKm=0;
+    let estimatedFare=computeFare(0, selectedVehicle);
     if(passengerLocation && destinationLocation){
-      const routeResult = await fetchRouteWithTollPreference(avoidToll);
-      if(routeResult){
-        distanceKm = routeResult.distanceMeters / 1000;
+      const url = "https://router.project-osrm.org/route/v1/driving/"+passengerLocation.lng+","+passengerLocation.lat+";"+destinationLocation.lng+","+destinationLocation.lat+"?overview=false";
+      const res = await fetch(url);
+      const data = await res.json();
+      if(data.routes?.[0]){
+        distanceKm = data.routes[0].distance / 1000;
         estimatedFare = computeFare(distanceKm, selectedVehicle);
       }
     }
 
     const vInfo = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
-    const tollTag = avoidToll ? "No Toll" : "Expressway OK";
     const payload={
       passenger_name:name,
       passenger_contact:contact,
@@ -2603,7 +2135,7 @@ async function executeBookRide(name, contact){
       pickup_lng:passengerLocation.lng,
       destination_lat:destinationLocation.lat,
       destination_lng:destinationLocation.lng,
-      destination:destinationLocation.name + ` [${vInfo.label} • ${tollTag} • ${selectedPaymentMethod}]`,
+      destination:destinationLocation.name + ` [${vInfo.label} • ${selectedPaymentMethod}]`,
       distance_km:Number(distanceKm.toFixed(2)),
       estimated_fare:Number(estimatedFare.toFixed(2)),
       status:"searching"
@@ -2840,6 +2372,14 @@ async function cancelRide(){
       riderMarker = null;
     }
 
+    if(ridePollTimer){
+      clearInterval(ridePollTimer);
+      ridePollTimer = null;
+    }
+    if(rideChannel){
+      await supabaseClient.removeChannel(rideChannel);
+      rideChannel = null;
+    }
     if(chatChannel){
       await supabaseClient.removeChannel(chatChannel);
       chatChannel = null;
@@ -2855,7 +2395,7 @@ async function cancelRide(){
 
     alert("Ride cancelled. You can book another ride.");
   }catch(e){
-    alert("Cancel error:\n"+e.message);
+    alert("Cancel error:\n" + e.message);
   }finally{
     cancelInProgress = false;
     btn.disabled = false;
@@ -2955,25 +2495,73 @@ function recoverActiveRide(ride){
   subscribeRealtime();
 }
 
-function subscribeRealtime(){
-  if(!currentRide?.id) return;
-  if(chatChannel){
-    try{ supabaseClient.removeChannel(chatChannel); }catch(e){}
+function handleRideDropped(){
+  if(dropHandled) return;
+  dropHandled = true;
+
+  if(ridePollTimer){
+    clearInterval(ridePollTimer);
+    ridePollTimer = null;
+  }
+  if(rideChannel){
+    try{ supabaseClient.removeChannel(rideChannel); }catch(e){}
+    rideChannel = null;
   }
 
-  chatChannel = supabaseClient
-    .channel("ride-"+currentRide.id)
+  alert("Nakadating ka na sa iyong destination! Salamat sa pagsakay sa TUKLAS.");
+  location.reload();
+}
+
+function subscribeRealtime(){
+  if(!currentRide?.id) return;
+  dropHandled = false;
+
+  if(rideChannel){
+    try{ supabaseClient.removeChannel(rideChannel); }catch(e){}
+  }
+
+  rideChannel = supabaseClient
+    .channel("ride-" + currentRide.id)
     .on(
       "postgres_changes",
-      { event:"UPDATE", schema:"public", table:"rides", filter:"id=eq."+currentRide.id },
-      payload=>{
+      { event: "UPDATE", schema: "public", table: "rides", filter: "id=eq." + currentRide.id },
+      payload => {
         if(!payload.new) return;
         currentRide = payload.new;
+        const st = String(currentRide.status || "").trim().toLowerCase();
+
+        if(st === "completed"){
+          handleRideDropped();
+          return;
+        }
+
         showRide(currentRide);
         loadHistory();
       }
     )
     .subscribe();
+
+  if(ridePollTimer) clearInterval(ridePollTimer);
+  ridePollTimer = setInterval(async () => {
+    if(!currentRide?.id || dropHandled) return;
+    const { data, error } = await supabaseClient
+      .from("rides")
+      .select("*")
+      .eq("id", currentRide.id)
+      .single();
+
+    if(!error && data){
+      const st = String(data.status || "").trim().toLowerCase();
+      if(st === "completed"){
+        handleRideDropped();
+        return;
+      }
+      if(st !== String(currentRide.status || "").trim().toLowerCase()){
+        currentRide = data;
+        showRide(data);
+      }
+    }
+  }, 3000);
 }
 
 function formatChatTime(value){
@@ -3112,8 +2700,6 @@ async function sendChatMessage(){
     input.focus();
   }
 }
-
-document.getElementById("tuklasAgreeCheck").addEventListener("change", syncTuklasAgreementBtn);
 
 document.getElementById("passengerName").addEventListener("input", saveRecoveryInfo);
 document.getElementById("passengerContact").addEventListener("input", function(){
