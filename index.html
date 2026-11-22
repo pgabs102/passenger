@@ -157,32 +157,79 @@ button,input,select{
   background:var(--bg-dark);
 }
 
-/* UI THEMES SWITCHER FLOATING TOOLBAR */
-.uiThemeSelectorBar{
+/* CIRCULAR FLOATING TOGGLE BUTTON FOR THEMES & MAP BASE */
+.mapToolsToggleBtn{
   position:fixed;
-  top:72px;
+  top:76px;
   left:12px;
-  z-index:2500;
+  z-index:2600;
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  max-width:46px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:50%!important;
+  background:var(--bg-card)!important;
+  border:1.5px solid var(--orange)!important;
+  color:var(--orange)!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.35);
+  cursor:pointer;
+}
+
+.mapToolsToggleBtn.open{
+  background:var(--orange)!important;
+  color:#ffffff!important;
+}
+
+/* COLLAPSIBLE WRAPPER FOR UI THEMES & MAP BASE */
+.mapToolsDrawer{
+  position:fixed;
+  top:76px;
+  left:66px;
+  right:12px;
+  z-index:2550;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+  opacity:0;
+  transform:translateX(-10px) scale(0.96);
+  pointer-events:none;
+  transition:opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mapToolsDrawer.open{
+  opacity:1;
+  transform:translateX(0) scale(1);
+  pointer-events:auto;
+}
+
+/* UI THEMES SWITCHER PILL BAR */
+.uiThemeSelectorBar{
   display:flex;
   align-items:center;
   gap:4px;
-  padding:4px 6px;
+  padding:5px 7px;
   background:var(--bg-card);
   border:1px solid var(--border-dark);
-  border-radius:var(--card-radius);
-  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
   overflow-x:auto;
-  max-width:calc(100vw - 24px);
+  max-width:100%;
   -webkit-overflow-scrolling:touch;
 }
 
 .uiThemeBtn{
   width:auto!important;
   margin:0!important;
-  padding:5px 9px!important;
+  padding:6px 12px!important;
   font-size:11px!important;
   font-weight:700!important;
-  border-radius:var(--btn-radius)!important;
+  border-radius:999px!important;
   background:transparent!important;
   border:1px solid transparent!important;
   color:var(--text-muted)!important;
@@ -194,6 +241,38 @@ button,input,select{
   background:var(--orange)!important;
   color:#ffffff!important;
   border-color:var(--orange)!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+
+/* MAP TILE STYLE TOGGLE PILL BAR */
+.styleToggle{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:5px 7px;
+  background:var(--bg-card);
+  border:1px solid var(--border-dark);
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+  max-width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.styleBtn{
+  width:auto!important;
+  margin:0!important;
+  padding:6px 12px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  border:0!important;
+  color:var(--text-muted)!important;
+  white-space:nowrap;
+}
+.styleBtn.active{
+  background:var(--orange)!important;
+  color:#fff!important;
   box-shadow:0 2px 6px rgba(0,0,0,.25);
 }
 
@@ -357,6 +436,23 @@ button,input,select{
 }
 .maplibregl-ctrl-attrib a{
   color:var(--orange)!important;
+}
+
+/* Popup text contrast across light/dark UI themes */
+.maplibregl-popup-content{
+  background:var(--bg-card)!important;
+  color:var(--text-light)!important;
+  border:1px solid var(--border-dark)!important;
+  border-radius:var(--btn-radius)!important;
+  padding:8px 11px!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  max-width:240px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35)!important;
+}
+.maplibregl-popup-tip{
+  border-top-color:var(--bg-card)!important;
+  border-bottom-color:var(--bg-card)!important;
 }
 
 .mapPinMarker{
@@ -532,6 +628,11 @@ input:focus,select:focus{
   height:20px;
   margin:0;
   accent-color:var(--orange);
+}
+
+.toggleRow input[type="checkbox"]:disabled{
+  opacity:0.65;
+  cursor:not-allowed;
 }
 
 /* BOOKING SHEET */
@@ -990,6 +1091,80 @@ button:disabled{
   font-size:14px;
 }
 
+/* PRE-BOOKING AGREEMENT POP-UP MODAL */
+.tuklasAgreementModal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,0.72);
+}
+
+.tuklasAgreementModal.open{
+  display:flex;
+}
+
+.tuklasAgreementCard{
+  width:100%;
+  max-width:440px;
+  max-height:88dvh;
+  overflow-y:auto;
+  background:var(--bg-card);
+  color:var(--text-light);
+  border:1px solid var(--border-dark);
+  border-radius:var(--card-radius);
+  padding:18px;
+  box-shadow:0 14px 36px rgba(0,0,0,0.55);
+}
+
+.tuklasAgreementCard h3{
+  margin:0 0 10px;
+  font-size:18px;
+  color:var(--orange);
+}
+
+.tuklasAgreementCard p{
+  margin:0 0 10px;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text-light);
+}
+
+.tuklasAgreementCheck{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  font-size:12.5px;
+  line-height:1.45;
+  margin:12px 0 16px;
+  cursor:pointer;
+  color:var(--text-light);
+}
+
+.tuklasAgreementCheck input[type="checkbox"]{
+  width:18px;
+  height:18px;
+  min-width:18px;
+  margin:1px 0 0;
+  accent-color:var(--orange);
+}
+
+.tuklasAgreementActions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+}
+
+.tuklasAgreementActions button{
+  width:auto;
+  margin:0;
+  padding:10px 14px;
+  font-size:13px;
+}
+
 @media(min-width:701px){
   .profilePanel{
     right:15px;
@@ -1191,41 +1366,6 @@ button:disabled{
 .bookingSection:has(#rideInfo) > #wazeDestinationBtn {
   margin-bottom: 14px;
 }
-
-/* Map Style Controls Toolbar */
-.styleToggle{
-  position:fixed;
-  top:118px;
-  left:12px;
-  z-index:2000;
-  display:flex;
-  align-items:center;
-  gap:4px;
-  padding:4px 6px;
-  background:var(--bg-card);
-  border:1px solid var(--border-dark);
-  border-radius:var(--card-radius);
-  box-shadow:0 4px 12px rgba(0,0,0,.35);
-  max-width:calc(100vw - 24px);
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-.styleBtn{
-  width:auto!important;
-  margin:0!important;
-  padding:5px 9px!important;
-  font-size:11px!important;
-  font-weight:700!important;
-  border-radius:var(--btn-radius)!important;
-  background:transparent!important;
-  border:0!important;
-  color:var(--text-muted)!important;
-  white-space:nowrap;
-}
-.styleBtn.active{
-  background:var(--orange)!important;
-  color:#fff!important;
-}
 </style>
 </head>
 <body>
@@ -1362,22 +1502,35 @@ button:disabled{
 <main class="mapArea">
   <div id="map"></div>
 
-  <!-- FLOATING UI THEMES SWITCHER -->
-  <div class="uiThemeSelectorBar" title="Switch UI Theme Skin">
-    <button class="uiThemeBtn active" data-theme="theme-classic" onclick="setUiTheme('theme-classic')">Classic</button>
-    <button class="uiThemeBtn" data-theme="theme-emerald" onclick="setUiTheme('theme-emerald')">Emerald</button>
-    <button class="uiThemeBtn" data-theme="theme-midnight" onclick="setUiTheme('theme-midnight')">Midnight</button>
-    <button class="uiThemeBtn" data-theme="theme-luxe" onclick="setUiTheme('theme-luxe')">Luxe</button>
-    <button class="uiThemeBtn" data-theme="theme-ecomint" onclick="setUiTheme('theme-ecomint')">EcoMint</button>
-  </div>
+  <!-- CIRCULAR FLOATING BUTTON TO REVEAL THEMES & MAP BASE -->
+  <button
+    id="mapToolsToggleBtn"
+    class="mapToolsToggleBtn"
+    onclick="toggleMapToolsDrawer()"
+    title="Themes & Map Style"
+  >
+    <span class="monoIcon" style="width:22px;height:22px"><svg><use href="#ic-palette"></use></svg></span>
+  </button>
 
-  <!-- MAP TILE STYLE TOGGLE BAR -->
-  <div class="styleToggle">
-    <button class="styleBtn active" data-style="voyager" onclick="setMapStyle('voyager')">Voyager</button>
-    <button class="styleBtn" data-style="positron" onclick="setMapStyle('positron')">Light</button>
-    <button class="styleBtn" data-style="dark" onclick="setMapStyle('dark')">Dark</button>
-    <button class="styleBtn" data-style="liberty" onclick="setMapStyle('liberty')">Liberty</button>
-    <button class="styleBtn" data-style="bright" onclick="setMapStyle('bright')">Bright</button>
+  <!-- COLLAPSIBLE DRAWER FOR UI THEMES & MAP BASE -->
+  <div id="mapToolsDrawer" class="mapToolsDrawer">
+    <!-- FLOATING UI THEMES SWITCHER -->
+    <div class="uiThemeSelectorBar" title="Switch UI Theme Skin">
+      <button class="uiThemeBtn active" data-theme="theme-classic" onclick="setUiTheme('theme-classic')">Classic</button>
+      <button class="uiThemeBtn" data-theme="theme-emerald" onclick="setUiTheme('theme-emerald')">Emerald</button>
+      <button class="uiThemeBtn" data-theme="theme-midnight" onclick="setUiTheme('theme-midnight')">Midnight</button>
+      <button class="uiThemeBtn" data-theme="theme-luxe" onclick="setUiTheme('theme-luxe')">Luxe</button>
+      <button class="uiThemeBtn" data-theme="theme-ecomint" onclick="setUiTheme('theme-ecomint')">EcoMint</button>
+    </div>
+
+    <!-- MAP TILE STYLE TOGGLE BAR -->
+    <div class="styleToggle" title="Switch Map Base">
+      <button class="styleBtn active" data-style="voyager" onclick="setMapStyle('voyager')">Voyager</button>
+      <button class="styleBtn" data-style="positron" onclick="setMapStyle('positron')">Light</button>
+      <button class="styleBtn" data-style="dark" onclick="setMapStyle('dark')">Dark</button>
+      <button class="styleBtn" data-style="liberty" onclick="setMapStyle('liberty')">Liberty</button>
+      <button class="styleBtn" data-style="bright" onclick="setMapStyle('bright')">Bright</button>
+    </div>
   </div>
 </main>
 
@@ -1455,8 +1608,11 @@ button:disabled{
         <span>Settings</span>
       </h3>
       <div class="toggleRow">
-        <span>Avoid Toll & Expressways</span>
-        <input type="checkbox" id="prefAvoidToll" checked onchange="saveSettingsPrefs()">
+        <div>
+          <div>Avoid Toll & Expressways</div>
+          <small id="avoidTollHint" class="small" style="font-size:11px;">Locked ON for Motorcycle (No Expressway)</small>
+        </div>
+        <input type="checkbox" id="prefAvoidToll" checked onchange="onAvoidTollToggle()">
       </div>
       <div class="toggleRow">
         <span>Auto-center Map on Pickup</span>
@@ -1529,7 +1685,7 @@ button:disabled{
         Set your pickup and destination.
       </div>
       <div id="recoveryNotice" class="recoveryNotice hidden">
-        Checking your previous active booking...
+        Restoring your active booking...
       </div>
       <button id="bookRideBtn" onclick="bookRide()">
         <span class="monoIcon" style="width:18px;height:18px"><svg><use href="#ic-bike"></use></svg></span>
@@ -1567,6 +1723,34 @@ button:disabled{
     </div>
   </div>
 </section>
+
+<!-- PRE-BOOKING AGREEMENT POP-UP MODAL -->
+<div id="tuklasBookingModal" class="tuklasAgreementModal">
+  <div class="tuklasAgreementCard">
+    <h3>Kasunduan Bago Mag-Book — Tuklas App</h3>
+    <p>
+      Ang <strong>Tuklas App</strong> ay gagamitin lamang para sa <strong>kabutihan, katapatan, at wastong pagkatao</strong>.
+    </p>
+    <p>
+      Mahigpit na ipinagbabawal ang anumang uri ng <strong>pang-aabuso</strong>, panloloko, o maling paggamit. Ang paglabag ay may <strong>kaukulang parusa</strong>—kabilang ang pag-suspend o pag-ban ng account at posibleng kasong sibil o kriminal alinsunod sa batas.
+    </p>
+    <p>
+      Alinsunod sa <strong>Data Privacy Act of 2012 (Republic Act No. 10173)</strong> at kaugnay na batas gaya ng <strong>RA 10175</strong>, <strong>hindi maaaring ipagsabi, ilathala, i-screenshot/ikalat, o ipamahagi</strong> ang anumang impormasyon, detalye, o datos mula sa app nang walang pahintulot mula sa may-ari ng Tuklas App.
+    </p>
+
+    <label class="tuklasAgreementCheck">
+      <input type="checkbox" id="tuklasAgreeCheck">
+      <span>Nabasa ko, naunawaan, at sumasang-ayon ako sa kasunduan at mga batas na nakasaad.</span>
+    </label>
+
+    <div class="tuklasAgreementActions">
+      <button type="button" class="secondary" onclick="closeTuklasModal()">Kanselahin</button>
+      <button type="button" id="tuklasConfirmBookBtn" disabled onclick="confirmTuklasAgreement()" style="opacity:0.45;cursor:not-allowed;">
+        Sumasang-ayon at Mag-Book
+      </button>
+    </div>
+  </div>
+</div>
 
 </div>
 
@@ -1616,6 +1800,7 @@ let destinationSearchTimer=null;
 let routeRequestId=0;
 let cancelInProgress=false;
 let lastRouteKm=null;
+let pendingBookingCallback=null;
 
 const VEHICLE_RATES = {
   motorcycle: { label: "Motorcycle", iconId: "ic-bike", base: 50, perKm: 15 },
@@ -1624,19 +1809,184 @@ const VEHICLE_RATES = {
 };
 let selectedVehicle = "motorcycle";
 let selectedPaymentMethod = "Cash";
+let carVanAvoidTollPref = true;
 
+let rideChannel=null;
 let chatChannel=null;
-let rideChannel = null;
-let ridePollTimer = null;
-let dropHandled = false;
-
 let chatRideId=null;
 let chatMessagesSeen=new Set();
 let chatLoading=false;
+let rideRecoveryTimer=null;
+let recoveryInFlight=false;
 
 const RECOVERY_KEY = "HABAL_NA_PASSENGER_RECOVERY";
+const ACTIVE_RIDE_KEY = "HABAL_NA_ACTIVE_RIDE";
 const PREFS_KEY = "HABAL_NA_PASSENGER_PREFS";
 const THEME_KEY = "TUKLAS_UI_THEME_KEY";
+const ACTIVE_STATUSES = ["searching", "accepted", "arrived", "ongoing", "picked_up"];
+
+function isActiveRideStatus(status){
+  return ACTIVE_STATUSES.includes(String(status || "").trim().toLowerCase());
+}
+
+function saveActiveRideSnapshot(ride){
+  if(!ride || !ride.id) return;
+  if(!isActiveRideStatus(ride.status)){
+    clearActiveRideSnapshot();
+    return;
+  }
+  try{
+    const snapshot = {
+      id: ride.id,
+      status: ride.status,
+      passenger_name: ride.passenger_name || "",
+      passenger_contact: ride.passenger_contact || "",
+      pickup_location: ride.pickup_location || passengerLocation?.name || "",
+      pickup_lat: ride.pickup_lat ?? passengerLocation?.lat ?? null,
+      pickup_lng: ride.pickup_lng ?? passengerLocation?.lng ?? null,
+      destination: ride.destination || destinationLocation?.name || "",
+      destination_lat: ride.destination_lat ?? destinationLocation?.lat ?? null,
+      destination_lng: ride.destination_lng ?? destinationLocation?.lng ?? null,
+      distance_km: ride.distance_km ?? null,
+      estimated_fare: ride.estimated_fare ?? null,
+      rider_name: ride.rider_name || ride.driver_name || "",
+      rider_contact: ride.rider_contact || ride.driver_contact || "",
+      rider_lat: ride.rider_lat ?? null,
+      rider_lng: ride.rider_lng ?? null,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(ACTIVE_RIDE_KEY, JSON.stringify(snapshot));
+  }catch(e){}
+}
+
+function getActiveRideSnapshot(){
+  try{
+    const raw = localStorage.getItem(ACTIVE_RIDE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed || !parsed.id) return null;
+    if(!isActiveRideStatus(parsed.status)){
+      clearActiveRideSnapshot();
+      return null;
+    }
+    return parsed;
+  }catch(e){
+    return null;
+  }
+}
+
+function clearActiveRideSnapshot(){
+  try{
+    localStorage.removeItem(ACTIVE_RIDE_KEY);
+  }catch(e){}
+}
+
+function expandBookingSheetForActiveRide(){
+  const sheet = document.getElementById("bookingSheet");
+  const btn = document.getElementById("toggleBtn");
+  if(sheet && !sheet.classList.contains("expanded")){
+    sheet.classList.add("expanded");
+    if(btn) btn.innerHTML = "CLOSE";
+  }
+}
+
+function startActiveRideSyncLoop(){
+  if(rideRecoveryTimer) clearInterval(rideRecoveryTimer);
+  rideRecoveryTimer = setInterval(async ()=>{
+    const snapshot = getActiveRideSnapshot();
+    const targetId = currentRide?.id || snapshot?.id;
+    if(!targetId){
+      stopActiveRideSyncLoop();
+      return;
+    }
+    if(currentRide && !isActiveRideStatus(currentRide.status)){
+      stopActiveRideSyncLoop();
+      return;
+    }
+    try{
+      const { data, error } = await supabaseClient
+        .from("rides")
+        .select("*")
+        .eq("id", targetId)
+        .maybeSingle();
+
+      if(error || !data) return;
+
+      const prevStatus = String(currentRide?.status || "").toLowerCase();
+      const nextStatus = String(data.status || "").toLowerCase();
+
+      if(!isActiveRideStatus(nextStatus)){
+        clearActiveRideSnapshot();
+        stopActiveRideSyncLoop();
+        currentRide = data;
+        showRide(data);
+        loadHistory();
+        return;
+      }
+
+      if(
+        !currentRide ||
+        prevStatus !== nextStatus ||
+        Number(currentRide.rider_lat) !== Number(data.rider_lat) ||
+        Number(currentRide.rider_lng) !== Number(data.rider_lng) ||
+        (currentRide.rider_name || "") !== (data.rider_name || "")
+      ){
+        currentRide = data;
+        saveActiveRideSnapshot(data);
+        showRide(data);
+      }
+    }catch(e){}
+  }, 5000);
+}
+
+function stopActiveRideSyncLoop(){
+  if(rideRecoveryTimer){
+    clearInterval(rideRecoveryTimer);
+    rideRecoveryTimer = null;
+  }
+}
+
+/* PRE-BOOKING AGREEMENT POP-UP LOGIC */
+function syncTuklasAgreementBtn(){
+  const check = document.getElementById("tuklasAgreeCheck");
+  const btn = document.getElementById("tuklasConfirmBookBtn");
+  if(!check || !btn) return;
+  btn.disabled = !check.checked;
+  btn.style.opacity = check.checked ? "1" : "0.45";
+  btn.style.cursor = check.checked ? "pointer" : "not-allowed";
+}
+
+function openBookingWithAgreement(onProceed){
+  const modal = document.getElementById("tuklasBookingModal");
+  const check = document.getElementById("tuklasAgreeCheck");
+  if(!modal || !check) return;
+  pendingBookingCallback = onProceed;
+  check.checked = false;
+  syncTuklasAgreementBtn();
+  modal.classList.add("open");
+}
+
+function closeTuklasModal(){
+  const modal = document.getElementById("tuklasBookingModal");
+  if(modal) modal.classList.remove("open");
+  pendingBookingCallback = null;
+}
+
+function confirmTuklasAgreement(){
+  const check = document.getElementById("tuklasAgreeCheck");
+  if(!check || !check.checked) return;
+  const cb = pendingBookingCallback;
+  closeTuklasModal();
+  if(typeof cb === "function") cb();
+}
+
+/* TOGGLE FLOATING THEMES & MAP BASE DRAWER */
+function toggleMapToolsDrawer() {
+  const drawer = document.getElementById("mapToolsDrawer");
+  const btn = document.getElementById("mapToolsToggleBtn");
+  const isOpen = drawer.classList.toggle("open");
+  btn.classList.toggle("open", isOpen);
+}
 
 /* UI THEMES CONTROL */
 function setUiTheme(themeClass) {
@@ -1679,10 +2029,47 @@ function setBookButtonText(text){
   }
 }
 
+function isAvoidTollActive(){
+  if(selectedVehicle === "motorcycle") return true;
+  return Boolean(document.getElementById("prefAvoidToll")?.checked);
+}
+
+function syncAvoidTollUI(){
+  const checkbox = document.getElementById("prefAvoidToll");
+  const hint = document.getElementById("avoidTollHint");
+  if(!checkbox) return;
+
+  if(selectedVehicle === "motorcycle"){
+    checkbox.checked = true;
+    checkbox.disabled = true;
+    if(hint) hint.innerText = "Locked ON for Motorcycle (No Expressway)";
+  }else{
+    checkbox.disabled = false;
+    checkbox.checked = carVanAvoidTollPref;
+    if(hint) hint.innerText = checkbox.checked
+      ? "ON: Avoiding Toll & Expressways"
+      : "OFF: Expressway & Toll Allowed";
+  }
+}
+
+function onAvoidTollToggle(){
+  const checkbox = document.getElementById("prefAvoidToll");
+  if(selectedVehicle !== "motorcycle" && checkbox){
+    carVanAvoidTollPref = checkbox.checked;
+  }
+  syncAvoidTollUI();
+  updateHeaderSubtitle();
+  saveSettingsPrefs();
+  if(passengerLocation && destinationLocation){
+    drawRoute();
+  }
+}
+
 function updateHeaderSubtitle(){
   const sub = document.getElementById("headerSubtitle");
   if(sub){
-    sub.innerText = "MapLibre • Passenger • " + selectedPaymentMethod;
+    const tollLabel = isAvoidTollActive() ? "No Toll" : "Toll OK";
+    sub.innerText = `MapLibre • ${selectedPaymentMethod} • ${tollLabel}`;
   }
 }
 
@@ -1702,7 +2089,7 @@ function saveSettingsPrefs(){
   const prefs = {
     payment: selectedPaymentMethod,
     vehicle: selectedVehicle,
-    avoidToll: Boolean(document.getElementById("prefAvoidToll")?.checked),
+    avoidToll: carVanAvoidTollPref,
     autoCenter: Boolean(document.getElementById("prefAutoCenter")?.checked),
     alerts: Boolean(document.getElementById("prefAlerts")?.checked)
   };
@@ -1712,39 +2099,54 @@ function saveSettingsPrefs(){
 function loadSettingsPrefs(){
   try{
     const raw = localStorage.getItem(PREFS_KEY);
-    if(!raw) return;
-    const prefs = JSON.parse(raw);
-    if(prefs.vehicle && VEHICLE_RATES[prefs.vehicle]) selectVehicleType(prefs.vehicle);
-    if(prefs.payment) selectPaymentMethod(prefs.payment);
-    if(document.getElementById("prefAvoidToll") && typeof prefs.avoidToll === "boolean"){
-      document.getElementById("prefAvoidToll").checked = prefs.avoidToll;
-    }
-    if(document.getElementById("prefAutoCenter") && typeof prefs.autoCenter === "boolean"){
-      document.getElementById("prefAutoCenter").checked = prefs.autoCenter;
-    }
-    if(document.getElementById("prefAlerts") && typeof prefs.alerts === "boolean"){
-      document.getElementById("prefAlerts").checked = prefs.alerts;
+    if(raw){
+      const prefs = JSON.parse(raw);
+      if(typeof prefs.avoidToll === "boolean"){
+        carVanAvoidTollPref = prefs.avoidToll;
+      }
+      if(prefs.vehicle && VEHICLE_RATES[prefs.vehicle]){
+        selectedVehicle = prefs.vehicle;
+      }
+      if(prefs.payment){
+        selectedPaymentMethod = prefs.payment;
+      }
+      if(document.getElementById("prefAutoCenter") && typeof prefs.autoCenter === "boolean"){
+        document.getElementById("prefAutoCenter").checked = prefs.autoCenter;
+      }
+      if(document.getElementById("prefAlerts") && typeof prefs.alerts === "boolean"){
+        document.getElementById("prefAlerts").checked = prefs.alerts;
+      }
     }
   }catch(e){}
+  selectPaymentMethod(selectedPaymentMethod);
+  selectVehicleType(selectedVehicle, false);
 }
 
-function selectVehicleType(type){
+function selectVehicleType(type, recalcRoute = true){
   if(!VEHICLE_RATES[type]) return;
   selectedVehicle = type;
   ["motorcycle", "car", "van"].forEach(k=>{
     const btn = document.getElementById("vehBtn-" + k);
     if(btn) btn.classList.toggle("active", k === type);
   });
+
+  syncAvoidTollUI();
+  updateHeaderSubtitle();
+
   const info = VEHICLE_RATES[type];
   const bookBtn = document.getElementById("bookRideBtn");
   if(bookBtn && !bookBtn.disabled){
     setBookButtonText(`BOOK ${info.label.toUpperCase()}`);
   }
   saveSettingsPrefs();
-  if(lastRouteKm != null){
+
+  if(recalcRoute && passengerLocation && destinationLocation){
+    drawRoute();
+  }else if(lastRouteKm != null){
     const fare = computeFare(lastRouteKm, type);
+    const tollTag = isAvoidTollActive() ? "No Toll" : "Expressway OK";
     document.getElementById("locationStatus").innerText =
-      `${info.label} • ${lastRouteKm.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+      `${info.label} (${tollTag}) • ${lastRouteKm.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
   }
 }
 
@@ -1766,6 +2168,7 @@ function enterAppFromLogin(isGuest = false){
 
   document.getElementById("loginScreen").classList.add("hiddenScreen");
   setTimeout(()=>{ if(map) map.resize(); }, 150);
+  checkExistingActiveRide();
 }
 
 function logoutToLogin(){
@@ -1876,6 +2279,10 @@ function initMap(){
     zoom: 13
   });
 
+  document.querySelectorAll(".styleBtn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.style === currentStyleKey);
+  });
+
   map.on("load", function(){
     mapLoaded = true;
     map.resize();
@@ -1884,10 +2291,28 @@ function initMap(){
     }
   });
 
-  map.on("click", function(e){
+  map.on("click", async function(e){
+    const drawer = document.getElementById("mapToolsDrawer");
+    if(drawer && drawer.classList.contains("open") && !destinationMode){
+      drawer.classList.remove("open");
+      document.getElementById("mapToolsToggleBtn")?.classList.remove("open");
+    }
+
     if(!destinationMode) return;
-    setDestination(e.lngLat.lat, e.lngLat.lng, "Map selected destination");
-    destinationMode=false;
+    destinationMode = false;
+
+    const lat = e.lngLat.lat;
+    const lng = e.lngLat.lng;
+    const renderedLabel = getRenderedMapLabel(e.point);
+    const provisional = renderedLabel || `Locating place (${lat.toFixed(4)}, ${lng.toFixed(4)})...`;
+
+    setDestination(lat, lng, provisional);
+    document.getElementById("locationStatus").innerText = "Fetching street & place name...";
+
+    const resolvedName = await reverseGeocode(lat, lng, e.point);
+    if(destinationLocation && Math.abs(destinationLocation.lat - lat) < 1e-6 && Math.abs(destinationLocation.lng - lng) < 1e-6){
+      setDestination(lat, lng, resolvedName);
+    }
   });
 }
 
@@ -1896,16 +2321,78 @@ function chooseDestination(){
   document.getElementById("locationStatus").innerText = "Tap the map to select your destination.";
 }
 
-async function reverseGeocode(lat, lng){
+function getRenderedMapLabel(point){
+  if(!map || !point) return "";
   try{
-    const url = "https://photon.komoot.io/reverse?lat="+lat+"&lon="+lng;
+    const box = [
+      [point.x - 24, point.y - 24],
+      [point.x + 24, point.y + 24]
+    ];
+    const features = map.queryRenderedFeatures(box);
+    for(const f of features){
+      const props = f.properties || {};
+      const candidate = props.name || props["name:en"] || props.ref || props.street || props.road;
+      if(candidate && String(candidate).trim()){
+        return String(candidate).trim();
+      }
+    }
+  }catch(e){}
+  return "";
+}
+
+async function reverseGeocode(lat, lng, point = null){
+  const mapLabel = getRenderedMapLabel(point);
+  const parts = [];
+
+  try{
+    const url = "https://photon.komoot.io/reverse?lat="+encodeURIComponent(lat)+"&lon="+encodeURIComponent(lng);
     const res = await fetch(url);
-    const data = await res.json();
-    const p = data.features?.[0]?.properties || {};
-    return [p.name, p.street, p.city, p.state].filter(Boolean).join(", ");
-  }catch(e){
-    return "Selected location";
-  }
+    if(res.ok){
+      const data = await res.json();
+      const p = data.features?.[0]?.properties || {};
+      const streetOrRoad = p.street || p.road || p.name || "";
+      const subArea = p.district || p.suburb || p.neighbourhood || p.locality || "";
+      const city = p.city || p.town || p.municipality || p.county || "";
+      const region = p.state || "";
+
+      if(mapLabel && (!streetOrRoad || !String(streetOrRoad).toLowerCase().includes(mapLabel.toLowerCase()))){
+        parts.push(mapLabel);
+      }
+      [streetOrRoad, subArea, city, region].forEach(val=>{
+        const clean = String(val || "").trim();
+        if(clean && !parts.some(existing => existing.toLowerCase() === clean.toLowerCase())){
+          parts.push(clean);
+        }
+      });
+      if(parts.length) return parts.join(", ");
+    }
+  }catch(e){}
+
+  try{
+    const nomUrl = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+encodeURIComponent(lat)+"&lon="+encodeURIComponent(lng)+"&zoom=18&addressdetails=1";
+    const nomRes = await fetch(nomUrl, { headers: { "Accept": "application/json" } });
+    if(nomRes.ok){
+      const nom = await nomRes.json();
+      const addr = nom.address || {};
+      const road = addr.road || addr.street || addr.pedestrian || addr.footway || addr.path || "";
+      const place = nom.name || addr.amenity || addr.building || addr.shop || "";
+      const area = addr.neighbourhood || addr.suburb || addr.quarter || addr.village || addr.barangay || "";
+      const city = addr.city || addr.town || addr.municipality || "";
+
+      const nomParts = [];
+      [mapLabel, place, road, area, city].forEach(val=>{
+        const clean = String(val || "").trim();
+        if(clean && !nomParts.some(existing => existing.toLowerCase() === clean.toLowerCase())){
+          nomParts.push(clean);
+        }
+      });
+      if(nomParts.length) return nomParts.slice(0, 4).join(", ");
+      if(nom.display_name) return nom.display_name.split(",").slice(0, 3).map(s=>s.trim()).filter(Boolean).join(", ");
+    }
+  }catch(e){}
+
+  if(mapLabel) return mapLabel;
+  return `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
 }
 
 function getPickupGPS(){
@@ -1932,10 +2419,11 @@ function setPickup(lat, lng, name){
   passengerLocation = { lat:Number(lat), lng:Number(lng), name:name || "Current Location" };
   if(pickupMarker){
     pickupMarker.setLngLat([lng, lat]);
+    if(pickupMarker.getPopup()) pickupMarker.getPopup().setText("Pickup: " + passengerLocation.name);
   }else if(map){
     pickupMarker = new maplibregl.Marker({ element: createPinEl("", "Pickup") })
       .setLngLat([lng, lat])
-      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Pickup"))
+      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Pickup: " + passengerLocation.name))
       .addTo(map);
   }
   document.getElementById("pickupInput").value = passengerLocation.name;
@@ -1949,15 +2437,17 @@ function setDestination(lat, lng, name){
   destinationLocation = { lat:Number(lat), lng:Number(lng), name:name || "Destination" };
   if(destinationMarker){
     destinationMarker.setLngLat([lng, lat]);
+    if(destinationMarker.getPopup()) destinationMarker.getPopup().setText(destinationLocation.name);
   }else if(map){
     destinationMarker = new maplibregl.Marker({ element: createPinEl("dest", "Destination"), draggable: true })
       .setLngLat([lng, lat])
-      .setPopup(new maplibregl.Popup({ offset: 14 }).setText("Destination"))
+      .setPopup(new maplibregl.Popup({ offset: 14 }).setText(destinationLocation.name))
       .addTo(map);
 
     destinationMarker.on("dragend", async function(){
       const p = destinationMarker.getLngLat();
-      const address = await reverseGeocode(p.lat, p.lng);
+      const pt = map ? map.project(p) : null;
+      const address = await reverseGeocode(p.lat, p.lng, pt);
       setDestination(p.lat, p.lng, address);
     });
   }
@@ -1976,7 +2466,7 @@ function updateStatus(){
     el.innerText = "Set destination.";
     return;
   }
-  el.innerText = "Pickup and destination are ready.";
+  el.innerText = `Destination: ${destinationLocation.name}`;
 }
 
 async function photonSearch(query){
@@ -2057,35 +2547,141 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
+/* ROUTING HELPER WITH AVOID TOLL & EXPRESSWAY SUPPORT */
+async function fetchRouteWithTollPreference(avoidToll){
+  const coords = `${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}`;
+
+  if(avoidToll){
+    try{
+      const valhallaPayload = {
+        locations: [
+          { lat: passengerLocation.lat, lon: passengerLocation.lng },
+          { lat: destinationLocation.lat, lon: destinationLocation.lng }
+        ],
+        costing: "auto",
+        costing_options: {
+          auto: {
+            use_tolls: 0,
+            use_highways: 0
+          }
+        },
+        directions_options: { units: "kilometers" }
+      };
+      const vRes = await fetch("https://valhalla1.openstreetmap.de/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(valhallaPayload)
+      });
+      if(vRes.ok){
+        const vData = await vRes.json();
+        const leg = vData.trip?.legs?.[0];
+        if(leg && leg.shape){
+          const decoded = decodePolyline6(leg.shape);
+          return {
+            distanceMeters: (vData.trip.summary?.length || 0) * 1000,
+            geometry: { type: "LineString", coordinates: decoded },
+            avoidedToll: true
+          };
+        }
+      }
+    }catch(e){}
+
+    try{
+      const osrmExUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&exclude=toll,motorway`;
+      const exRes = await fetch(osrmExUrl);
+      if(exRes.ok){
+        const exData = await exRes.json();
+        if(exData.routes?.[0]){
+          return {
+            distanceMeters: exData.routes[0].distance,
+            geometry: exData.routes[0].geometry,
+            avoidedToll: true
+          };
+        }
+      }
+    }catch(e){}
+  }
+
+  const stdUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+  const res = await fetch(stdUrl);
+  const data = await res.json();
+  if(!data.routes || !data.routes.length) return null;
+  return {
+    distanceMeters: data.routes[0].distance,
+    geometry: data.routes[0].geometry,
+    avoidedToll: false
+  };
+}
+
+function decodePolyline6(encoded){
+  let index = 0, lat = 0, lng = 0, coordinates = [];
+  const factor = 1e6;
+  while(index < encoded.length){
+    let b, shift = 0, result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while(b >= 0x20);
+    lat += ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while(b >= 0x20);
+    lng += ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+    coordinates.push([lng / factor, lat / factor]);
+  }
+  return coordinates;
+}
+
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   const requestId = ++routeRequestId;
-  try{
-    const url = "https://router.project-osrm.org/route/v1/driving/"+passengerLocation.lng+","+passengerLocation.lat+";"+destinationLocation.lng+","+destinationLocation.lat+"?overview=full&geometries=geojson";
-    const res = await fetch(url);
-    const data = await res.json();
-    if(requestId!==routeRequestId) return;
-    if(!data.routes || !data.routes.length) return;
-    const route = data.routes[0];
-    applyRouteGeoJSON(route.geometry);
+  const avoidToll = isAvoidTollActive();
 
-    const km = route.distance / 1000;
+  document.getElementById("locationStatus").innerText =
+    avoidToll ? "Calculating non-expressway route..." : "Calculating route...";
+
+  try{
+    const routeResult = await fetchRouteWithTollPreference(avoidToll);
+    if(requestId !== routeRequestId || !routeResult) return;
+
+    applyRouteGeoJSON(routeResult.geometry);
+
+    const km = routeResult.distanceMeters / 1000;
     lastRouteKm = km;
     const fare = computeFare(km, selectedVehicle);
     const vLabel = VEHICLE_RATES[selectedVehicle]?.label || "Motorcycle";
+    const tollTag = avoidToll ? "No Toll/Expressway" : "Expressway OK";
+
     document.getElementById("locationStatus").innerText =
-      `${vLabel} • ${km.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+      `${destinationLocation.name} • ${vLabel} (${tollTag}) • ${km.toFixed(2)} km • ₱${Math.round(fare)} (${selectedPaymentMethod})`;
   }catch(e){}
 }
 
 async function bookRide(){
   if(currentRide){
-    const status = String(currentRide.status || "").toLowerCase();
-    if(!["completed", "cancelled"].includes(status)){
+    if(isActiveRideStatus(currentRide.status)){
       alert("You already have an active ride.");
+      expandBookingSheetForActiveRide();
+      showRide(currentRide);
       return;
     }
     currentRide = null;
+  }
+
+  const existingSnapshot = getActiveRideSnapshot();
+  if(existingSnapshot){
+    await checkExistingActiveRide();
+    if(currentRide && isActiveRideStatus(currentRide.status)){
+      alert("You already have an active ride.");
+      return;
+    }
   }
 
   if(!passengerLocation){
@@ -2109,33 +2705,39 @@ async function bookRide(){
     return;
   }
 
+  openBookingWithAgreement(() => executeBookRide(name, contact));
+}
+
+async function executeBookRide(name, contact){
   saveRecoveryInfo();
   const btn = document.getElementById("bookRideBtn");
   btn.disabled=true;
   setBookButtonText("BOOKING...");
 
   try{
-    let distanceKm=0;
-    let estimatedFare=computeFare(0, selectedVehicle);
+    const avoidToll = isAvoidTollActive();
+    let distanceKm = lastRouteKm || 0;
+    let estimatedFare = computeFare(distanceKm, selectedVehicle);
+
     if(passengerLocation && destinationLocation){
-      const url = "https://router.project-osrm.org/route/v1/driving/"+passengerLocation.lng+","+passengerLocation.lat+";"+destinationLocation.lng+","+destinationLocation.lat+"?overview=false";
-      const res = await fetch(url);
-      const data = await res.json();
-      if(data.routes?.[0]){
-        distanceKm = data.routes[0].distance / 1000;
+      const routeResult = await fetchRouteWithTollPreference(avoidToll);
+      if(routeResult){
+        distanceKm = routeResult.distanceMeters / 1000;
         estimatedFare = computeFare(distanceKm, selectedVehicle);
       }
     }
 
     const vInfo = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
+    const tollTag = avoidToll ? "No Toll" : "Expressway OK";
     const payload={
       passenger_name:name,
       passenger_contact:contact,
+      pickup_location:passengerLocation.name || "Pickup Location",
       pickup_lat:passengerLocation.lat,
       pickup_lng:passengerLocation.lng,
       destination_lat:destinationLocation.lat,
       destination_lng:destinationLocation.lng,
-      destination:destinationLocation.name + ` [${vInfo.label} • ${selectedPaymentMethod}]`,
+      destination:destinationLocation.name + ` [${vInfo.label} • ${tollTag} • ${selectedPaymentMethod}]`,
       distance_km:Number(distanceKm.toFixed(2)),
       estimated_fare:Number(estimatedFare.toFixed(2)),
       status:"searching"
@@ -2148,8 +2750,11 @@ async function bookRide(){
     }
 
     currentRide=data;
+    saveActiveRideSnapshot(data);
+    expandBookingSheetForActiveRide();
     showRide(data);
     subscribeRealtime();
+    startActiveRideSyncLoop();
     loadHistory();
   }catch(e){
     alert("Booking error:\n"+e.message);
@@ -2166,6 +2771,7 @@ function statusText(status){
     accepted:"Rider accepted your booking.",
     arrived:"Rider has arrived.",
     ongoing:"Ride in progress.",
+    picked_up:"Ride in progress.",
     completed:"Ride completed.",
     cancelled:"Ride cancelled."
   };
@@ -2180,6 +2786,8 @@ function showRide(ride){
 
   if(!ride){
     currentRide = null;
+    clearActiveRideSnapshot();
+    stopActiveRideSyncLoop();
     info.innerHTML = "No active ride.";
     section.classList.add("hidden");
     actionIds.forEach(id=>document.getElementById(id).classList.add("hidden"));
@@ -2193,6 +2801,14 @@ function showRide(ride){
   const status = String(ride.status || "").trim().toLowerCase();
   const accepted = ["accepted", "arrived", "ongoing", "picked_up"].includes(status);
   const finished = ["completed", "cancelled"].includes(status);
+
+  if(finished){
+    clearActiveRideSnapshot();
+    stopActiveRideSyncLoop();
+  }else{
+    saveActiveRideSnapshot(ride);
+    startActiveRideSyncLoop();
+  }
 
   section.classList.toggle("hidden", finished);
   
@@ -2364,6 +2980,8 @@ async function cancelRide(){
       return;
     }
 
+    clearActiveRideSnapshot();
+    stopActiveRideSyncLoop();
     currentRide = data;
     showRide(data);
 
@@ -2372,16 +2990,13 @@ async function cancelRide(){
       riderMarker = null;
     }
 
-    if(ridePollTimer){
-      clearInterval(ridePollTimer);
-      ridePollTimer = null;
-    }
     if(rideChannel){
-      await supabaseClient.removeChannel(rideChannel);
+      try{ await supabaseClient.removeChannel(rideChannel); }catch(e){}
       rideChannel = null;
     }
+
     if(chatChannel){
-      await supabaseClient.removeChannel(chatChannel);
+      try{ await supabaseClient.removeChannel(chatChannel); }catch(e){}
       chatChannel = null;
     }
 
@@ -2395,7 +3010,7 @@ async function cancelRide(){
 
     alert("Ride cancelled. You can book another ride.");
   }catch(e){
-    alert("Cancel error:\n" + e.message);
+    alert("Cancel error:\n"+e.message);
   }finally{
     cancelInProgress = false;
     btn.disabled = false;
@@ -2458,110 +3073,140 @@ async function loadHistory(){
 }
 
 async function checkExistingActiveRide(){
+  if(recoveryInFlight) return;
+  recoveryInFlight = true;
+
   const recovery = getRecoveryInfo();
-  if(!recovery?.contact) return;
+  const snapshot = getActiveRideSnapshot();
+  const contact = (document.getElementById("passengerContact")?.value || "").trim() || recovery?.contact || snapshot?.passenger_contact || "";
+  const name = (document.getElementById("passengerName")?.value || "").trim() || recovery?.name || snapshot?.passenger_name || "";
+
+  if(!snapshot && !contact && !name){
+    recoveryInFlight = false;
+    return;
+  }
+
+  if(snapshot && (!currentRide || !isActiveRideStatus(currentRide.status))){
+    recoverActiveRide(snapshot, { autoExpand: true, skipSubscribe: true });
+  }
 
   document.getElementById("recoveryNotice").classList.remove("hidden");
 
   try{
-    const { data, error } = await supabaseClient
-      .from("rides")
-      .select("*")
-      .eq("passenger_contact", recovery.contact)
-      .in("status", ["searching", "accepted", "arrived", "ongoing"])
-      .order("created_at", { ascending:false })
-      .limit(1);
+    let recoveredRide = null;
 
-    if(error) return;
+    if(snapshot?.id){
+      const { data, error } = await supabaseClient
+        .from("rides")
+        .select("*")
+        .eq("id", snapshot.id)
+        .maybeSingle();
 
-    if(data && data.length){
-      recoverActiveRide(data[0]);
+      if(!error && data){
+        if(isActiveRideStatus(data.status)){
+          recoveredRide = data;
+        }else{
+          clearActiveRideSnapshot();
+        }
+      }
+    }
+
+    if(!recoveredRide && contact){
+      const { data, error } = await supabaseClient
+        .from("rides")
+        .select("*")
+        .eq("passenger_contact", contact)
+        .in("status", ACTIVE_STATUSES)
+        .order("created_at", { ascending:false })
+        .limit(1);
+
+      if(!error && data && data.length){
+        recoveredRide = data[0];
+      }
+    }
+
+    if(!recoveredRide && !contact && name){
+      const { data, error } = await supabaseClient
+        .from("rides")
+        .select("*")
+        .eq("passenger_name", name)
+        .in("status", ACTIVE_STATUSES)
+        .order("created_at", { ascending:false })
+        .limit(1);
+
+      if(!error && data && data.length){
+        recoveredRide = data[0];
+      }
+    }
+
+    if(recoveredRide){
+      if(!recovery?.contact && recoveredRide.passenger_contact){
+        document.getElementById("passengerContact").value = recoveredRide.passenger_contact;
+        document.getElementById("loginContactInput").value = recoveredRide.passenger_contact;
+      }
+      if(!recovery?.name && recoveredRide.passenger_name){
+        document.getElementById("passengerName").value = recoveredRide.passenger_name;
+        document.getElementById("loginNameInput").value = recoveredRide.passenger_name;
+      }
+      if(recoveredRide.passenger_name || recoveredRide.passenger_contact){
+        saveRecoveryInfo();
+      }
+      recoverActiveRide(recoveredRide, { autoExpand: true });
+    }else if(!snapshot){
+      clearActiveRideSnapshot();
     }
   }catch(e){
   }finally{
+    recoveryInFlight = false;
     document.getElementById("recoveryNotice").classList.add("hidden");
   }
 }
 
-function recoverActiveRide(ride){
-  currentRide=ride;
+function recoverActiveRide(ride, options = {}){
+  if(!ride || !isActiveRideStatus(ride.status)) return;
+  currentRide = ride;
+  saveActiveRideSnapshot(ride);
+
   if(ride.pickup_lat != null && ride.pickup_lng != null){
-    setPickup(ride.pickup_lat, ride.pickup_lng, ride.pickup_location || "Pickup");
+    setPickup(ride.pickup_lat, ride.pickup_lng, ride.pickup_location || passengerLocation?.name || "Pickup");
   }
   if(ride.destination_lat != null && ride.destination_lng != null){
-    setDestination(ride.destination_lat, ride.destination_lng, ride.destination || "Destination");
+    setDestination(ride.destination_lat, ride.destination_lng, ride.destination || destinationLocation?.name || "Destination");
   }
+
+  if(options.autoExpand){
+    expandBookingSheetForActiveRide();
+  }
+
   showRide(ride);
-  subscribeRealtime();
+
+  if(!options.skipSubscribe){
+    subscribeRealtime();
+  }
+  startActiveRideSyncLoop();
 }
 
-function handleRideDropped(){
-  if(dropHandled) return;
-  dropHandled = true;
-
-  if(ridePollTimer){
-    clearInterval(ridePollTimer);
-    ridePollTimer = null;
-  }
+function subscribeRealtime(){
+  if(!currentRide?.id) return;
   if(rideChannel){
     try{ supabaseClient.removeChannel(rideChannel); }catch(e){}
     rideChannel = null;
   }
 
-  alert("Nakadating ka na sa iyong destination! Salamat sa pagsakay sa TUKLAS.");
-  location.reload();
-}
-
-function subscribeRealtime(){
-  if(!currentRide?.id) return;
-  dropHandled = false;
-
-  if(rideChannel){
-    try{ supabaseClient.removeChannel(rideChannel); }catch(e){}
-  }
-
   rideChannel = supabaseClient
-    .channel("ride-" + currentRide.id)
+    .channel("ride-"+currentRide.id)
     .on(
       "postgres_changes",
-      { event: "UPDATE", schema: "public", table: "rides", filter: "id=eq." + currentRide.id },
-      payload => {
+      { event:"UPDATE", schema:"public", table:"rides", filter:"id=eq."+currentRide.id },
+      payload=>{
         if(!payload.new) return;
         currentRide = payload.new;
-        const st = String(currentRide.status || "").trim().toLowerCase();
-
-        if(st === "completed"){
-          handleRideDropped();
-          return;
-        }
-
+        saveActiveRideSnapshot(currentRide);
         showRide(currentRide);
         loadHistory();
       }
     )
     .subscribe();
-
-  if(ridePollTimer) clearInterval(ridePollTimer);
-  ridePollTimer = setInterval(async () => {
-    if(!currentRide?.id || dropHandled) return;
-    const { data, error } = await supabaseClient
-      .from("rides")
-      .select("*")
-      .eq("id", currentRide.id)
-      .single();
-
-    if(!error && data){
-      const st = String(data.status || "").trim().toLowerCase();
-      if(st === "completed"){
-        handleRideDropped();
-        return;
-      }
-      if(st !== String(currentRide.status || "").trim().toLowerCase()){
-        currentRide = data;
-        showRide(data);
-      }
-    }
-  }, 3000);
 }
 
 function formatChatTime(value){
@@ -2632,6 +3277,7 @@ function subscribeChat(){
   if(!chatRideId) return;
   if(chatChannel){
     try{ supabaseClient.removeChannel(chatChannel); }catch(e){}
+    chatChannel = null;
   }
 
   chatChannel = supabaseClient
@@ -2701,6 +3347,8 @@ async function sendChatMessage(){
   }
 }
 
+document.getElementById("tuklasAgreeCheck").addEventListener("change", syncTuklasAgreementBtn);
+
 document.getElementById("passengerName").addEventListener("input", saveRecoveryInfo);
 document.getElementById("passengerContact").addEventListener("input", function(){
   saveRecoveryInfo();
@@ -2719,8 +3367,7 @@ function updateBookingMenu(ride){
   const section = document.getElementById("pickupDestinationSection");
   if(!section) return;
   const status = String(ride?.status || "").trim().toLowerCase();
-  const activeStatuses = ["searching", "accepted", "arrived", "ongoing", "picked_up"];
-  const hasActiveRide = Boolean(ride) && activeStatuses.includes(status);
+  const hasActiveRide = Boolean(ride) && isActiveRideStatus(status);
   section.classList.toggle("sectionHidden", hasActiveRide);
 }
 
@@ -2737,6 +3384,16 @@ function toggleBookingSheet(){
   }
 }
 
+document.addEventListener("visibilitychange", function(){
+  if(!document.hidden){
+    checkExistingActiveRide();
+  }
+});
+
+window.addEventListener("focus", function(){
+  checkExistingActiveRide();
+});
+
 async function startApp(){
   try{
     loadSavedUiTheme();
@@ -2744,17 +3401,27 @@ async function startApp(){
     setupPhoton();
     loadSettingsPrefs();
     const recovery = getRecoveryInfo();
-    if(recovery){
-      if(recovery.name){
-        document.getElementById("passengerName").value = recovery.name;
-        document.getElementById("loginNameInput").value = recovery.name;
-      }
-      if(recovery.contact){
-        document.getElementById("passengerContact").value = recovery.contact;
-        document.getElementById("loginContactInput").value = recovery.contact;
-      }
+    const snapshot = getActiveRideSnapshot();
+    const prefillName = recovery?.name || snapshot?.passenger_name || "";
+    const prefillContact = recovery?.contact || snapshot?.passenger_contact || "";
+
+    if(prefillName){
+      document.getElementById("passengerName").value = prefillName;
+      document.getElementById("loginNameInput").value = prefillName;
     }
+    if(prefillContact){
+      document.getElementById("passengerContact").value = prefillContact;
+      document.getElementById("loginContactInput").value = prefillContact;
+    }
+
+    if(snapshot && isActiveRideStatus(snapshot.status)){
+      recoverActiveRide(snapshot, { autoExpand: true, skipSubscribe: true });
+    }
+
     await checkExistingActiveRide();
+    if(prefillContact){
+      loadHistory();
+    }
   }catch(e){}
 }
 
