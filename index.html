@@ -635,6 +635,63 @@ input:focus,select:focus{
   cursor:not-allowed;
 }
 
+/* TOLL CONDITION BAR FOR CAR & VAN */
+.tollConditionBox{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:var(--btn-radius);
+  background:var(--bg-input);
+  border:1px solid var(--border-dark);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.tollConditionInfo{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.tollConditionTitle{
+  font-size:12.5px;
+  font-weight:800;
+  color:var(--text-light);
+}
+
+.tollConditionSub{
+  font-size:11px;
+  color:var(--text-muted);
+}
+
+.tollModeSwitch{
+  display:inline-flex;
+  border-radius:999px;
+  background:var(--bg-card);
+  border:1px solid var(--border-dark);
+  padding:2px;
+  flex-shrink:0;
+}
+
+.tollModeBtn{
+  width:auto!important;
+  margin:0!important;
+  padding:6px 10px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  border:0!important;
+  color:var(--text-muted)!important;
+  white-space:nowrap;
+}
+
+.tollModeBtn.active{
+  background:var(--orange)!important;
+  color:#ffffff!important;
+}
+
 /* BOOKING SHEET */
 .bookingSheet{
   position:fixed;
@@ -1655,18 +1712,30 @@ button:disabled{
         <button type="button" id="vehBtn-motorcycle" class="vehicleOptionBtn active" onclick="selectVehicleType('motorcycle')">
           <span class="monoIcon" style="width:20px;height:20px"><svg><use href="#ic-bike"></use></svg></span>
           <span class="vehicleOptionTitle">Motorcycle</span>
-          <span class="vehicleOptionSub" id="vehFare-motorcycle">₱50 base</span>
+          <span class="vehicleOptionSub" id="vehFare-motorcycle">₱50 + ₱15/km</span>
         </button>
         <button type="button" id="vehBtn-car" class="vehicleOptionBtn" onclick="selectVehicleType('car')">
           <span class="monoIcon" style="width:20px;height:20px"><svg><use href="#ic-car"></use></svg></span>
           <span class="vehicleOptionTitle">Car</span>
-          <span class="vehicleOptionSub" id="vehFare-car">₱90 base</span>
+          <span class="vehicleOptionSub" id="vehFare-car">₱90 + ₱25/km</span>
         </button>
         <button type="button" id="vehBtn-van" class="vehicleOptionBtn" onclick="selectVehicleType('van')">
           <span class="monoIcon" style="width:20px;height:20px"><svg><use href="#ic-van"></use></svg></span>
           <span class="vehicleOptionTitle">Van</span>
-          <span class="vehicleOptionSub" id="vehFare-van">₱150 base</span>
+          <span class="vehicleOptionSub" id="vehFare-van">₱150 + ₱35/km</span>
         </button>
+      </div>
+
+      <!-- TOLL / EXPRESSWAY CONDITION CONTROL FOR CAR & VAN -->
+      <div id="tollConditionBox" class="tollConditionBox">
+        <div class="tollConditionInfo">
+          <span id="tollConditionTitle" class="tollConditionTitle">Toll & Expressway Condition</span>
+          <span id="tollConditionSub" class="tollConditionSub">Motorcycle: Always No Toll / No Expressway</span>
+        </div>
+        <div id="tollModeSwitch" class="tollModeSwitch">
+          <button type="button" id="tollBtn-allow" class="tollModeBtn" onclick="setTollCondition('allow')">Allow Toll</button>
+          <button type="button" id="tollBtn-notoll" class="tollModeBtn active" onclick="setTollCondition('notoll')">No Toll</button>
+        </div>
       </div>
 
       <button class="secondary" onclick="getPickupGPS()">
@@ -1802,10 +1871,32 @@ let cancelInProgress=false;
 let lastRouteKm=null;
 let pendingBookingCallback=null;
 
+/* UNIFIED VEHICLE & TOLL FARE COMPUTATION CONFIG */
 const VEHICLE_RATES = {
-  motorcycle: { label: "Motorcycle", iconId: "ic-bike", base: 50, perKm: 15 },
-  car:        { label: "Car",        iconId: "ic-car",  base: 90, perKm: 25 },
-  van:        { label: "Van",        iconId: "ic-van",  base: 150, perKm: 35 }
+  motorcycle: {
+    label: "Motorcycle",
+    iconId: "ic-bike",
+    base: 50,
+    perKm: 15,
+    tollFee: 0,
+    tollAllowed: false
+  },
+  car: {
+    label: "Car",
+    iconId: "ic-car",
+    base: 90,
+    perKm: 25,
+    tollFee: 45,
+    tollAllowed: true
+  },
+  van: {
+    label: "Van",
+    iconId: "ic-van",
+    base: 150,
+    perKm: 35,
+    tollFee: 75,
+    tollAllowed: true
+  }
 };
 let selectedVehicle = "motorcycle";
 let selectedPaymentMethod = "Cash";
@@ -2029,32 +2120,101 @@ function setBookButtonText(text){
   }
 }
 
-function isAvoidTollActive(){
-  if(selectedVehicle === "motorcycle") return true;
-  return Boolean(document.getElementById("prefAvoidToll")?.checked);
+function isAvoidTollActive(type = selectedVehicle){
+  const rate = VEHICLE_RATES[type] || VEHICLE_RATES.motorcycle;
+  if(!rate.tollAllowed) return true;
+  return Boolean(carVanAvoidTollPref);
+}
+
+function isTollAllowedForFare(type = selectedVehicle){
+  const rate = VEHICLE_RATES[type] || VEHICLE_RATES.motorcycle;
+  return Boolean(rate.tollAllowed) && !isAvoidTollActive(type);
+}
+
+function setTollCondition(mode){
+  const rate = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
+  if(!rate.tollAllowed){
+    carVanAvoidTollPref = true;
+  }else{
+    carVanAvoidTollPref = (mode === "notoll");
+  }
+  const checkbox = document.getElementById("prefAvoidToll");
+  if(checkbox) checkbox.checked = isAvoidTollActive(selectedVehicle);
+
+  syncAvoidTollUI();
+  updateHeaderSubtitle();
+  saveSettingsPrefs();
+
+  if(passengerLocation && destinationLocation){
+    drawRoute();
+  }else if(lastRouteKm != null){
+    refreshFareStatusLabel(lastRouteKm);
+  }
 }
 
 function syncAvoidTollUI(){
   const checkbox = document.getElementById("prefAvoidToll");
   const hint = document.getElementById("avoidTollHint");
-  if(!checkbox) return;
+  const rate = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
+  const avoidToll = isAvoidTollActive(selectedVehicle);
 
-  if(selectedVehicle === "motorcycle"){
-    checkbox.checked = true;
-    checkbox.disabled = true;
-    if(hint) hint.innerText = "Locked ON for Motorcycle (No Expressway)";
-  }else{
-    checkbox.disabled = false;
-    checkbox.checked = carVanAvoidTollPref;
-    if(hint) hint.innerText = checkbox.checked
-      ? "ON: Avoiding Toll & Expressways"
-      : "OFF: Expressway & Toll Allowed";
+  const tollBox = document.getElementById("tollConditionBox");
+  const tollTitle = document.getElementById("tollConditionTitle");
+  const tollSub = document.getElementById("tollConditionSub");
+  const btnAllow = document.getElementById("tollBtn-allow");
+  const btnNoToll = document.getElementById("tollBtn-notoll");
+
+  if(checkbox){
+    if(!rate.tollAllowed){
+      checkbox.checked = true;
+      checkbox.disabled = true;
+      if(hint) hint.innerText = "Locked ON for Motorcycle (No Expressway)";
+    }else{
+      checkbox.disabled = false;
+      checkbox.checked = avoidToll;
+      if(hint) hint.innerText = avoidToll
+        ? `ON: No Toll / No Expressway for ${rate.label}`
+        : `OFF: Toll & Expressway Allowed (+₱${rate.tollFee} toll fare)`;
+    }
+  }
+
+  if(tollBox){
+    if(!rate.tollAllowed){
+      if(tollTitle) tollTitle.innerText = "Motorcycle Route Rule";
+      if(tollSub) tollSub.innerText = "No Toll / No Expressway (Locked)";
+      if(btnAllow){
+        btnAllow.classList.remove("active");
+        btnAllow.disabled = true;
+        btnAllow.style.opacity = "0.45";
+      }
+      if(btnNoToll){
+        btnNoToll.classList.add("active");
+        btnNoToll.disabled = false;
+        btnNoToll.style.opacity = "1";
+      }
+    }else{
+      if(tollTitle) tollTitle.innerText = `${rate.label} Toll & Expressway`;
+      if(tollSub) tollSub.innerText = avoidToll
+        ? `No Toll selected (${rate.label} local/non-toll fare)`
+        : `Allow Toll selected (+₱${rate.tollFee} toll added to fare)`;
+      if(btnAllow){
+        btnAllow.disabled = false;
+        btnAllow.style.opacity = "1";
+        btnAllow.classList.toggle("active", !avoidToll);
+      }
+      if(btnNoToll){
+        btnNoToll.disabled = false;
+        btnNoToll.style.opacity = "1";
+        btnNoToll.classList.toggle("active", avoidToll);
+      }
+    }
   }
 }
 
 function onAvoidTollToggle(){
   const checkbox = document.getElementById("prefAvoidToll");
-  if(selectedVehicle !== "motorcycle" && checkbox){
+  const rate = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
+  if(rate.tollAllowed && checkbox){
     carVanAvoidTollPref = checkbox.checked;
   }
   syncAvoidTollUI();
@@ -2062,13 +2222,15 @@ function onAvoidTollToggle(){
   saveSettingsPrefs();
   if(passengerLocation && destinationLocation){
     drawRoute();
+  }else if(lastRouteKm != null){
+    refreshFareStatusLabel(lastRouteKm);
   }
 }
 
 function updateHeaderSubtitle(){
   const sub = document.getElementById("headerSubtitle");
   if(sub){
-    const tollLabel = isAvoidTollActive() ? "No Toll" : "Toll OK";
+    const tollLabel = isAvoidTollActive(selectedVehicle) ? "No Toll" : "Toll OK";
     sub.innerText = `MapLibre • ${selectedPaymentMethod} • ${tollLabel}`;
   }
 }
@@ -2083,6 +2245,9 @@ function selectPaymentMethod(method){
   });
   updateHeaderSubtitle();
   saveSettingsPrefs();
+  if(lastRouteKm != null){
+    refreshFareStatusLabel(lastRouteKm);
+  }
 }
 
 function saveSettingsPrefs(){
@@ -2143,16 +2308,26 @@ function selectVehicleType(type, recalcRoute = true){
   if(recalcRoute && passengerLocation && destinationLocation){
     drawRoute();
   }else if(lastRouteKm != null){
-    const fare = computeFare(lastRouteKm, type);
-    const tollTag = isAvoidTollActive() ? "No Toll" : "Expressway OK";
-    document.getElementById("locationStatus").innerText =
-      `${info.label} (${tollTag}) • ${lastRouteKm.toFixed(2)} km • Estimated ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+    refreshFareStatusLabel(lastRouteKm);
   }
 }
 
 function computeFare(km, type = selectedVehicle){
   const rate = VEHICLE_RATES[type] || VEHICLE_RATES.motorcycle;
-  return rate.base + (Number(km || 0) * rate.perKm);
+  const distanceFare = Number(km || 0) * rate.perKm;
+  const tollCharge = isTollAllowedForFare(type) ? rate.tollFee : 0;
+  return rate.base + distanceFare + tollCharge;
+}
+
+function refreshFareStatusLabel(km){
+  const info = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
+  const fare = computeFare(km, selectedVehicle);
+  const tollTag = isTollAllowedForFare(selectedVehicle)
+    ? `Toll OK (+₱${info.tollFee})`
+    : "No Toll";
+  const prefix = destinationLocation?.name ? `${destinationLocation.name} • ` : "";
+  document.getElementById("locationStatus").innerText =
+    `${prefix}${info.label} (${tollTag}) • ${Number(km).toFixed(2)} km • ₱${Math.round(fare)} (${selectedPaymentMethod})`;
 }
 
 function enterAppFromLogin(isGuest = false){
@@ -2642,10 +2817,10 @@ function decodePolyline6(encoded){
 async function drawRoute(){
   if(!passengerLocation || !destinationLocation) return;
   const requestId = ++routeRequestId;
-  const avoidToll = isAvoidTollActive();
+  const avoidToll = isAvoidTollActive(selectedVehicle);
 
   document.getElementById("locationStatus").innerText =
-    avoidToll ? "Calculating non-expressway route..." : "Calculating route...";
+    avoidToll ? "Calculating non-expressway route..." : "Calculating toll/expressway route...";
 
   try{
     const routeResult = await fetchRouteWithTollPreference(avoidToll);
@@ -2655,12 +2830,7 @@ async function drawRoute(){
 
     const km = routeResult.distanceMeters / 1000;
     lastRouteKm = km;
-    const fare = computeFare(km, selectedVehicle);
-    const vLabel = VEHICLE_RATES[selectedVehicle]?.label || "Motorcycle";
-    const tollTag = avoidToll ? "No Toll/Expressway" : "Expressway OK";
-
-    document.getElementById("locationStatus").innerText =
-      `${destinationLocation.name} • ${vLabel} (${tollTag}) • ${km.toFixed(2)} km • ₱${Math.round(fare)} (${selectedPaymentMethod})`;
+    refreshFareStatusLabel(km);
   }catch(e){}
 }
 
@@ -2715,7 +2885,7 @@ async function executeBookRide(name, contact){
   setBookButtonText("BOOKING...");
 
   try{
-    const avoidToll = isAvoidTollActive();
+    const avoidToll = isAvoidTollActive(selectedVehicle);
     let distanceKm = lastRouteKm || 0;
     let estimatedFare = computeFare(distanceKm, selectedVehicle);
 
@@ -2728,7 +2898,7 @@ async function executeBookRide(name, contact){
     }
 
     const vInfo = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
-    const tollTag = avoidToll ? "No Toll" : "Expressway OK";
+    const tollTag = isTollAllowedForFare(selectedVehicle) ? `Toll OK (+₱${vInfo.tollFee})` : "No Toll";
     const payload={
       passenger_name:name,
       passenger_contact:contact,
