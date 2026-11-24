@@ -1666,8 +1666,8 @@ button:disabled{
       </h3>
       <div class="toggleRow">
         <div>
-          <div>Avoid Toll & Expressways</div>
-          <small id="avoidTollHint" class="small" style="font-size:11px;">Locked ON for Motorcycle (No Expressway)</small>
+          <div>Avoid Tollgate & Expressway</div>
+          <small id="avoidTollHint" class="small" style="font-size:11px;">No Toll • National Road / C-5 Priority</small>
         </div>
         <input type="checkbox" id="prefAvoidToll" checked onchange="onAvoidTollToggle()">
       </div>
@@ -1729,8 +1729,8 @@ button:disabled{
       <!-- TOLL / EXPRESSWAY CONDITION CONTROL FOR CAR & VAN -->
       <div id="tollConditionBox" class="tollConditionBox">
         <div class="tollConditionInfo">
-          <span id="tollConditionTitle" class="tollConditionTitle">Toll & Expressway Condition</span>
-          <span id="tollConditionSub" class="tollConditionSub">Motorcycle: Always No Toll / No Expressway</span>
+          <span id="tollConditionTitle" class="tollConditionTitle">No Toll • National Road / C-5 Priority</span>
+          <span id="tollConditionSub" class="tollConditionSub">Bawal ang tollgate/expressway • Main roads allowed</span>
         </div>
         <div id="tollModeSwitch" class="tollModeSwitch">
           <button type="button" id="tollBtn-allow" class="tollModeBtn" onclick="setTollCondition('allow')">Allow Toll</button>
@@ -2168,20 +2168,20 @@ function syncAvoidTollUI(){
     if(!rate.tollAllowed){
       checkbox.checked = true;
       checkbox.disabled = true;
-      if(hint) hint.innerText = "Locked ON for Motorcycle (No Expressway)";
+      if(hint) hint.innerText = "No Toll • National Road / C-5 Priority (No Tollgate)";
     }else{
       checkbox.disabled = false;
       checkbox.checked = avoidToll;
       if(hint) hint.innerText = avoidToll
-        ? `ON: No Toll / No Expressway for ${rate.label}`
-        : `OFF: Toll & Expressway Allowed (+₱${rate.tollFee} toll fare)`;
+        ? `No Toll • National Road / C-5 Priority (${rate.label})`
+        : `Tollgate/Expressway Allowed (+₱${rate.tollFee} toll fare)`;
     }
   }
 
   if(tollBox){
     if(!rate.tollAllowed){
-      if(tollTitle) tollTitle.innerText = "Motorcycle Route Rule";
-      if(tollSub) tollSub.innerText = "No Toll / No Expressway (Locked)";
+      if(tollTitle) tollTitle.innerText = "No Toll • National Road / C-5 Priority";
+      if(tollSub) tollSub.innerText = "Bawal ang tollgate/expressway • Main roads allowed";
       if(btnAllow){
         btnAllow.classList.remove("active");
         btnAllow.disabled = true;
@@ -2193,9 +2193,9 @@ function syncAvoidTollUI(){
         btnNoToll.style.opacity = "1";
       }
     }else{
-      if(tollTitle) tollTitle.innerText = `${rate.label} Toll & Expressway`;
+      if(tollTitle) tollTitle.innerText = `${rate.label} • National Road / C-5 Priority`;
       if(tollSub) tollSub.innerText = avoidToll
-        ? `No Toll selected (${rate.label} local/non-toll fare)`
+        ? `No Toll selected (Bawal tollgate/expressway)`
         : `Allow Toll selected (+₱${rate.tollFee} toll added to fare)`;
       if(btnAllow){
         btnAllow.disabled = false;
@@ -2230,7 +2230,7 @@ function onAvoidTollToggle(){
 function updateHeaderSubtitle(){
   const sub = document.getElementById("headerSubtitle");
   if(sub){
-    const tollLabel = isAvoidTollActive(selectedVehicle) ? "No Toll" : "Toll OK";
+    const tollLabel = isAvoidTollActive(selectedVehicle) ? "No Toll • Main Road" : "Toll OK";
     sub.innerText = `MapLibre • ${selectedPaymentMethod} • ${tollLabel}`;
   }
 }
@@ -2324,7 +2324,7 @@ function refreshFareStatusLabel(km){
   const fare = computeFare(km, selectedVehicle);
   const tollTag = isTollAllowedForFare(selectedVehicle)
     ? `Toll OK (+₱${info.tollFee})`
-    : "No Toll";
+    : "No Toll • Main Rd";
   const prefix = destinationLocation?.name ? `${destinationLocation.name} • ` : "";
   document.getElementById("locationStatus").innerText =
     `${prefix}${info.label} (${tollTag}) • ${Number(km).toFixed(2)} km • ₱${Math.round(fare)} (${selectedPaymentMethod})`;
@@ -2722,22 +2722,23 @@ async function searchDestination(query){
   box.classList.toggle("hidden", results.length===0);
 }
 
-/* ROUTING HELPER WITH AVOID TOLL & EXPRESSWAY SUPPORT */
+/* ROUTING HELPER: NO TOLL / NO EXPRESSWAY, PRIORITY NATIONAL ROAD / MAIN ROAD / C-5 */
 async function fetchRouteWithTollPreference(avoidToll){
   const coords = `${passengerLocation.lng},${passengerLocation.lat};${destinationLocation.lng},${destinationLocation.lat}`;
+  const costingType = selectedVehicle === "motorcycle" ? "motorcycle" : "auto";
 
   if(avoidToll){
     try{
+      // use_tolls: 0 blocks tollgates/expressways without blocking national roads / C-5 / main roads
       const valhallaPayload = {
         locations: [
           { lat: passengerLocation.lat, lon: passengerLocation.lng },
           { lat: destinationLocation.lat, lon: destinationLocation.lng }
         ],
-        costing: "auto",
+        costing: costingType,
         costing_options: {
-          auto: {
-            use_tolls: 0,
-            use_highways: 0
+          [costingType]: {
+            use_tolls: 0
           }
         },
         directions_options: { units: "kilometers" }
@@ -2762,8 +2763,9 @@ async function fetchRouteWithTollPreference(avoidToll){
     }catch(e){}
 
     try{
-      const osrmExUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&exclude=toll,motorway`;
-      const exRes = await fetch(osrmExUrl);
+      // exclude=toll keeps national roads / C-5 / main roads available while avoiding toll roads
+      const osrmNoTollUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&exclude=toll`;
+      const exRes = await fetch(osrmNoTollUrl);
       if(exRes.ok){
         const exData = await exRes.json();
         if(exData.routes?.[0]){
@@ -2820,7 +2822,7 @@ async function drawRoute(){
   const avoidToll = isAvoidTollActive(selectedVehicle);
 
   document.getElementById("locationStatus").innerText =
-    avoidToll ? "Calculating non-expressway route..." : "Calculating toll/expressway route...";
+    avoidToll ? "Calculating no-toll national/main road route..." : "Calculating toll/expressway route...";
 
   try{
     const routeResult = await fetchRouteWithTollPreference(avoidToll);
@@ -2898,7 +2900,7 @@ async function executeBookRide(name, contact){
     }
 
     const vInfo = VEHICLE_RATES[selectedVehicle] || VEHICLE_RATES.motorcycle;
-    const tollTag = isTollAllowedForFare(selectedVehicle) ? `Toll OK (+₱${vInfo.tollFee})` : "No Toll";
+    const tollTag = isTollAllowedForFare(selectedVehicle) ? `Toll OK (+₱${vInfo.tollFee})` : "No Toll • Main Rd";
     const payload={
       passenger_name:name,
       passenger_contact:contact,
