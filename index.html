@@ -185,6 +185,184 @@ button,input,select{
   color:#ffffff!important;
 }
 
+/* SAVED TAGS PILL BAR ON MAP */
+.savedTagsBar{
+  position:fixed;
+  top:76px;
+  right:12px;
+  max-width:calc(100vw - 76px);
+  z-index:2500;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  overflow-x:auto;
+  padding:4px 2px;
+  -webkit-overflow-scrolling:touch;
+}
+
+.savedTagsBar.hidden{
+  display:none!important;
+}
+
+.savedTagChip{
+  width:auto!important;
+  margin:0!important;
+  padding:6px 11px!important;
+  border-radius:999px!important;
+  background:var(--bg-card)!important;
+  border:1.5px solid var(--orange)!important;
+  color:var(--text-light)!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+  display:inline-flex!important;
+  align-items:center;
+  gap:5px;
+}
+
+.savedTagChip:hover{
+  background:var(--orange)!important;
+  color:#ffffff!important;
+}
+
+/* TAG MARKER PIN ON MAP */
+.mapTagPin{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 10px;
+  border-radius:999px;
+  background:var(--orange);
+  color:#ffffff;
+  border:2px solid #ffffff;
+  font-size:11px;
+  font-weight:900;
+  box-shadow:0 4px 14px rgba(0,0,0,.45);
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+/* TAG ICON PICKER GRID IN MODAL */
+.tagIconGrid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+  margin-top:6px;
+}
+
+.tagIconOption{
+  margin:0!important;
+  padding:9px 4px!important;
+  border-radius:var(--btn-radius)!important;
+  background:var(--bg-input)!important;
+  border:1.5px solid var(--border-dark)!important;
+  color:var(--text-light)!important;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:10.5px!important;
+  font-weight:800!important;
+}
+
+.tagIconOption.active{
+  border-color:var(--orange)!important;
+  background:var(--orange-soft)!important;
+  color:var(--orange)!important;
+}
+
+/* SETTINGS SAVED TAG ROW */
+.settingsTagItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:9px 10px;
+  margin-top:8px;
+  border-radius:var(--btn-radius);
+  background:var(--bg-card);
+  border:1px solid var(--border-dark);
+}
+
+.settingsTagInfo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  flex:1;
+  cursor:pointer;
+}
+
+.settingsTagText{
+  min-width:0;
+  flex:1;
+}
+
+.settingsTagName{
+  font-size:13px;
+  font-weight:800;
+  color:var(--text-light);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.settingsTagAddr{
+  font-size:11px;
+  color:var(--text-muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.settingsTagBtns{
+  display:flex;
+  gap:4px;
+  flex-shrink:0;
+}
+
+.settingsTagBtns button{
+  width:auto!important;
+  margin:0!important;
+  padding:6px 8px!important;
+  font-size:11px!important;
+  border-radius:7px!important;
+}
+
+/* TAG POPUP ACTION CARD */
+.tagPopupBox{
+  min-width:195px;
+}
+.tagPopupTitle{
+  font-size:14px;
+  font-weight:900;
+  color:var(--orange);
+  margin-bottom:3px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.tagPopupAddr{
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--text-muted);
+  margin-bottom:9px;
+  line-height:1.35;
+}
+.tagPopupActions{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.tagPopupActions button{
+  margin:0!important;
+  padding:8px 10px!important;
+  font-size:12px!important;
+  border-radius:8px!important;
+}
+
 /* COLLAPSIBLE WRAPPER FOR UI THEMES & MAP BASE */
 .mapToolsDrawer{
   position:fixed;
@@ -444,11 +622,16 @@ button,input,select{
   color:var(--text-light)!important;
   border:1px solid var(--border-dark)!important;
   border-radius:var(--btn-radius)!important;
-  padding:8px 11px!important;
+  padding:10px 12px!important;
   font-size:12px!important;
   font-weight:700!important;
-  max-width:240px;
+  max-width:260px;
   box-shadow:0 6px 18px rgba(0,0,0,.35)!important;
+}
+.maplibregl-popup-close-button{
+  color:var(--text-muted)!important;
+  font-size:18px!important;
+  padding:2px 6px!important;
 }
 .maplibregl-popup-tip{
   border-top-color:var(--bg-card)!important;
@@ -1148,7 +1331,7 @@ button:disabled{
   font-size:14px;
 }
 
-/* PRE-BOOKING AGREEMENT POP-UP MODAL */
+/* PRE-BOOKING AGREEMENT & TAG MODAL */
 .tuklasAgreementModal{
   position:fixed;
   inset:0;
@@ -1213,6 +1396,7 @@ button:disabled{
   display:flex;
   gap:10px;
   justify-content:flex-end;
+  margin-top:14px;
 }
 
 .tuklasAgreementActions button{
@@ -1498,6 +1682,49 @@ button:disabled{
     <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
     <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.21-.64-1.67-.38-.43-.6-1-.6-1.58 0-1.24 1.01-2.25 2.25-2.25H17c2.76 0 5-2.24 5-5 0-4.97-4.48-9-10-9z"></path>
   </symbol>
+  <symbol id="ic-tag" viewBox="0 0 24 24">
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+  </symbol>
+  <!-- LOCATION TAG PLACE ICONS -->
+  <symbol id="ic-home" viewBox="0 0 24 24">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+  </symbol>
+  <symbol id="ic-school" viewBox="0 0 24 24">
+    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+  </symbol>
+  <symbol id="ic-church" viewBox="0 0 24 24">
+    <path d="M12 2v4M10 4h4"></path>
+    <path d="M6 22V11l6-5 6 5v11"></path>
+    <path d="M10 22v-5a2 2 0 0 1 4 0v5"></path>
+  </symbol>
+  <symbol id="ic-store" viewBox="0 0 24 24">
+    <path d="M3 9l1.5-5h15L21 9"></path>
+    <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+    <path d="M5 12v8h14v-8"></path>
+  </symbol>
+  <symbol id="ic-mall" viewBox="0 0 24 24">
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <path d="M16 10a4 4 0 0 1-8 0"></path>
+  </symbol>
+  <symbol id="ic-hospital" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+    <line x1="12" y1="8" x2="12" y2="16"></line>
+    <line x1="8" y1="12" x2="16" y2="12"></line>
+  </symbol>
+  <symbol id="ic-office" viewBox="0 0 24 24">
+    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+    <line x1="9" y1="6" x2="9.01" y2="6"></line>
+    <line x1="15" y1="6" x2="15.01" y2="6"></line>
+    <line x1="9" y1="10" x2="9.01" y2="10"></line>
+    <line x1="15" y1="10" x2="15.01" y2="10"></line>
+    <line x1="9" y1="14" x2="9.01" y2="14"></line>
+    <line x1="15" y1="14" x2="15.01" y2="14"></line>
+    <path d="M10 22v-4h4v4"></path>
+  </symbol>
 </svg>
 
 <!-- LOGIN SCREEN OVERLAY -->
@@ -1568,6 +1795,9 @@ button:disabled{
   >
     <span class="monoIcon" style="width:22px;height:22px"><svg><use href="#ic-palette"></use></svg></span>
   </button>
+
+  <!-- SAVED TAGS QUICK BAR -->
+  <div id="savedTagsBar" class="savedTagsBar hidden"></div>
 
   <!-- COLLAPSIBLE DRAWER FOR UI THEMES & MAP BASE -->
   <div id="mapToolsDrawer" class="mapToolsDrawer">
@@ -1657,6 +1887,20 @@ button:disabled{
           <strong id="payCheck-Maya"></strong>
         </div>
       </div>
+    </div>
+
+    <!-- LOCATION TAGGING INSIDE SETTINGS -->
+    <div class="profileCard">
+      <h3>
+        <span class="monoIcon" style="width:16px;height:16px;color:var(--orange)"><svg><use href="#ic-tag"></use></svg></span>
+        <span>Saved Location Tags</span>
+      </h3>
+      <div class="small" style="font-size:12px;">Gumawa ng Tag (Home, School, Church, Store, Mall, Hospital, atbp.) at pindutin ang tag pin sa mapa para mag-book, mag-edit, o mag-delete.</div>
+      <button type="button" class="secondary" onclick="startCreateTagFromSettings()">
+        <span class="monoIcon" style="width:16px;height:16px;color:var(--orange)"><svg><use href="#ic-tag"></use></svg></span>
+        <span>+ Create Tag on Map</span>
+      </button>
+      <div id="settingsTagsList"></div>
     </div>
 
     <div class="profileCard">
@@ -1793,6 +2037,28 @@ button:disabled{
   </div>
 </section>
 
+<!-- CREATE / EDIT LOCATION TAG MODAL -->
+<div id="tagEditorModal" class="tuklasAgreementModal">
+  <div class="tuklasAgreementCard">
+    <h3 id="tagEditorModalTitle">Create Location Tag</h3>
+    <p id="tagEditorModalSub" style="font-size:12px;color:var(--text-muted);">Pumili ng icon at ilagay ang pangalan ng Tag.</p>
+
+    <label class="profileLabel">Select Tag Icon</label>
+    <div id="tagIconGrid" class="tagIconGrid"></div>
+
+    <label class="profileLabel">Tag Name (hal. Home, School, Church, Store, Mall, Hospital)</label>
+    <input id="tagNameInput" placeholder="Ilagay ang pangalan ng tag">
+
+    <label class="profileLabel">Location / Address</label>
+    <input id="tagAddressInput" placeholder="Address o landmark">
+
+    <div class="tuklasAgreementActions">
+      <button type="button" class="secondary" onclick="closeTagEditorModal()">Kanselahin</button>
+      <button type="button" onclick="saveLocationTag()">I-save ang Tag</button>
+    </div>
+  </div>
+</div>
+
 <!-- PRE-BOOKING AGREEMENT POP-UP MODAL -->
 <div id="tuklasBookingModal" class="tuklasAgreementModal">
   <div class="tuklasAgreementCard">
@@ -1864,12 +2130,31 @@ let passengerLocation=null;
 let destinationLocation=null;
 let currentRide=null;
 let destinationMode=false;
+let tagCreateMode=false;
 let pickupSearchTimer=null;
 let destinationSearchTimer=null;
 let routeRequestId=0;
 let cancelInProgress=false;
 let lastRouteKm=null;
 let pendingBookingCallback=null;
+
+/* GLYMPSE-STYLE LOCATION TAGGING STATE & ICONS */
+const TAGS_STORAGE_KEY = "TUKLAS_SAVED_LOCATION_TAGS";
+const TAG_ICONS = [
+  { key: "home", label: "Home", symbol: "ic-home" },
+  { key: "school", label: "School", symbol: "ic-school" },
+  { key: "church", label: "Church", symbol: "ic-church" },
+  { key: "store", label: "Store", symbol: "ic-store" },
+  { key: "mall", label: "Mall", symbol: "ic-mall" },
+  { key: "hospital", label: "Hospital", symbol: "ic-hospital" },
+  { key: "office", label: "Office", symbol: "ic-office" },
+  { key: "pin", label: "Other", symbol: "ic-tag" }
+];
+let savedTags = [];
+let tagMarkers = {};
+let activeTagPopup = null;
+let editingTagDraft = null;
+let selectedTagIconKey = "home";
 
 /* UNIFIED VEHICLE & TOLL FARE COMPUTATION CONFIG */
 const VEHICLE_RATES = {
@@ -2035,6 +2320,250 @@ function stopActiveRideSyncLoop(){
     clearInterval(rideRecoveryTimer);
     rideRecoveryTimer = null;
   }
+}
+
+/* =========================================================
+   GLYMPSE-STYLE LOCATION TAGGING FUNCTIONS (IN SETTINGS)
+   ========================================================= */
+function getTagIconMeta(iconKey){
+  return TAG_ICONS.find(i => i.key === iconKey) || TAG_ICONS[0];
+}
+
+function renderTagIconSvg(iconKey, size = 14){
+  const meta = getTagIconMeta(iconKey);
+  return `<span class="monoIcon" style="width:${size}px;height:${size}px"><svg><use href="#${meta.symbol}"></use></svg></span>`;
+}
+
+function renderTagIconPicker(){
+  const grid = document.getElementById("tagIconGrid");
+  if(!grid) return;
+  grid.innerHTML = TAG_ICONS.map(item => `
+    <button type="button" class="tagIconOption ${item.key === selectedTagIconKey ? "active" : ""}" onclick="selectTagIcon('${item.key}')">
+      ${renderTagIconSvg(item.key, 18)}
+      <span>${item.label}</span>
+    </button>
+  `).join("");
+}
+
+function selectTagIcon(iconKey){
+  selectedTagIconKey = iconKey;
+  const nameInput = document.getElementById("tagNameInput");
+  const meta = getTagIconMeta(iconKey);
+  if(nameInput && (!nameInput.value.trim() || TAG_ICONS.some(i => i.label.toLowerCase() === nameInput.value.trim().toLowerCase()))){
+    nameInput.value = meta.key === "pin" ? "" : meta.label;
+  }
+  renderTagIconPicker();
+}
+
+function loadSavedTags(){
+  try{
+    const raw = localStorage.getItem(TAGS_STORAGE_KEY);
+    savedTags = raw ? JSON.parse(raw) : [];
+    if(!Array.isArray(savedTags)) savedTags = [];
+  }catch(e){
+    savedTags = [];
+  }
+  renderSavedTagsBar();
+  renderSettingsTagsList();
+  renderAllTagMarkers();
+}
+
+function persistSavedTags(){
+  try{
+    localStorage.setItem(TAGS_STORAGE_KEY, JSON.stringify(savedTags));
+  }catch(e){}
+  renderSavedTagsBar();
+  renderSettingsTagsList();
+  renderAllTagMarkers();
+}
+
+function startCreateTagFromSettings(){
+  closeProfileMenu();
+  destinationMode = false;
+  tagCreateMode = true;
+  const sheet = document.getElementById("bookingSheet");
+  const btn = document.getElementById("toggleBtn");
+  if(sheet && sheet.classList.contains("expanded")){
+    sheet.classList.remove("expanded");
+    if(btn) btn.innerHTML = "BOOK<br>NOW";
+  }
+  alert("Pindutin sa mapa kung saan ilalagay ang bagong Tag.");
+}
+
+function openTagEditorModal(draft){
+  editingTagDraft = draft;
+  selectedTagIconKey = draft.icon || "home";
+  document.getElementById("tagEditorModalTitle").innerText = draft.id ? "Edit Location Tag" : "Create Location Tag";
+  renderTagIconPicker();
+  document.getElementById("tagNameInput").value = draft.name || (draft.id ? "" : "Home");
+  document.getElementById("tagAddressInput").value = draft.address || "";
+  document.getElementById("tagEditorModal").classList.add("open");
+  setTimeout(()=>{ document.getElementById("tagNameInput")?.focus(); }, 80);
+}
+
+function closeTagEditorModal(){
+  document.getElementById("tagEditorModal").classList.remove("open");
+  editingTagDraft = null;
+}
+
+function saveLocationTag(){
+  if(!editingTagDraft) return;
+  const name = document.getElementById("tagNameInput").value.trim();
+  const address = document.getElementById("tagAddressInput").value.trim() || editingTagDraft.address || "Tagged Location";
+  if(!name){
+    alert("Maglagay ng pangalan para sa Tag.");
+    return;
+  }
+
+  let savedId = editingTagDraft.id;
+  if(editingTagDraft.id){
+    const idx = savedTags.findIndex(t => t.id === editingTagDraft.id);
+    if(idx !== -1){
+      savedTags[idx] = { ...savedTags[idx], icon: selectedTagIconKey, name, address };
+    }
+  }else{
+    savedId = "tag_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+    savedTags.push({
+      id: savedId,
+      icon: selectedTagIconKey,
+      name,
+      address,
+      lat: Number(editingTagDraft.lat),
+      lng: Number(editingTagDraft.lng)
+    });
+  }
+
+  const targetLat = editingTagDraft.lat;
+  const targetLng = editingTagDraft.lng;
+  closeTagEditorModal();
+  persistSavedTags();
+
+  if(map && Number.isFinite(targetLat) && Number.isFinite(targetLng)){
+    map.flyTo({ center: [targetLng, targetLat], zoom: Math.max(map.getZoom(), 15) });
+    if(savedId) setTimeout(()=>openTagActionPopup(savedId), 250);
+  }
+}
+
+function renderSettingsTagsList(){
+  const listEl = document.getElementById("settingsTagsList");
+  if(!listEl) return;
+  if(!savedTags.length){
+    listEl.innerHTML = `<div class="small" style="margin-top:8px;font-size:12px;">Wala pang naka-save na tag.</div>`;
+    return;
+  }
+  listEl.innerHTML = savedTags.map(tag => `
+    <div class="settingsTagItem">
+      <div class="settingsTagInfo" onclick="closeProfileMenu();focusAndOpenTag('${escapeHTML(tag.id)}')">
+        <span style="color:var(--orange);display:inline-flex;">${renderTagIconSvg(tag.icon || "home", 18)}</span>
+        <div class="settingsTagText">
+          <div class="settingsTagName">${escapeHTML(tag.name)}</div>
+          <div class="settingsTagAddr">${escapeHTML(tag.address)}</div>
+        </div>
+      </div>
+      <div class="settingsTagBtns">
+        <button type="button" class="secondary" onclick="editTagFromSettings('${escapeHTML(tag.id)}')">Edit</button>
+        <button type="button" class="secondary" style="color:#ff5a5f;" onclick="deleteLocationTag('${escapeHTML(tag.id)}')">Del</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function editTagFromSettings(tagId){
+  const tag = savedTags.find(t => t.id === tagId);
+  if(!tag) return;
+  closeProfileMenu();
+  openTagEditorModal({ ...tag });
+}
+
+function renderSavedTagsBar(){
+  const bar = document.getElementById("savedTagsBar");
+  if(!bar) return;
+  if(!savedTags.length){
+    bar.classList.add("hidden");
+    bar.innerHTML = "";
+    return;
+  }
+  bar.classList.remove("hidden");
+  bar.innerHTML = savedTags.map(tag => `
+    <button type="button" class="savedTagChip" onclick="focusAndOpenTag('${escapeHTML(tag.id)}')">
+      ${renderTagIconSvg(tag.icon || "home", 13)}
+      <span>${escapeHTML(tag.name)}</span>
+    </button>
+  `).join("");
+}
+
+function renderAllTagMarkers(){
+  if(!map) return;
+  Object.values(tagMarkers).forEach(m => m.remove());
+  tagMarkers = {};
+
+  savedTags.forEach(tag => {
+    const el = document.createElement("div");
+    el.className = "mapTagPin";
+    el.innerHTML = `${renderTagIconSvg(tag.icon || "home", 13)}<span>${escapeHTML(tag.name)}</span>`;
+    el.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      openTagActionPopup(tag.id);
+    });
+
+    const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
+      .setLngLat([tag.lng, tag.lat])
+      .addTo(map);
+    tagMarkers[tag.id] = marker;
+  });
+}
+
+function focusAndOpenTag(tagId){
+  const tag = savedTags.find(t => t.id === tagId);
+  if(!tag || !map) return;
+  map.flyTo({ center: [tag.lng, tag.lat], zoom: Math.max(map.getZoom(), 15) });
+  openTagActionPopup(tagId);
+}
+
+function openTagActionPopup(tagId){
+  const tag = savedTags.find(t => t.id === tagId);
+  if(!tag || !map) return;
+
+  if(activeTagPopup){
+    activeTagPopup.remove();
+    activeTagPopup = null;
+  }
+
+  const container = document.createElement("div");
+  container.className = "tagPopupBox";
+  container.innerHTML = `
+    <div class="tagPopupTitle">${renderTagIconSvg(tag.icon || "home", 15)}<span>${escapeHTML(tag.name)}</span></div>
+    <div class="tagPopupAddr">${escapeHTML(tag.address)}</div>
+    <div class="tagPopupActions">
+      <button type="button" id="tagActBookDest">Booking (Destination)</button>
+      <button type="button" class="secondary" id="tagActBookPickup">Set as Pickup</button>
+    </div>
+  `;
+
+  container.querySelector("#tagActBookDest").onclick = () => {
+    if(activeTagPopup){ activeTagPopup.remove(); activeTagPopup = null; }
+    setDestination(tag.lat, tag.lng, `${tag.name} (${tag.address})`);
+    expandBookingSheetForActiveRide();
+  };
+
+  container.querySelector("#tagActBookPickup").onclick = () => {
+    if(activeTagPopup){ activeTagPopup.remove(); activeTagPopup = null; }
+    setPickup(tag.lat, tag.lng, `${tag.name} (${tag.address})`);
+    expandBookingSheetForActiveRide();
+  };
+
+  activeTagPopup = new maplibregl.Popup({ offset: 26, closeOnClick: true })
+    .setLngLat([tag.lng, tag.lat])
+    .setDOMContent(container)
+    .addTo(map);
+}
+
+function deleteLocationTag(tagId){
+  const tag = savedTags.find(t => t.id === tagId);
+  if(!tag) return;
+  if(!confirm(`I-delete ang tag na "${tag.name}"?`)) return;
+  savedTags = savedTags.filter(t => t.id !== tagId);
+  persistSavedTags();
 }
 
 /* PRE-BOOKING AGREEMENT POP-UP LOGIC */
@@ -2433,6 +2962,7 @@ function setMapStyle(key){
     if(lastRouteGeoJSON){
       applyRouteGeoJSON(lastRouteGeoJSON);
     }
+    renderAllTagMarkers();
   });
 
   map.setStyle(MAP_STYLES[key]);
@@ -2464,13 +2994,30 @@ function initMap(){
     if(lastRouteGeoJSON){
       applyRouteGeoJSON(lastRouteGeoJSON);
     }
+    renderAllTagMarkers();
   });
 
   map.on("click", async function(e){
     const drawer = document.getElementById("mapToolsDrawer");
-    if(drawer && drawer.classList.contains("open") && !destinationMode){
+    if(drawer && drawer.classList.contains("open") && !destinationMode && !tagCreateMode){
       drawer.classList.remove("open");
       document.getElementById("mapToolsToggleBtn")?.classList.remove("open");
+    }
+
+    if(tagCreateMode){
+      tagCreateMode = false;
+      const lat = e.lngLat.lat;
+      const lng = e.lngLat.lng;
+      const renderedLabel = getRenderedMapLabel(e.point);
+      const resolvedName = await reverseGeocode(lat, lng, e.point);
+      openTagEditorModal({
+        lat,
+        lng,
+        icon: "home",
+        name: renderedLabel || "",
+        address: resolvedName
+      });
+      return;
     }
 
     if(!destinationMode) return;
@@ -2492,6 +3039,7 @@ function initMap(){
 }
 
 function chooseDestination(){
+  tagCreateMode = false;
   destinationMode=true;
   document.getElementById("locationStatus").innerText = "Tap the map to select your destination.";
 }
@@ -3570,6 +4118,7 @@ async function startApp(){
   try{
     loadSavedUiTheme();
     initMap();
+    loadSavedTags();
     setupPhoton();
     loadSettingsPrefs();
     const recovery = getRecoveryInfo();
